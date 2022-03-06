@@ -1,8 +1,7 @@
 import bcrypt from 'bcryptjs';
 
-const users = [
+const teachers = [
 	{
-		role: 'teacher',
 		name: 'Adam',
 		email: 'adam@example.com',
 		phoneNumber: '+40123456789',
@@ -13,7 +12,6 @@ const users = [
 		isAdmin: true,
 	},
 	{
-		role: 'teacher',
 		name: 'Margret',
 		email: 'margret@example.com',
 		phoneNumber: '+40123456789',
@@ -22,8 +20,10 @@ const users = [
 		school: 'ASE Bucuresti',
 		title: 'Prof. Dr.',
 	},
+];
+
+const students = [
 	{
-		role: 'student',
 		name: 'John',
 		email: 'john@example.com',
 		phoneNumber: '+40123456789',
@@ -32,7 +32,6 @@ const users = [
 		yearsOfStudy: '2019-2022',
 	},
 	{
-		role: 'student',
 		name: 'Emma',
 		email: 'emma@example.com',
 		phoneNumber: '+40123456789',
@@ -40,6 +39,14 @@ const users = [
 		country: 'Romania',
 		yearsOfStudy: '2019-2022',
 	},
+	{
+		name: 'Mihaela',
+		email: 'mihaela@example.com',
+		phoneNumber: '+40123456789',
+		password: bcrypt.hashSync('123456'),
+		country: 'Romania',
+		yearsOfStudy: '2019-2022',
+	},
 ];
 
-export default users;
+export { teachers, students };

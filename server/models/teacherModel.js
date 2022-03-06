@@ -6,15 +6,13 @@ const teacherSchema = mongoose.Schema(
 		courses: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
-				required: true,
 				ref: 'Course',
 			},
 		],
-		classes: [
+		groups: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
-				required: true,
-				ref: 'Class',
+				ref: 'Group',
 			},
 		],
 		title: {
@@ -33,4 +31,4 @@ const teacherSchema = mongoose.Schema(
 
 const Teacher = User.discriminator('Teacher', teacherSchema);
 
-export default Teacher;
+export default mongoose.model('Teacher');

@@ -31,10 +31,10 @@ gradeSchema.pre('save', function (next) {
 const studentSchema = mongoose.Schema(
 	{
 		grades: [gradeSchema],
-		class: {
+		group: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
-			ref: 'Class',
+			ref: 'Group',
 		},
 		yearsOfStudy: {
 			type: String,
@@ -46,4 +46,4 @@ const studentSchema = mongoose.Schema(
 
 const Student = User.discriminator('Student', studentSchema);
 
-export default Student;
+export default mongoose.model('Student');

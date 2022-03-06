@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const classSchema = mongoose.Schema({
+const groupSchema = mongoose.Schema({
 	code: {
 		type: String,
 		trim: true,
@@ -14,19 +14,17 @@ const classSchema = mongoose.Schema({
 	students: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: 'Student',
 		},
 	],
 	courses: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: 'Course',
 		},
 	],
 });
 
-const Class = mongoose.model('Class', classSchema);
+const Group = mongoose.model('Group', groupSchema);
 
-export default Class;
+export default Group;
