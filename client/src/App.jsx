@@ -1,10 +1,22 @@
 import React from 'react';
-import PrimeReact from 'primereact/api';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ThemeConfig from './theme';
+import GlobalStyles from './theme/globalStyles';
+import ScrollToTop from './components/ScrollToTop';
+
+import Header from './components/Header';
 
 const App = () => {
-	PrimeReact.ripple = true;
-
-	return <div>App</div>;
+	return (
+		<ThemeConfig>
+			<GlobalStyles />
+			<Router>
+				<Header />
+				<ScrollToTop />
+				<main className='py-3'></main>
+			</Router>
+		</ThemeConfig>
+	);
 };
 
 export default App;

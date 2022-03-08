@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 import App from './App';
-import 'primereact/resources/primereact.min.css'; //core css
-import 'primeicons/primeicons.css'; //icons
-import 'primereact/resources/themes/tailwind-light/theme.css'; //theme
+
 import './index.css';
 
 ReactDOM.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>,
+	<Provider store={store}>
+		<React.StrictMode>
+			<App />
+		</React.StrictMode>
+	</Provider>,
 	document.getElementById('root')
 );
