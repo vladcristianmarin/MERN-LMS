@@ -7,7 +7,7 @@ const reducer = combineReducers({
 	sidebar: sidebarReducer,
 });
 
-const inititalState = {};
+const inititalState = { sidebar: { isOpen: true } };
 
 const middleware = [thunk];
 

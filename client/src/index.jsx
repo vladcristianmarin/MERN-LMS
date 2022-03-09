@@ -5,11 +5,14 @@ import store from './store';
 import App from './App';
 
 import './index.css';
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
 	<Provider store={store}>
 		<React.StrictMode>
-			<App />
+			<BrowserRouter>
+				<App />
+			</BrowserRouter>
 		</React.StrictMode>
 	</Provider>,
 	document.getElementById('root')

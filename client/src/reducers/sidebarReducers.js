@@ -1,14 +1,11 @@
-import {
-	HIDE_SIDEBAR_MENU,
-	SHOW_SIDEBAR_MENU,
-} from '../constants/sidebarConstants';
+import { HIDE_SIDEBAR, SHOW_SIDEBAR } from '../constants/sidebarConstants';
 
-export const sidebarReducer = (state = { isSidebarVisible: false }, action) => {
+export const sidebarReducer = (state = { isOpen: true }, action) => {
 	switch (action.type) {
-		case SHOW_SIDEBAR_MENU:
-			return { isSidebarVisible: true };
-		case HIDE_SIDEBAR_MENU:
-			return { isSidebarVisible: false };
+		case SHOW_SIDEBAR:
+			return { isOpen: true };
+		case HIDE_SIDEBAR:
+			return { isOpen: false };
 		default:
 			return state;
 	}
