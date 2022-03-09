@@ -1,8 +1,9 @@
-import { useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router-dom';
 import Header from './layouts/Header';
 import Sidebar from './layouts/Sidebar';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import NotFoundScreen from './screens/NotFoundScreen';
 
 const Router = () => {
   return useRoutes([
@@ -16,11 +17,10 @@ const Router = () => {
       ),
       children: []
     },
-    {
-      path: '/login',
-      element: <LoginScreen />
-    },
-    { path: '/register', element: <RegisterScreen /> }
+    { path: '/login', element: <LoginScreen /> },
+    { path: '/404', element: <NotFoundScreen /> },
+    { path: '/register', element: <RegisterScreen /> },
+    { path: '*', element: <Navigate to="/404" replace /> }
   ]);
 };
 
