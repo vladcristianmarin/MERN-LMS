@@ -1,13 +1,16 @@
 import jwt from 'jsonwebtoken';
+import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 
-const protect = async (req, res, next) => {
+const protect = asyncHandler(async (req, res, next) => {
 	let token;
+	console.log(req.headers.authorization);
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith('Bearer')
 	) {
 		token = req.headers.authorization.replace('Bearer ', '');
+
 		try {
 			const decoded = jwt.verify(token, process.env.JWT_SECRET);
 			const user = await User.findOne({
@@ -22,19 +25,18 @@ const protect = async (req, res, next) => {
 			res.status(401);
 			throw new Error('Unauthorized, invalid token!');
 		}
-	}
-	if (!token) {
+	} else {
 		res.status(401);
 		throw new Error('Unauthorized, no token!');
 	}
-};
+});
 
-const admin = (req, res, next) => {
+const admin = asyncHandler((req, res, next) => {
 	if (req.user && req.user.isAdmin) {
 		return next();
 	}
 	res.status(401);
 	throw new Error('Not authorized! Admins only!');
-};
+});
 
 export { protect, admin };

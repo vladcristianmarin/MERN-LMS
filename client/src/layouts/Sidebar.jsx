@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import React, { useEffect } from 'react';
 import ScrollBar from '../components/ScrollBar';
+
 import { Link, useLocation } from 'react-router-dom';
 import useResponsive from '../hooks/useResponsive';
 import {
@@ -24,6 +25,9 @@ const Sidebar = ({ onCloseSidebar }) => {
 	const { pathname } = useLocation();
 	const dispatch = useDispatch();
 	const { isOpen } = useSelector((state) => state.sidebar);
+
+	const userLogin = useSelector((state) => state.userLogin);
+	const { userInfo } = userLogin;
 
 	const isDesktop = useResponsive('up', 'lg');
 	const isMobile = useResponsive('down', 'sm');
@@ -74,13 +78,18 @@ const Sidebar = ({ onCloseSidebar }) => {
 			<Box sx={{ mb: 5, mx: 2.5 }}>
 				<MUILink underline='none' component={Link} to='#'>
 					<AccountStyle>
-						<Avatar src='/images/avatar.jpeg' alt='Avatar' />
+						<Avatar
+							src={userInfo?.avatar}
+							alt={`${userInfo?.name} profile picture`}
+							sx={{ bgcolor: 'primary.dark' }}>
+							{userInfo?.name[0].toUpperCase()}
+						</Avatar>
 						<Box sx={{ ml: 2 }}>
 							<Typography variant='subtitle1' color='text.primary'>
-								Username
+								{userInfo?.name}
 							</Typography>
 							<Typography variant='body2' color='text.secondary'>
-								Student
+								{userInfo?.role}
 							</Typography>
 						</Box>
 					</AccountStyle>

@@ -33,12 +33,7 @@ const studentSchema = mongoose.Schema(
 		grades: [gradeSchema],
 		group: {
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: 'Group',
-		},
-		yearsOfStudy: {
-			type: String,
-			required: true,
 		},
 	},
 	{ discriminatorKey: 'role', timestamps: true }

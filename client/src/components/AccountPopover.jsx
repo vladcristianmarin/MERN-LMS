@@ -8,13 +8,20 @@ import {
 	Typography,
 } from '@mui/material';
 import React, { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import Iconify from './Iconify';
 import MenuPopover from './MenuPopover';
+import { logout } from '../actions/userActions';
 
 const AccountPopover = () => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(false);
 	const anchorRef = useRef(null);
+
+	const userLogin = useSelector((state) => state.userLogin);
+	const { userInfo } = userLogin;
 
 	const MENU_OPTIONS = [
 		{
@@ -46,7 +53,8 @@ const AccountPopover = () => {
 			icon: 'eva:log-out-outline',
 			linkTo: '/',
 			onClick() {
-				setIsOpen(false);
+				navigate('/login', { replace: true });
+				dispatch(logout());
 			},
 		},
 	];
@@ -72,7 +80,12 @@ const AccountPopover = () => {
 					}),
 				}}
 				onClick={() => setIsOpen((prev) => !prev.isOpen)}>
-				<Avatar src='images/avatar.jpeg' alt='Avatar'></Avatar>
+				<Avatar
+					src={userInfo?.avatar}
+					alt={`${userInfo?.name} profile picture`}
+					sx={{ bgcolor: 'primary.dark' }}>
+					{userInfo?.name[0].toUpperCase()}
+				</Avatar>
 			</IconButton>
 			<MenuPopover
 				open={isOpen}
@@ -80,10 +93,10 @@ const AccountPopover = () => {
 				anchorEl={anchorRef.current}>
 				<Box sx={{ my: 1.5, px: 2.5 }}>
 					<Typography variant='subtitle1' noWrap>
-						Username
+						{userInfo?.name}
 					</Typography>
 					<Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
-						email@example.com
+						{userInfo?.email}
 					</Typography>
 				</Box>
 

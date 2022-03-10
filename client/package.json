@@ -27,6 +27,7 @@
 		"redux": "^4.1.2",
 		"redux-devtools-extension": "^2.13.9",
 		"redux-thunk": "^2.4.1",
+		"simplebar": "^5.3.6",
 		"simplebar-react": "^2.3.6",
 		"styled-components": "^5.3.3",
 		"web-vitals": "^2.1.4",

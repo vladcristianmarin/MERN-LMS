@@ -29,7 +29,6 @@ const students = [
 		phoneNumber: '+40123456789',
 		password: bcrypt.hashSync('123456'),
 		country: 'Romania',
-		yearsOfStudy: '2019-2022',
 	},
 	{
 		name: 'Emma',
@@ -37,7 +36,6 @@ const students = [
 		phoneNumber: '+40123456789',
 		password: bcrypt.hashSync('123456'),
 		country: 'Romania',
-		yearsOfStudy: '2019-2022',
 	},
 	{
 		name: 'Mihaela',
@@ -45,7 +43,6 @@ const students = [
 		phoneNumber: '+40123456789',
 		password: bcrypt.hashSync('123456'),
 		country: 'Romania',
-		yearsOfStudy: '2019-2022',
 	},
 ];
 

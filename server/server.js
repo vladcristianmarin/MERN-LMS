@@ -1,12 +1,14 @@
-import colors from 'colors';
-import dotenv from 'dotenv';
-import morgan from 'morgan';
 import express from 'express';
+import dotenv from 'dotenv';
+import path from 'path';
+import colors from 'colors';
+import morgan from 'morgan';
 
 import connectDB from './config/database.js';
 
 import userRoutes from './routes/userRoutes.js';
-import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import countriesRoutes from './routes/countriesRoutes.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
 
@@ -20,11 +22,22 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.json());
 app.use('/api/users', userRoutes);
+app.use('/api/countries', countriesRoutes);
 
-const PORT = process.env.PORT || 3030;
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(path.join(__dirname, '/client/build')));
+	app.get('*', (_req, res) =>
+		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+	);
+}
 
 app.use(notFound);
 app.use(errorHandler);
+
+const PORT = process.env.PORT || 3030;
 
 app.listen(
 	PORT,
