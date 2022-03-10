@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,6 @@ import {
 	Typography,
 	List,
 	ListItem,
-	Slide,
 	Box,
 	FormControl,
 	Grid,
@@ -27,6 +26,8 @@ import Iconify from './Iconify';
 import { strengthColor, strengthIndicator } from '../utils/passwordStrength';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
+import { register } from '../actions/userActions';
+import Toast from './Toast';
 
 const RegisterForm = ({ variant }) => {
 	const navigate = useNavigate();
@@ -35,12 +36,20 @@ const RegisterForm = ({ variant }) => {
 
 	const [showPassword, setShowPassword] = useState(false);
 	const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+	const [showAlert, setShowAlert] = useState(false);
 	const [countries, setCountries] = useState([]);
 	const [level, setLevel] = useState();
 	const [strength, setStrength] = useState(0);
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
+
+	const userRegister = useSelector((state) => state.userRegister);
+	const {
+		error: registerError,
+		loading: registerLoading,
+		success: registerSuccess,
+	} = userRegister;
 
 	useEffect(() => {
 		const fetchCountries = async () => {
@@ -97,8 +106,14 @@ const RegisterForm = ({ variant }) => {
 		},
 		validationSchema: RegisterSchema,
 
-		onSubmit(values, actions) {
-			console.log('submited');
+		onSubmit(values) {
+			if (values.password === values.passwordConfirmation) {
+				const userData = { ...values };
+				delete userData.passwordConfirmation;
+				userData.role = variant;
+				console.log(userData);
+				dispatch(register(userData));
+			}
 		},
 	});
 
@@ -108,11 +123,29 @@ const RegisterForm = ({ variant }) => {
 		handleSubmit,
 		handleChange,
 		handleBlur,
+		handleReset,
 		isSubmitting,
+		setSubmitting,
 		getFieldProps,
 		values,
 		setFieldValue,
 	} = formik;
+
+	useEffect(() => {
+		if (!registerLoading) {
+			setSubmitting(false);
+		}
+		if (registerError) {
+			setShowAlert(true);
+			handleReset();
+		}
+		if (registerSuccess) {
+			setShowAlert(false);
+			handleReset();
+			navigate('/', { replace: true });
+		}
+		// eslint-disable-next-line
+	}, [registerLoading, registerError]);
 
 	const ColorBox = styled(Box)(() => ({
 		display: 'inline-block',
@@ -181,6 +214,13 @@ const RegisterForm = ({ variant }) => {
 	return (
 		<FormikProvider value={formik}>
 			<Form autoComplete='off' noValidate onSubmit={handleSubmit}>
+				<Toast
+					show={showAlert}
+					timeout={500}
+					severity='error'
+					onClose={() => setShowAlert(false)}
+					message={registerError}
+				/>
 				<Stack sx={{ marginTop: 1 }} spacing={1}>
 					<TextField
 						fullWidth
@@ -211,10 +251,11 @@ const RegisterForm = ({ variant }) => {
 					/>
 
 					<Autocomplete
+						key={registerSuccess}
 						disablePortal
 						id='country'
 						options={countries}
-						onChange={(e, value) => setFieldValue('country', value)}
+						onChange={(_e, value) => setFieldValue('country', value)}
 						renderInput={(params) => (
 							<TextField
 								{...params}
