@@ -39,6 +39,6 @@ const studentSchema = mongoose.Schema(
 	{ discriminatorKey: 'role', timestamps: true }
 );
 
-const Student = User.discriminator('Student', studentSchema);
+User.discriminator('Student', studentSchema);
 
 export default mongoose.model('Student');

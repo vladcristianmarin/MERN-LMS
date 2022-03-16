@@ -41,7 +41,7 @@ const Sidebar = ({ onCloseSidebar }) => {
 			dispatch(hideSidebar());
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pathname, isMobile, dispatch]);
+	}, [pathname]);
 
 	const AccountStyle = styled('div')(({ theme }) => ({
 		display: 'flex',

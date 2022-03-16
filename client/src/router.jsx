@@ -1,7 +1,6 @@
 import React from 'react';
-import { Navigate, Outlet, useRoutes } from 'react-router-dom';
-import Header from './layouts/Header';
-import Sidebar from './layouts/Sidebar';
+import { Navigate, useRoutes } from 'react-router-dom';
+import Dashboard from './layouts/Dashboard';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -11,12 +10,7 @@ const Router = () => {
 	return useRoutes([
 		{
 			path: '/',
-			element: (
-				<>
-					<Header /> <Sidebar />
-					<Outlet />
-				</>
-			),
+			element: <Dashboard />,
 			children: [{ path: '', element: <HomeScreen /> }],
 		},
 		{ path: '/login', element: <LoginScreen /> },
