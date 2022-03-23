@@ -1,9 +1,14 @@
 import styled from '@emotion/styled';
 import * as Yup from 'yup';
-import { Card, Stack, TextField, Typography, Button, Chip, Autocomplete, TextareaAutosize } from '@mui/material';
-import React from 'react';
+import { Card, Stack, TextField, Typography, Button, Autocomplete } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { Form, FormikProvider, useFormik } from 'formik';
 import { LoadingButton } from '@mui/lab';
+import { useDispatch, useSelector } from 'react-redux';
+import { COURSE_CREATE_RESET } from '../../constants/courseConstants';
+import Toast from '../Toast';
+import { createCourse } from '../../actions/courseActions';
+import { listTeachers } from '../../actions/teacherActions';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
@@ -13,6 +18,18 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 const CreateCourseForm = () => {
+	const [showAlert, setShowAlert] = useState(false);
+
+	const dispatch = useDispatch();
+
+	const courseCreate = useSelector((state) => state.courseCreate);
+	const { error, loading, success } = courseCreate;
+
+	const teacherList = useSelector((state) => state.teacherList);
+	const teachers = teacherList.teachers || [];
+
+	const teachersEmails = teachers.map((teacher) => teacher.email);
+
 	const CreateCourseSchema = Yup.object().shape({
 		name: Yup.string().required('Name is required'),
 		acronym: Yup.string().required('Acronym is required').max(5, 'Acronym is too long. (Avoid dots)'),
@@ -28,29 +45,46 @@ const CreateCourseForm = () => {
 			description: '',
 		},
 		validationSchema: CreateCourseSchema,
-		onSubmit(values, actions) {
-			console.log(values);
+		onSubmit(values) {
+			const { name, acronym, teacher, description } = values;
+			dispatch(createCourse(name, acronym, teacher, description));
 			handleReset();
 		},
 	});
 
-	const {
-		errors,
-		setErrors,
-		touched,
-		values,
-		setFieldValue,
-		isSubmitting,
-		setSubmitting,
-		handleSubmit,
-		handleReset,
-		handleBlur,
-		getFieldProps,
-		handleChange,
-	} = formik;
+	const { errors, touched, setFieldValue, isSubmitting, setSubmitting, handleSubmit, handleReset, getFieldProps } =
+		formik;
+
+	useEffect(() => {
+		dispatch(listTeachers());
+	}, [dispatch]);
+
+	useEffect(() => {
+		if (!loading) {
+			setSubmitting(false);
+		}
+		if (error) {
+			setShowAlert(true);
+			handleReset();
+		}
+		if (success) {
+			setShowAlert(true);
+			dispatch({ type: COURSE_CREATE_RESET });
+			handleReset();
+		}
+		// eslint-disable-next-line
+	}, [loading, error]);
 
 	return (
 		<RootStyle>
+			<Toast show={showAlert} timeout={500} severity='error' onClose={() => setShowAlert(false)} message={error} />
+			<Toast
+				show={showAlert}
+				timeout={500}
+				severity='success'
+				onClose={() => setShowAlert(false)}
+				message='Course created!'
+			/>
 			<Typography variant='h4' sx={{ textAlign: 'center' }}>
 				Create New Course
 			</Typography>
@@ -76,10 +110,14 @@ const CreateCourseForm = () => {
 							helperText={touched.acronym && errors.acronym}
 						/>
 						<Autocomplete
+							key={loading}
 							disablePortal
 							id='country'
-							options={['prof1@example.com', 'prof2@example.com']}
-							onChange={(_e, value) => setFieldValue('country', value)}
+							options={teachersEmails}
+							onChange={(_e, value, reason) => {
+								setFieldValue('teacher', value);
+								if (reason === 'clear') setFieldValue('teacher', '');
+							}}
 							renderInput={(params) => (
 								<TextField
 									{...params}

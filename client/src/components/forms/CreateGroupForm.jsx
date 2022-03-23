@@ -1,9 +1,13 @@
 import styled from '@emotion/styled';
 import * as Yup from 'yup';
 import { Card, Stack, TextField, Typography, Button, Chip, Autocomplete } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, FormikProvider, useFormik } from 'formik';
 import { LoadingButton } from '@mui/lab';
+import { createCourse } from '../../actions/courseActions';
+import { useDispatch, useSelector } from 'react-redux';
+import Toast from '../Toast';
+import { COURSE_CREATE_RESET } from '../../constants/courseConstants';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
@@ -13,6 +17,13 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 const CreateGroupForm = () => {
+	const [showAlert, setShowAlert] = useState(false);
+
+	const dispatch = useDispatch();
+
+	const courseCreate = useSelector((state) => state.courseCreate);
+	const { error, loading, success } = courseCreate;
+
 	const CreateGroupSchema = Yup.object().shape({
 		code: Yup.string().required('Code is required'),
 		school: Yup.string().required('School is required'),
@@ -27,14 +38,14 @@ const CreateGroupForm = () => {
 		},
 		validationSchema: CreateGroupSchema,
 		onSubmit(values, actions) {
-			console.log(values);
+			const { name, acronym, teacher, description } = values;
+			dispatch(createCourse(name, acronym, teacher, description));
 			handleReset();
 		},
 	});
 
 	const {
 		errors,
-		setErrors,
 		touched,
 		values,
 		setFieldValue,
@@ -42,13 +53,33 @@ const CreateGroupForm = () => {
 		setSubmitting,
 		handleSubmit,
 		handleReset,
-		handleBlur,
 		getFieldProps,
-		handleChange,
 	} = formik;
+
+	useEffect(() => {
+		if (!loading) {
+			setSubmitting(false);
+		}
+		if (error) {
+			handleReset();
+		}
+		if (success) {
+			dispatch({ type: COURSE_CREATE_RESET });
+			handleReset();
+		}
+		// eslint-disable-next-line
+	}, [loading, error]);
 
 	return (
 		<RootStyle>
+			<Toast show={showAlert} timeout={500} severity='error' onClose={() => setShowAlert(false)} message={error} />
+			<Toast
+				show={showAlert}
+				timeout={500}
+				severity='success'
+				onClose={() => setShowAlert(false)}
+				message='Course created!'
+			/>
 			<Typography
 				variant='h4'
 				sx={{

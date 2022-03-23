@@ -12,12 +12,19 @@ const groupSchema = mongoose.Schema({
 		required: true,
 		trim: true,
 	},
-	students: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Student',
-		},
-	],
+	yearOfStudy: {
+		type: Number,
+		required: true,
+	},
+	students: {
+		type: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'Student',
+			},
+		],
+		validate: (v) => Array.isArray(v) && v.length > 0,
+	},
 	courses: [
 		{
 			type: mongoose.Schema.Types.ObjectId,

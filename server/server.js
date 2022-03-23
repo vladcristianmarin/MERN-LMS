@@ -8,6 +8,10 @@ import connectDB from './config/database.js';
 
 import userRoutes from './routes/userRoutes.js';
 import countriesRoutes from './routes/countriesRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import teacherRoutes from './routes/teacherRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -23,15 +27,17 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/countries', countriesRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/teachers', teacherRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.join(__dirname, '/client/build')));
-	app.get('*', (_req, res) =>
-		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
-	);
+	app.get('*', (_req, res) => res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html')));
 }
 
 app.use(notFound);
@@ -39,10 +45,4 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3030;
 
-app.listen(
-	PORT,
-	console.log(
-		`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
-			.bold
-	)
-);
+app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold));
