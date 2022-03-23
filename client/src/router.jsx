@@ -5,13 +5,17 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import NotFoundScreen from './screens/NotFoundScreen';
+import AdminHomeScreen from './screens/AdminHomeScreen';
 
 const Router = () => {
 	return useRoutes([
 		{
 			path: '/',
 			element: <Dashboard />,
-			children: [{ path: '', element: <HomeScreen /> }],
+			children: [
+				{ path: '', element: <HomeScreen /> },
+				{ path: '/admin', element: <AdminHomeScreen /> },
+			],
 		},
 		{ path: '/login', element: <LoginScreen /> },
 		{ path: '/register', element: <RegisterScreen /> },

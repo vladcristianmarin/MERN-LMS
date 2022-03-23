@@ -14,23 +14,17 @@ import {
 	FormControlLabel,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import Iconify from '../components/Iconify';
-import { login } from '../actions/userActions';
+import Iconify from '../Iconify';
+import { login } from '../../actions/userActions';
 
 const LoginForm = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const {
-		loading: loginLoading,
-		error: loginError,
-		userInfo,
-	} = useSelector((state) => state.userLogin);
+	const { loading: loginLoading, error: loginError, userInfo } = useSelector((state) => state.userLogin);
 	const [showPassword, setShowPassword] = useState(false);
 
 	const LoginSchema = Yup.object().shape({
-		email: Yup.string()
-			.email('Email must be a valid email address')
-			.required('Email is required'),
+		email: Yup.string().email('Email must be a valid email address').required('Email is required'),
 		password: Yup.string().required('Password is required'),
 	});
 
@@ -46,16 +40,7 @@ const LoginForm = () => {
 		},
 	});
 
-	const {
-		errors,
-		setErrors,
-		touched,
-		values,
-		isSubmitting,
-		setSubmitting,
-		handleSubmit,
-		getFieldProps,
-	} = formik;
+	const { errors, setErrors, touched, values, isSubmitting, setSubmitting, handleSubmit, getFieldProps } = formik;
 
 	useEffect(() => {
 		setErrors({ email: loginError, password: loginError });
@@ -96,46 +81,24 @@ const LoginForm = () => {
 							endAdornment: (
 								<InputAdornment position='end'>
 									<IconButton onClick={handleShowPassword} edge='end'>
-										<Iconify
-											icon={
-												showPassword ? 'eva:eye-outline' : 'eva:eye-off-outline'
-											}
-										/>
+										<Iconify icon={showPassword ? 'eva:eye-outline' : 'eva:eye-off-outline'} />
 									</IconButton>
 								</InputAdornment>
 							),
 						}}
 					/>
 				</Stack>
-				<Stack
-					direction='row'
-					alignItems='center'
-					justifyContent='space-between'
-					sx={{ my: 2 }}>
+				<Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ my: 2 }}>
 					<FormControlLabel
-						control={
-							<Checkbox
-								{...getFieldProps('remember')}
-								checked={values.remember}
-							/>
-						}
+						control={<Checkbox {...getFieldProps('remember')} checked={values.remember} />}
 						label='Remember me'
 					/>
-					<MUILink
-						component={Link}
-						variant='subtitle2'
-						to='#'
-						underline='hover'>
+					<MUILink component={Link} variant='subtitle2' to='#' underline='hover'>
 						Forgot password?
 					</MUILink>
 				</Stack>
 
-				<LoadingButton
-					fullWidth
-					size='large'
-					type='submit'
-					variant='contained'
-					loading={isSubmitting}>
+				<LoadingButton fullWidth size='large' type='submit' variant='contained' loading={isSubmitting}>
 					Login
 				</LoadingButton>
 			</Form>

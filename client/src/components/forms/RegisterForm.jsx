@@ -22,12 +22,12 @@ import {
 	Fade,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import Iconify from './Iconify';
-import { strengthColor, strengthIndicator } from '../utils/passwordStrength';
+import Iconify from '../Iconify';
+import { strengthColor, strengthIndicator } from '../../utils/passwordStrength';
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
-import { register } from '../actions/userActions';
-import Toast from './Toast';
+import { register } from '../../actions/userActions';
+import Toast from '../Toast';
 
 const RegisterForm = ({ variant }) => {
 	const navigate = useNavigate();
@@ -45,11 +45,7 @@ const RegisterForm = ({ variant }) => {
 	const { userInfo } = userLogin;
 
 	const userRegister = useSelector((state) => state.userRegister);
-	const {
-		error: registerError,
-		loading: registerLoading,
-		success: registerSuccess,
-	} = userRegister;
+	const { error: registerError, loading: registerLoading, success: registerSuccess } = userRegister;
 
 	useEffect(() => {
 		const fetchCountries = async () => {
@@ -66,31 +62,15 @@ const RegisterForm = ({ variant }) => {
 	}, [userInfo, navigate]);
 
 	const RegisterSchema = Yup.object().shape({
-		name: Yup.string()
-			.min(2, 'Too Short')
-			.max(50, 'Too Long')
-			.required('Name is required'),
-		email: Yup.string()
-			.email('Email must be a valid email address')
-			.required('Email is required'),
-		phoneNumber: Yup.string()
-			.min(10, 'Too Short')
-			.required('Phone Number is required'),
+		name: Yup.string().min(2, 'Too Short').max(50, 'Too Long').required('Name is required'),
+		email: Yup.string().email('Email must be a valid email address').required('Email is required'),
+		phoneNumber: Yup.string().min(10, 'Too Short').required('Phone Number is required'),
 		country: Yup.string().required('Please choose a country'),
 		password: Yup.string().required('Password is required'),
-		passwordConfirmation: Yup.string().oneOf(
-			[Yup.ref('password'), null],
-			'Passwords must match'
-		),
+		passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
 		...(variant === 'teacher' && {
-			title: Yup.string()
-				.min(2, 'Too Short')
-				.max(50, 'Too Long')
-				.required('Title is required'),
-			school: Yup.string()
-				.min(2, 'Too Short')
-				.max(50, 'Too Long')
-				.required('School name is required'),
+			title: Yup.string().min(2, 'Too Short').max(50, 'Too Long').required('Title is required'),
+			school: Yup.string().min(2, 'Too Short').max(50, 'Too Long').required('School name is required'),
 		}),
 	});
 
@@ -309,12 +289,8 @@ const RegisterForm = ({ variant }) => {
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position='end'>
-									<IconButton
-										edge='end'
-										onClick={() => setShowPassword((prev) => !prev)}>
-										<Iconify
-											icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
-										/>
+									<IconButton edge='end' onClick={() => setShowPassword((prev) => !prev)}>
+										<Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
 									</IconButton>
 								</InputAdornment>
 							),
@@ -322,9 +298,7 @@ const RegisterForm = ({ variant }) => {
 						error={Boolean(touched.password && errors.password)}
 						helperText={touched.password && errors.password}
 					/>
-					{values.password.length !== 0 &&
-						isPasswordFocused &&
-						passwordStrengthPopup}
+					{values.password.length !== 0 && isPasswordFocused && passwordStrengthPopup}
 
 					<TextField
 						fullWidth
@@ -332,20 +306,11 @@ const RegisterForm = ({ variant }) => {
 						type={showPassword ? 'text' : 'password'}
 						label='Confirm Password'
 						{...getFieldProps('passwordConfirmation')}
-						error={Boolean(
-							touched.passwordConfirmation && errors.passwordConfirmation
-						)}
-						helperText={
-							touched.passwordConfirmation && errors.passwordConfirmation
-						}
+						error={Boolean(touched.passwordConfirmation && errors.passwordConfirmation)}
+						helperText={touched.passwordConfirmation && errors.passwordConfirmation}
 					/>
 
-					<LoadingButton
-						fullWidth
-						size='large'
-						type='submit'
-						variant='contained'
-						loading={isSubmitting}>
+					<LoadingButton fullWidth size='large' type='submit' variant='contained' loading={isSubmitting}>
 						Register
 					</LoadingButton>
 				</Stack>

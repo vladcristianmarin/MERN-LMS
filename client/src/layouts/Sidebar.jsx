@@ -4,15 +4,7 @@ import ScrollBar from '../components/ScrollBar';
 
 import { Link, useLocation } from 'react-router-dom';
 import useResponsive from '../hooks/useResponsive';
-import {
-	Avatar,
-	Box,
-	DialogTitle,
-	Drawer,
-	IconButton,
-	Link as MUILink,
-	Typography,
-} from '@mui/material';
+import { Avatar, Box, DialogTitle, Drawer, IconButton, Link as MUILink, Typography } from '@mui/material';
 import Navigation from './Navigation';
 import navConfig from './SidebarNavConfig';
 import Iconify from '../components/Iconify';
@@ -78,10 +70,7 @@ const Sidebar = ({ onCloseSidebar }) => {
 			<Box sx={{ mb: 5, mx: 2.5 }}>
 				<MUILink underline='none' component={Link} to='#'>
 					<AccountStyle>
-						<Avatar
-							src={userInfo?.avatar}
-							alt={`${userInfo?.name} profile picture`}
-							sx={{ bgcolor: 'primary.dark' }}>
+						<Avatar src={userInfo?.avatar} alt={`${userInfo?.name} profile picture`} sx={{ bgcolor: 'primary.dark' }}>
 							{userInfo?.name[0].toUpperCase()}
 						</Avatar>
 						<Box sx={{ ml: 2 }}>
@@ -89,7 +78,7 @@ const Sidebar = ({ onCloseSidebar }) => {
 								{userInfo?.name}
 							</Typography>
 							<Typography variant='body2' color='text.secondary'>
-								{userInfo?.role}
+								{userInfo?.isAdmin ? 'Admin' : userInfo?.role}
 							</Typography>
 						</Box>
 					</AccountStyle>
@@ -135,10 +124,7 @@ const Sidebar = ({ onCloseSidebar }) => {
 	return (
 		<>
 			{!isDesktop && (
-				<Drawer
-					open={isOpen}
-					onClose={closeSidebarHandler}
-					PaperProps={{ sx: { width: DRAWER_WIDTH } }}>
+				<Drawer open={isOpen} onClose={closeSidebarHandler} PaperProps={{ sx: { width: DRAWER_WIDTH } }}>
 					{content}
 				</Drawer>
 			)}
@@ -151,9 +137,7 @@ const Sidebar = ({ onCloseSidebar }) => {
 						sx: { width: DRAWER_WIDTH, bgcolor: 'Background.default' },
 					}}>
 					<DialogTitleStyle>
-						<IconButton
-							onClick={closeSidebarHandler}
-							sx={{ '&:hover': { transform: 'scale(1.07)' } }}>
+						<IconButton onClick={closeSidebarHandler} sx={{ '&:hover': { transform: 'scale(1.07)' } }}>
 							<Iconify icon='eva:arrowhead-left-outline' />
 						</IconButton>
 					</DialogTitleStyle>

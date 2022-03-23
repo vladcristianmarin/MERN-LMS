@@ -1,16 +1,9 @@
 import styled from '@emotion/styled';
-import {
-	Typography,
-	Link as MUILink,
-	Card,
-	Container,
-	Stack,
-	Divider,
-} from '@mui/material';
+import { Typography, Link as MUILink, Card, Container, Stack, Divider } from '@mui/material';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LoginForm from '../components/LoginForm';
+import LoginForm from '../components/forms/LoginForm';
 
 const LoginScreen = () => {
 	const RootStyle = styled('div')(({ theme }) => ({
@@ -55,10 +48,7 @@ const LoginScreen = () => {
 	return (
 		<RootStyle title='Register | WeKlass'>
 			<HeaderStyle>
-				<Typography
-					sx={{ mt: { md: -3 }, ml: -1 }}
-					variant='h2'
-					color='primary'>
+				<Typography sx={{ mt: { md: -3 }, ml: -1 }} variant='h2' color='primary'>
 					WeKlass
 				</Typography>
 				<Typography
@@ -68,11 +58,7 @@ const LoginScreen = () => {
 						mt: { md: -2 },
 					}}>
 					Don’t have an account? &nbsp;
-					<MUILink
-						underline='none'
-						variant='subtitle2'
-						component={Link}
-						to='/register'>
+					<MUILink underline='none' variant='subtitle2' component={Link} to='/register'>
 						Get started!
 					</MUILink>
 				</Typography>
@@ -106,11 +92,7 @@ const LoginScreen = () => {
 							display: { sm: 'none' },
 						}}>
 						Don’t have an account?&nbsp;
-						<MUILink
-							variant='subtitle2'
-							component={Link}
-							to='register'
-							underline='hover'>
+						<MUILink variant='subtitle2' component={Link} to='register' underline='hover'>
 							Get started
 						</MUILink>
 					</Typography>

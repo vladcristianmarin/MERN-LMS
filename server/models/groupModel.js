@@ -5,6 +5,7 @@ const groupSchema = mongoose.Schema({
 		type: String,
 		trim: true,
 		required: true,
+		unique: true,
 	},
 	school: {
 		type: String,

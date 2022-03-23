@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 
 import { Link } from 'react-router-dom';
-import RegisterForm from '../components/RegisterForm';
+import RegisterForm from '../components/forms/RegisterForm';
 
 const RegisterScreen = () => {
 	const RootStyle = styled('div')(({ theme }) => ({
@@ -65,10 +65,7 @@ const RegisterScreen = () => {
 	return (
 		<RootStyle>
 			<HeaderStyle>
-				<Typography
-					sx={{ mt: { md: -3 }, ml: -1 }}
-					variant='h2'
-					color='primary'>
+				<Typography sx={{ mt: { md: -3 }, ml: -1 }} variant='h2' color='primary'>
 					WeKlass
 				</Typography>
 				<Typography
@@ -78,11 +75,7 @@ const RegisterScreen = () => {
 						mt: { md: -2 },
 					}}>
 					Already have an account? &nbsp;
-					<MUILink
-						underline='none'
-						variant='subtitle2'
-						component={Link}
-						to='/login'>
+					<MUILink underline='none' variant='subtitle2' component={Link} to='/login'>
 						Login!
 					</MUILink>
 				</Typography>
@@ -101,9 +94,7 @@ const RegisterScreen = () => {
 						<Typography variant='h4' gutterBottom>
 							Get started absolutely free.
 						</Typography>
-						<Typography sx={{ color: 'text.secondary' }}>
-							By students for students
-						</Typography>
+						<Typography sx={{ color: 'text.secondary' }}>By students for students</Typography>
 					</Box>
 					<Divider sx={{ mb: 2.5 }} />
 					<ToggleButtonGroup
@@ -111,18 +102,10 @@ const RegisterScreen = () => {
 						value={role}
 						onChange={selectRoleHandler}
 						sx={{ display: 'flex', flexWrap: 'wrap' }}>
-						<ToggleButton
-							sx={{ flex: '1' }}
-							color='primary'
-							value='student'
-							aria-label='left aligned'>
+						<ToggleButton sx={{ flex: '1' }} color='primary' value='student' aria-label='left aligned'>
 							Student
 						</ToggleButton>
-						<ToggleButton
-							sx={{ flex: '1' }}
-							color='primary'
-							value='teacher'
-							aria-label='right aligned'>
+						<ToggleButton sx={{ flex: '1' }} color='primary' value='teacher' aria-label='right aligned'>
 							Teacher
 						</ToggleButton>
 					</ToggleButtonGroup>

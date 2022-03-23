@@ -8,12 +8,14 @@ const HomeScreen = () => {
 	const { userInfo } = useSelector((state) => state.userLogin);
 
 	useEffect(() => {
-		console.log(userInfo);
 		if (!userInfo) {
 			navigate('/login', { replace: true });
 		}
+		if (userInfo && userInfo.isAdmin) {
+			navigate('/admin', { replace: true });
+		}
 	}, [userInfo, navigate]);
-	return <>{userInfo?.role === 'Student' && <StudentHomeScreen />}</>;
+	return <StudentHomeScreen />;
 };
 
 export default HomeScreen;
