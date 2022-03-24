@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Student from './studentModel.js';
 
 const groupSchema = mongoose.Schema({
 	code: {
@@ -31,6 +32,14 @@ const groupSchema = mongoose.Schema({
 			ref: 'Course',
 		},
 	],
+});
+
+groupSchema.post('save', async function (error, _doc, next) {
+	if (error.name === 'MongoServerError' && error.code === 11000) {
+		const duplicateStudent = await Student.findOne({ _id: error.keyValue.students });
+		next(new Error(`Student ${duplicateStudent.name}(${duplicateStudent.email}) already in another group!`));
+	}
+	next();
 });
 
 const Group = mongoose.model('Group', groupSchema);

@@ -4,10 +4,11 @@ import { Card, Stack, TextField, Typography, Button, Chip, Autocomplete } from '
 import React, { useEffect, useState } from 'react';
 import { Form, FormikProvider, useFormik } from 'formik';
 import { LoadingButton } from '@mui/lab';
-import { createCourse } from '../../actions/courseActions';
 import { useDispatch, useSelector } from 'react-redux';
 import Toast from '../Toast';
-import { COURSE_CREATE_RESET } from '../../constants/courseConstants';
+import { GROUP_CREATE_RESET } from '../../constants/groupConstants';
+import { createGroup } from '../../actions/groupActions';
+import { listStudents } from '../../actions/studentActions';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
@@ -17,16 +18,23 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 const CreateGroupForm = () => {
-	const [showAlert, setShowAlert] = useState(false);
-
 	const dispatch = useDispatch();
 
-	const courseCreate = useSelector((state) => state.courseCreate);
-	const { error, loading, success } = courseCreate;
+	const [showError, setShowError] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
+
+	const groupCreate = useSelector((state) => state.groupCreate);
+	const { error, loading, success } = groupCreate;
+
+	const studentList = useSelector((state) => state.studentList);
+	const students = studentList.students || [];
+
+	const studentsEmails = students.map((student) => student.email);
 
 	const CreateGroupSchema = Yup.object().shape({
 		code: Yup.string().required('Code is required'),
 		school: Yup.string().required('School is required'),
+		yearOfStudy: Yup.number().required('Year of study is required'),
 		students: Yup.array().of(Yup.string()).min(1, 'At least 1 email is required!'),
 	});
 
@@ -34,13 +42,13 @@ const CreateGroupForm = () => {
 		initialValues: {
 			code: '',
 			school: '',
+			yearOfStudy: '',
 			students: [],
 		},
 		validationSchema: CreateGroupSchema,
-		onSubmit(values, actions) {
-			const { name, acronym, teacher, description } = values;
-			dispatch(createCourse(name, acronym, teacher, description));
-			handleReset();
+		onSubmit(values) {
+			const { code, school, yearOfStudy, students } = values;
+			dispatch(createGroup(code, school, yearOfStudy, students));
 		},
 	});
 
@@ -57,14 +65,21 @@ const CreateGroupForm = () => {
 	} = formik;
 
 	useEffect(() => {
+		dispatch(listStudents());
+	}, [dispatch]);
+
+	useEffect(() => {
 		if (!loading) {
 			setSubmitting(false);
 		}
 		if (error) {
-			handleReset();
+			setShowError(true);
+			setShowSuccess(false);
 		}
 		if (success) {
-			dispatch({ type: COURSE_CREATE_RESET });
+			setShowSuccess(true);
+			setShowError(false);
+			dispatch({ type: GROUP_CREATE_RESET });
 			handleReset();
 		}
 		// eslint-disable-next-line
@@ -72,13 +87,13 @@ const CreateGroupForm = () => {
 
 	return (
 		<RootStyle>
-			<Toast show={showAlert} timeout={500} severity='error' onClose={() => setShowAlert(false)} message={error} />
+			<Toast show={showError} timeout={500} severity='error' message={error} onClose={() => setShowError(false)} />
 			<Toast
-				show={showAlert}
+				show={showSuccess}
 				timeout={500}
 				severity='success'
-				onClose={() => setShowAlert(false)}
-				message='Course created!'
+				message='Group created!'
+				onClose={() => setShowSuccess(false)}
 			/>
 			<Typography
 				variant='h4'
@@ -110,18 +125,19 @@ const CreateGroupForm = () => {
 							fullWidth
 							type='text'
 							label='Year of study'
-							{...getFieldProps('school')}
-							error={Boolean(touched.school && errors.school)}
-							helperText={touched.school && errors.school}
+							{...getFieldProps('yearOfStudy')}
+							error={Boolean(touched.yearOfStudy && errors.yearOfStudy)}
+							helperText={touched.yearOfStudy && errors.yearOfStudy}
 						/>
 
 						<Autocomplete
+							key={loading}
 							multiple
 							id='tags-filled'
 							value={values.students}
 							freeSolo
-							options={[]}
-							onChange={(e, val) => setFieldValue('students', val)}
+							options={studentsEmails}
+							onChange={(_e, val) => setFieldValue('students', val)}
 							renderTags={(value, getTagProps) =>
 								value.map((option, index) => <Chip color='primary' label={option} {...getTagProps({ index })} />)
 							}

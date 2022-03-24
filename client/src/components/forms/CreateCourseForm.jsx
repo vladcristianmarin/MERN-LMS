@@ -18,9 +18,10 @@ const RootStyle = styled(Card)(({ theme }) => ({
 }));
 
 const CreateCourseForm = () => {
-	const [showAlert, setShowAlert] = useState(false);
-
 	const dispatch = useDispatch();
+
+	const [showError, setShowError] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
 
 	const courseCreate = useSelector((state) => state.courseCreate);
 	const { error, loading, success } = courseCreate;
@@ -48,7 +49,6 @@ const CreateCourseForm = () => {
 		onSubmit(values) {
 			const { name, acronym, teacher, description } = values;
 			dispatch(createCourse(name, acronym, teacher, description));
-			handleReset();
 		},
 	});
 
@@ -64,11 +64,12 @@ const CreateCourseForm = () => {
 			setSubmitting(false);
 		}
 		if (error) {
-			setShowAlert(true);
-			handleReset();
+			setShowError(true);
+			setShowSuccess(false);
 		}
 		if (success) {
-			setShowAlert(true);
+			setShowSuccess(true);
+			setShowError(false);
 			dispatch({ type: COURSE_CREATE_RESET });
 			handleReset();
 		}
@@ -77,13 +78,13 @@ const CreateCourseForm = () => {
 
 	return (
 		<RootStyle>
-			<Toast show={showAlert} timeout={500} severity='error' onClose={() => setShowAlert(false)} message={error} />
+			<Toast show={showError} timeout={500} severity='error' message={error} onClose={() => setShowError(false)} />
 			<Toast
-				show={showAlert}
+				show={showSuccess}
 				timeout={500}
 				severity='success'
-				onClose={() => setShowAlert(false)}
 				message='Course created!'
+				onClose={() => setShowSuccess(false)}
 			/>
 			<Typography variant='h4' sx={{ textAlign: 'center' }}>
 				Create New Course
@@ -112,7 +113,7 @@ const CreateCourseForm = () => {
 						<Autocomplete
 							key={loading}
 							disablePortal
-							id='country'
+							id='teachers'
 							options={teachersEmails}
 							onChange={(_e, value, reason) => {
 								setFieldValue('teacher', value);
