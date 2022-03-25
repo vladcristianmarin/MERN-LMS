@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { IconButton, Typography, Box, Stack, Link as MUILink, avatarClasses, Avatar, Checkbox } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Link } from 'react-router-dom';
-import Iconify from '../Iconify';
 import { studentTableColumns } from './StudentTableColumns';
 import { useDispatch, useSelector } from 'react-redux';
 import { listStudents } from '../../actions/studentActions';

@@ -1,4 +1,4 @@
-import { Avatar, Link as MUILink, Typography, Checkbox } from '@mui/material';
+import { Avatar, Link as MUILink, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 export const studentTableColumns = (countries) => {
