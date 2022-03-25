@@ -8,7 +8,7 @@ import Teacher from './models/teacherModel.js';
 import Course from './models/courseModel.js';
 import Group from './models/groupModel.js';
 import connectDB from './config/database.js';
-import groups from './data/groups.js';
+import group from './data/groups.js';
 import createCourses from './data/courses.js';
 
 dotenv.config();
@@ -22,16 +22,14 @@ const importData = async () => {
 		await Course.deleteMany({});
 		await Group.deleteMany({});
 
-		await Group.insertMany(groups);
-
-		const group = await Group.findOne({});
-
-		students.forEach((student) => (student.group = group._id));
-
 		const studentsFromDB = await Student.insertMany(students);
 
-		group.students = studentsFromDB.map((x) => x._id);
-		await group.save();
+		const groupFromDb = await Group.create({ ...group, students: studentsFromDB.map((stud) => stud._id) });
+
+		for (const stud of studentsFromDB) {
+			stud.group = groupFromDb._id;
+			await stud.save();
+		}
 
 		const teachersFromDB = await Teacher.insertMany(teachers);
 

@@ -1,8 +1,8 @@
-const groups = [
-	{
-		code: '1087',
-		school: 'ASE Bucuresti',
-	},
-];
+const group = {
+	code: '1087',
+	school: 'ASE Bucuresti',
+	yearOfStudy: '3',
+	students: [],
+};
 
-export default groups;
+export default group;

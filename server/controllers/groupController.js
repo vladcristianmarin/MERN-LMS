@@ -33,6 +33,16 @@ const createGroup = asyncHandler(async (req, res) => {
 
 	const createdGroup = await Group.create({ code, school, yearOfStudy, students: uniqueStudentIds });
 
+	const assignGroupToStudent = async () => {
+		for (const stud of createdGroup.students) {
+			const updatedStudent = await Student.findOne({ _id: stud });
+			updatedStudent.group = createdGroup._id;
+			await updatedStudent.save();
+		}
+	};
+
+	await assignGroupToStudent();
+
 	if (createdGroup) {
 		return res.status(201).send(createdGroup);
 	}

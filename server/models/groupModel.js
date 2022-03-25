@@ -24,7 +24,7 @@ const groupSchema = mongoose.Schema({
 				ref: 'Student',
 			},
 		],
-		validate: (v) => Array.isArray(v) && v.length > 0,
+		// validate: (v) => Array.isArray(v) && v.length > 0,
 	},
 	courses: [
 		{
