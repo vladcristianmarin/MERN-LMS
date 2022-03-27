@@ -84,4 +84,25 @@ const registerUser = asyncHandler(async (req, res) => {
 	throw new Error('Invalid user data');
 });
 
-export { authUser, registerUser, logoutUser, verifyToken };
+const makeAdmin = asyncHandler(async (req, res) => {
+	const selectedUser = await User.findOne({ _id: req.params.id });
+
+	if (!selectedUser) {
+		res.status(404);
+		throw new Error('User not found!');
+	}
+	if (selectedUser.role !== 'Teacher') {
+		res.status(400);
+		throw new Error('Students cannot be admins!');
+	}
+	if (selectedUser.isAdmin) {
+		res.status(400);
+		throw new Error('User already is an admin!');
+	}
+
+	selectedUser.isAdmin = true;
+	await selectedUser.save();
+	res.status(201).send();
+});
+
+export { authUser, registerUser, logoutUser, verifyToken, makeAdmin };

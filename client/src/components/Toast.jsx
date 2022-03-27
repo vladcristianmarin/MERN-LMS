@@ -1,6 +1,6 @@
 import { Alert, Collapse, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import Iconify from './Iconify';
 
@@ -14,7 +14,7 @@ const Toast = ({ show, timeout, severity, onClose, message }) => {
 				top: 0,
 				right: 0,
 				textAlign: 'right',
-				zIndex: 1200,
+				zIndex: 9999,
 			}}>
 			<Collapse in={show} timeout={timeout}>
 				<Alert

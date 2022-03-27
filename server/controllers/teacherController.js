@@ -6,4 +6,13 @@ const getTeachers = asyncHandler(async (req, res) => {
 	res.send(teachers);
 });
 
-export { getTeachers };
+const getTeacherCourses = asyncHandler(async (req, res) => {
+	const teacher = await Teacher.findOne({ _id: req.params.id }).populate('courses');
+	if (!teacher) {
+		res.status(400);
+		throw new Error('Teacher not found!');
+	}
+	res.send(teacher.courses);
+});
+
+export { getTeachers, getTeacherCourses };

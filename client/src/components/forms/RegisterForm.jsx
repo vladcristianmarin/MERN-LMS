@@ -91,7 +91,6 @@ const RegisterForm = ({ variant }) => {
 				const userData = { ...values };
 				delete userData.passwordConfirmation;
 				userData.role = variant;
-				console.log(userData);
 				dispatch(register(userData));
 			}
 		},
