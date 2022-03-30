@@ -3,6 +3,9 @@ import {
 	GROUP_CREATE_REQUEST,
 	GROUP_CREATE_RESET,
 	GROUP_CREATE_SUCCESS,
+	LIST_GROUPS_FAIL,
+	LIST_GROUPS_REQUEST,
+	LIST_GROUPS_SUCCESS,
 } from '../constants/groupConstants';
 
 export const groupCreateReducer = (state = {}, action) => {
@@ -15,6 +18,19 @@ export const groupCreateReducer = (state = {}, action) => {
 			return { loading: false, error: action.payload, success: false };
 		case GROUP_CREATE_RESET:
 			return {};
+		default:
+			return state;
+	}
+};
+
+export const groupListReducer = (state = { groups: [] }, action) => {
+	switch (action.type) {
+		case LIST_GROUPS_REQUEST:
+			return { loading: true };
+		case LIST_GROUPS_SUCCESS:
+			return { loading: false, groups: action.payload, success: true };
+		case LIST_GROUPS_FAIL:
+			return { loading: false, error: action.payload, success: false };
 		default:
 			return state;
 	}

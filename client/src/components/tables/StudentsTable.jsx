@@ -10,6 +10,7 @@ const StudentsTable = () => {
 	const dispatch = useDispatch();
 
 	const [countries, setCountries] = useState([]);
+	const [pageSize, setPageSize] = useState(5);
 
 	const studentList = useSelector((state) => state.studentList);
 	const students = studentList.students || [];
@@ -34,7 +35,14 @@ const StudentsTable = () => {
 			<Typography sx={{ ml: 1 }} variant='h4'>
 				Students
 			</Typography>
-			<DataGrid autoHeight={true} pageSize={5} columns={columns} rows={studentsWithId} pagination='true'></DataGrid>
+			<DataGrid
+				autoHeight={true}
+				rowsPerPageOptions={[5, 10, 15]}
+				pageSize={pageSize}
+				onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+				columns={columns}
+				rows={studentsWithId}
+				pagination='true'></DataGrid>
 		</Box>
 	);
 };

@@ -7,6 +7,7 @@ import CreateCourseForm from '../components/forms/CreateCourseForm';
 import StudentsTable from '../components/tables/StudentsTable';
 import { useNavigate } from 'react-router-dom';
 import TeachersTable from '../components/tables/TeachersTable';
+import GroupsTable from '../components/tables/GroupsTable';
 
 const AdminHomeScreen = () => {
 	const navigate = useNavigate();
@@ -41,6 +42,7 @@ const AdminHomeScreen = () => {
 
 			<StudentsTable />
 			<TeachersTable />
+			<GroupsTable />
 		</Container>
 	);
 };

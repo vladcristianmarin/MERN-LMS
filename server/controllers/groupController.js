@@ -51,8 +51,8 @@ const createGroup = asyncHandler(async (req, res) => {
 	throw new Error('Invalid group data');
 });
 
-const getGroups = asyncHandler(async (req, res) => {
-	const groups = await Group.find({});
+const getGroups = asyncHandler(async (_req, res) => {
+	const groups = await Group.find({}).populate('students');
 	res.send(groups);
 });
 

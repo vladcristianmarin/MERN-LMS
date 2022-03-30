@@ -8,7 +8,6 @@ import {
 	Typography,
 	Box,
 	Modal,
-	Card,
 	CircularProgress,
 	List,
 	ListItem,
@@ -17,20 +16,21 @@ import {
 	Divider,
 	Fab,
 	Stack,
+	Tooltip,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import styled from '@emotion/styled';
 import { useTheme } from '@emotion/react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
-import Iconify from '../Iconify';
-import Toast from '../Toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { listTeacherCourses, listTeachers } from '../../actions/teacherActions';
 import { deleteCourse } from '../../actions/courseActions';
 import { makeAdmin } from '../../actions/userActions';
 import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
 import { USER_MAKE_ADMIN_RESET } from '../../constants/userContstants';
+import Iconify from '../Iconify';
+import Toast from '../Toast';
+import ModalBox from '../ModalBox';
 
 const TeachersTable = () => {
 	const dispatch = useDispatch();
@@ -43,6 +43,7 @@ const TeachersTable = () => {
 	const [goToTop, setGoToTop] = useState(false);
 	const [selectedTeacher, setSelectedTeacher] = useState({});
 	const [selectedCourse, setSelectedCourse] = useState('');
+	const [pageSize, setPageSize] = useState(5);
 
 	const teacherList = useSelector((state) => state.teacherList);
 	const teachers = teacherList.teachers || [];
@@ -104,18 +105,6 @@ const TeachersTable = () => {
 		setSelectedTeacher(this);
 		setShowConfirmAdmin(true);
 	}
-
-	const ModalBox = styled(Card)(({ theme }) => ({
-		display: 'flex',
-		minWidth: theme.spacing(40),
-		flexDirection: 'column',
-		alignItems: 'center',
-		position: 'absolute',
-		top: '50%',
-		left: '50%',
-		transform: 'translate(-50%, -50%)',
-		padding: theme.spacing(3),
-	}));
 
 	const columns = [
 		{
@@ -184,7 +173,7 @@ const TeachersTable = () => {
 		{ field: 'school', type: 'string', headerName: 'School', flex: 1 },
 		{
 			field: 'isAdmin',
-			type: 'bool',
+			type: 'string',
 			headerName: 'Admin',
 			renderCell: (params) => {
 				return (
@@ -200,19 +189,22 @@ const TeachersTable = () => {
 		{
 			field: 'showCourseBtn',
 			headerName: 'Courses',
+			type: 'actions',
 			flex: 1,
 			renderCell: (params) => {
 				return (
-					<Button
-						variant='outlined'
-						onClick={(e) => {
-							e.stopPropagation();
-							setSelectedTeacher(params.row);
-							dispatch(listTeacherCourses(params.row._id));
-							setShowCourses(true);
-						}}>
-						Show
-					</Button>
+					<Tooltip title='Show courses'>
+						<IconButton
+							color='success'
+							onClick={(e) => {
+								e.stopPropagation();
+								setSelectedTeacher(params.row);
+								dispatch(listTeacherCourses(params.row._id));
+								setShowCourses(true);
+							}}>
+							<Iconify icon='eva:eye-outline' />
+						</IconButton>
+					</Tooltip>
 				);
 			},
 		},
@@ -335,7 +327,14 @@ const TeachersTable = () => {
 				<Typography sx={{ ml: 1 }} variant='h4'>
 					Teachers
 				</Typography>
-				<DataGrid autoHeight={true} pageSize={5} columns={columns} rows={teachersWithId} pagination='true'></DataGrid>
+				<DataGrid
+					autoHeight={true}
+					rowsPerPageOptions={[5, 10, 15]}
+					pageSize={pageSize}
+					onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+					columns={columns}
+					rows={teachersWithId}
+					pagination='true'></DataGrid>
 				{coursesModal}
 				{confirmDelete}
 				{confirmAdmin}
