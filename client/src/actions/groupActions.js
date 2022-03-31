@@ -1,5 +1,8 @@
 import axios from 'axios';
 import {
+	GROUP_ADD_STUDENTS_FAIL,
+	GROUP_ADD_STUDENTS_REQUEST,
+	GROUP_ADD_STUDENTS_SUCCESS,
 	GROUP_CREATE_FAIL,
 	GROUP_CREATE_REQUEST,
 	GROUP_CREATE_SUCCESS,
@@ -69,6 +72,27 @@ export const deleteGroup = (groupId) => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: GROUP_DELETE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const addStudents = (groupId, students) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: GROUP_ADD_STUDENTS_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.post(`/api/groups/${groupId}`, { students }, config);
+
+		dispatch({ type: GROUP_ADD_STUDENTS_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: GROUP_ADD_STUDENTS_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

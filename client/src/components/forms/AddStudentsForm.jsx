@@ -14,7 +14,7 @@ import {
 	TextField,
 } from '@mui/material';
 import { listStudents } from '../../actions/studentActions';
-import Toast from '../Toast';
+import { addStudents } from '../../actions/groupActions';
 
 const AddStudentsForm = ({ open, handleClose, group }) => {
 	const dispatch = useDispatch();
@@ -24,12 +24,8 @@ const AddStudentsForm = ({ open, handleClose, group }) => {
 
 	const studentsEmails = students.map((student) => student.email);
 
-	// const groupAddStudents = useSelector((state) => state.groupAddStudents);
-	// const { error, loading, success } = groupAddStudents;
-
-	const error = false;
-	const loading = false;
-	const success = false;
+	const groupAddStudents = useSelector((state) => state.groupAddStudents);
+	const { loading, success } = groupAddStudents;
 
 	const AddStudentsSchema = Yup.object().shape({
 		students: Yup.array().of(Yup.string()).min(1, 'At least 1 email is required!'),
@@ -42,7 +38,7 @@ const AddStudentsForm = ({ open, handleClose, group }) => {
 		validationSchema: AddStudentsSchema,
 		onSubmit(values) {
 			const { students } = values;
-			// dispatch(addStudents(students));
+			dispatch(addStudents(group._id, students));
 		},
 	});
 
@@ -58,7 +54,9 @@ const AddStudentsForm = ({ open, handleClose, group }) => {
 		}
 		if (success) {
 			handleReset();
+			handleClose();
 		}
+
 		// eslint-disable-next-line
 	}, [loading, success]);
 
@@ -114,14 +112,6 @@ const AddStudentsForm = ({ open, handleClose, group }) => {
 					Cancel
 				</Button>
 			</DialogActions>
-			<Toast show={error && !loading} timeout={3000} severity='error' message={error} onClose={() => {}} />
-			<Toast
-				show={success && !loading}
-				timeout={2000}
-				severity='success'
-				message='Students added!'
-				onClose={() => {}}
-			/>
 		</Dialog>
 	);
 };

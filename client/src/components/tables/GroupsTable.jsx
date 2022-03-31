@@ -8,7 +8,7 @@ import { deleteGroup, listGroups } from '../../actions/groupActions';
 import Iconify from '../Iconify';
 import ConfirmDialog from '../ConfirmDialog';
 import Toast from '../Toast';
-import { GROUP_DELETE_RESET } from '../../constants/groupConstants';
+import { GROUP_ADD_STUDENTS_RESET, GROUP_DELETE_RESET } from '../../constants/groupConstants';
 import AddStudentsForm from '../forms/AddStudentsForm';
 
 const GroupsTable = () => {
@@ -32,6 +32,9 @@ const GroupsTable = () => {
 	const groupDelete = useSelector((state) => state.groupDelete);
 	const { error: deleteGroupError, loading: deleteGroupLoading, success: deleteGroupSuccess } = groupDelete;
 
+	const groupAddStudents = useSelector((state) => state.groupAddStudents);
+	const { error: addStudentsError, loading: addStudentsLoading, success: addStudentsSuccess } = groupAddStudents;
+
 	useEffect(() => {
 		dispatch(listGroups());
 	}, [dispatch]);
@@ -41,7 +44,10 @@ const GroupsTable = () => {
 			setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: false, selectedGroup: null }));
 			dispatch(listGroups());
 		}
-	}, [dispatch, deleteGroupSuccess, deleteGroupLoading]);
+		if (addStudentsSuccess && !addStudentsLoading) {
+			dispatch(listGroups());
+		}
+	}, [dispatch, deleteGroupSuccess, deleteGroupLoading, addStudentsSuccess, addStudentsLoading]);
 
 	const columns = [
 		{ field: 'code', type: 'string', headerName: 'Code', flex: 1 },
@@ -131,11 +137,17 @@ const GroupsTable = () => {
 		setGroupsState((prev) => ({ ...prev, showAddStudentsForm: false, selectedGroup: null }));
 	};
 
+	const resetAddStudentsState = () => {
+		dispatch({ type: GROUP_ADD_STUDENTS_RESET });
+	};
+
 	const StyledDataGrid = styled(DataGrid)(() => ({
 		'& .MuiDataGrid-cell--withRenderer': {
 			overflow: 'auto',
 		},
 	}));
+
+	console.log(addStudentsError, !addStudentsLoading);
 
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
@@ -178,6 +190,20 @@ const GroupsTable = () => {
 				severity='error'
 				onClose={resetDeleteStateHandler}
 				message={deleteGroupError}
+			/>
+			<Toast
+				show={addStudentsSuccess && !addStudentsLoading}
+				timeout={2000}
+				severity='success'
+				message='Students added!'
+				onClose={resetAddStudentsState}
+			/>
+			<Toast
+				show={addStudentsError && !addStudentsLoading}
+				timeout={3000}
+				severity='error'
+				message={addStudentsError}
+				onClose={resetAddStudentsState}
 			/>
 		</Box>
 	);

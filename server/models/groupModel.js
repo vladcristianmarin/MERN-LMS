@@ -22,9 +22,10 @@ const groupSchema = mongoose.Schema({
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Student',
+				unique: true,
 			},
 		],
-		// validate: (v) => Array.isArray(v) && v.length > 0,
+		validate: (v) => Array.isArray(v) && v.length > 0,
 	},
 	courses: [
 		{
@@ -32,6 +33,10 @@ const groupSchema = mongoose.Schema({
 			ref: 'Course',
 		},
 	],
+});
+
+groupSchema.post('validate', async function (error, doc, next) {
+	console.log(error);
 });
 
 groupSchema.post('save', async function (error, _doc, next) {
