@@ -3,6 +3,9 @@ import {
 	GROUP_CREATE_FAIL,
 	GROUP_CREATE_REQUEST,
 	GROUP_CREATE_SUCCESS,
+	GROUP_DELETE_FAIL,
+	GROUP_DELETE_REQUEST,
+	GROUP_DELETE_SUCCESS,
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
@@ -45,6 +48,27 @@ export const listGroups = () => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: LIST_GROUPS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const deleteGroup = (groupId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: GROUP_DELETE_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.delete(`/api/groups/${groupId}`, config);
+
+		dispatch({ type: GROUP_DELETE_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: GROUP_DELETE_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

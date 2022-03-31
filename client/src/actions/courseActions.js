@@ -28,6 +28,7 @@ export const createCourse = (name, acronym, teacher, description) => async (disp
 		});
 	}
 };
+
 export const deleteCourse = (courseId) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: COURSE_DELETE_REQUEST });

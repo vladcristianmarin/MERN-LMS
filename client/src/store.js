@@ -5,7 +5,7 @@ import { sidebarReducer } from './reducers/sidebarReducers';
 import { userLoginReducer, userMakeAdminReducer, userRegisterReducer } from './reducers/userReducers';
 import { courseCreateReducer, courseDeleteReducer } from './reducers/courseReducers';
 import { teacherListCoursesReducer, teacherListReducer } from './reducers/teacherReducers';
-import { groupCreateReducer, groupListReducer } from './reducers/groupReducers';
+import { groupCreateReducer, groupDeleteReducer, groupListReducer } from './reducers/groupReducers';
 import { studentListReducer } from './reducers/studentReducers';
 
 const reducer = combineReducers({
@@ -16,6 +16,7 @@ const reducer = combineReducers({
 	courseCreate: courseCreateReducer,
 	courseDelete: courseDeleteReducer,
 	groupCreate: groupCreateReducer,
+	groupDelete: groupDeleteReducer,
 	groupList: groupListReducer,
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
