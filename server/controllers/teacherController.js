@@ -1,10 +1,18 @@
 import asyncHandler from 'express-async-handler';
 import Teacher from '../models/teacherModel.js';
 
-const getTeachers = asyncHandler(async (req, res) => {
+//* @description    Gets all teachers
+//* @route          GET /api/teachers
+//* @access         Protected / Admin
+
+const getTeachers = asyncHandler(async (_req, res) => {
 	const teachers = await Teacher.find({});
 	res.send(teachers);
 });
+
+//* @description    Gets teacher courses
+//* @route          GET /api/teachers/:id/courses
+//* @access         Protected / Admin
 
 const getTeacherCourses = asyncHandler(async (req, res) => {
 	const teacher = await Teacher.findOne({ _id: req.params.id }).populate('courses');

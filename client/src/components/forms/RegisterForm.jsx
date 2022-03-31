@@ -195,7 +195,7 @@ const RegisterForm = ({ variant }) => {
 			<Form autoComplete='off' noValidate onSubmit={handleSubmit}>
 				<Toast
 					show={showAlert}
-					timeout={500}
+					timeout={3000}
 					severity='error'
 					onClose={() => setShowAlert(false)}
 					message={registerError}

@@ -84,6 +84,10 @@ const registerUser = asyncHandler(async (req, res) => {
 	throw new Error('Invalid user data');
 });
 
+//* @description    Makes a teacher admin
+//* @route          GET /api/users/:id/grantAdmin
+//* @access         Protected / Admin
+
 const makeAdmin = asyncHandler(async (req, res) => {
 	const selectedUser = await User.findOne({ _id: req.params.id });
 

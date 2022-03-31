@@ -2,6 +2,10 @@ import asyncHandler from 'express-async-handler';
 import Group from '../models/groupModel.js';
 import Student from '../models/studentModel.js';
 
+//* @description    Creates new group
+//* @route          POST /api/groups
+//* @access         Protected / Admin
+
 const createGroup = asyncHandler(async (req, res) => {
 	const { code, school, yearOfStudy, students } = req.body;
 
@@ -51,9 +55,35 @@ const createGroup = asyncHandler(async (req, res) => {
 	throw new Error('Invalid group data');
 });
 
+//* @description    Get all groups
+//* @route          GET /api/groups
+//* @access         Protected / Admin
+
 const getGroups = asyncHandler(async (_req, res) => {
 	const groups = await Group.find({}).populate('students');
 	res.send(groups);
 });
 
-export { createGroup, getGroups };
+//* @description    Removes a group and deletes group filed from all students in that group
+//* @route          DELETE /api/groups/:id
+//* @access         Protected / Admin
+
+const deleteGroup = asyncHandler(async (req, res) => {
+	const deletedGroup = await Group.findOne({ _id: req.params.id }).populate('students');
+	if (!deletedGroup) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+	const removeStudentsFromGroup = async () => {
+		for (const stud of deletedGroup.students) {
+			const updatedStudent = await Student.findOne({ _id: stud });
+			updatedStudent.group = undefined;
+			await updatedStudent.save();
+		}
+	};
+	removeStudentsFromGroup();
+	await deletedGroup.remove();
+	res.send(deletedGroup);
+});
+
+export { createGroup, getGroups, deleteGroup };
