@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
 	Avatar,
-	Button,
 	Checkbox,
 	Link as MUILink,
 	Typography,
 	Box,
-	Modal,
 	CircularProgress,
 	List,
 	ListItem,
 	ListItemText,
 	IconButton,
 	Divider,
-	Fab,
-	Stack,
 	Tooltip,
+	DialogTitle,
+	Dialog,
+	DialogContent,
+	DialogActions,
+	Button,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
 import { useTheme } from '@emotion/react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
@@ -27,23 +27,27 @@ import { listTeacherCourses, listTeachers } from '../../actions/teacherActions';
 import { deleteCourse } from '../../actions/courseActions';
 import { makeAdmin } from '../../actions/userActions';
 import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
-import { USER_MAKE_ADMIN_RESET } from '../../constants/userContstants';
+import { USER_MAKE_ADMIN_RESET } from '../../constants/userConstants';
 import Iconify from '../Iconify';
 import Toast from '../Toast';
-import ModalBox from '../ModalBox';
+import ConfirmDialog from '../ConfirmDialog';
 
 const TeachersTable = () => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 
 	const [countries, setCountries] = useState([]);
-	const [showCourses, setShowCourses] = useState(false);
-	const [showConfirmAdmin, setShowConfirmAdmin] = useState(false);
-	const [confirmMakeAdmin, setConfirmMakeAdmin] = useState(false);
-	const [goToTop, setGoToTop] = useState(false);
-	const [selectedTeacher, setSelectedTeacher] = useState({});
-	const [selectedCourse, setSelectedCourse] = useState('');
+	const [scrollToTop, setScrollToTop] = useState(false);
 	const [pageSize, setPageSize] = useState(5);
+
+	const [coursesState, setCoursesState] = useState({
+		showCoursesDialog: false,
+		showDeleteCourseDialog: false,
+		selectedTeacher: null,
+		selectedCourse: null,
+	});
+
+	const [adminState, setAdminState] = useState({ showMakeAdminDialog: false, selectedTeacher: null });
 
 	const teacherList = useSelector((state) => state.teacherList);
 	const teachers = teacherList.teachers || [];
@@ -76,35 +80,35 @@ const TeachersTable = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (deleteCourseSuccess) {
-			dispatch(listTeacherCourses(selectedTeacher._id));
+		if (scrollToTop) {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			setScrollToTop(false);
 		}
-	}, [dispatch, deleteCourseSuccess, selectedTeacher]);
+	}, [scrollToTop]);
 
 	useEffect(() => {
-		if (makeAdminSuccess) {
+		if (coursesState.selectedTeacher && coursesState.showCoursesDialog) {
+			dispatch(listTeacherCourses(coursesState.selectedTeacher._id));
+		}
+	}, [dispatch, coursesState.selectedTeacher, coursesState.showCoursesDialog]);
+
+	useEffect(() => {
+		if (deleteCourseSuccess && !deleteCourseLoading) {
+			setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: false, selectedCourse: null }));
+			dispatch(listTeacherCourses(coursesState.selectedTeacher._id));
+		}
+		if (makeAdminSuccess && !makeAdminLoading) {
+			setAdminState((prev) => ({ ...prev, showMakeAdminDialog: false, selectedTeacher: null }));
 			dispatch(listTeachers());
 		}
-	}, [dispatch, makeAdminSuccess]);
-
-	useEffect(() => {
-		if (goToTop) {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			setGoToTop(false);
-		}
-	}, [goToTop]);
-
-	useEffect(() => {
-		if (selectedTeacher && confirmMakeAdmin) {
-			dispatch(makeAdmin(selectedTeacher._id));
-			setShowConfirmAdmin(false);
-		}
-	}, [selectedTeacher, confirmMakeAdmin, dispatch]);
-
-	function makeAdminHandler() {
-		setSelectedTeacher(this);
-		setShowConfirmAdmin(true);
-	}
+	}, [
+		dispatch,
+		deleteCourseSuccess,
+		deleteCourseLoading,
+		makeAdminSuccess,
+		makeAdminLoading,
+		coursesState.selectedTeacher,
+	]);
 
 	const columns = [
 		{
@@ -173,14 +177,14 @@ const TeachersTable = () => {
 		{ field: 'school', type: 'string', headerName: 'School', flex: 1 },
 		{
 			field: 'isAdmin',
-			type: 'string',
+			type: 'actions',
 			headerName: 'Admin',
 			renderCell: (params) => {
 				return (
 					<Checkbox
 						checked={params.row.isAdmin}
 						disabled={params.row.isAdmin}
-						onChange={makeAdminHandler.bind(params.row)}
+						onClick={showMakeAdminDialogHandler.bind(this, params.row)}
 					/>
 				);
 			},
@@ -194,14 +198,7 @@ const TeachersTable = () => {
 			renderCell: (params) => {
 				return (
 					<Tooltip title='Show courses'>
-						<IconButton
-							color='success'
-							onClick={(e) => {
-								e.stopPropagation();
-								setSelectedTeacher(params.row);
-								dispatch(listTeacherCourses(params.row._id));
-								setShowCourses(true);
-							}}>
+						<IconButton color='success' onClick={showCoursesDialogHandler.bind(this, params.row)}>
 							<Iconify icon='eva:eye-outline' />
 						</IconButton>
 					</Tooltip>
@@ -210,116 +207,52 @@ const TeachersTable = () => {
 		},
 	];
 
-	const deleteCourseHandler = () => {
-		dispatch(deleteCourse(selectedCourse));
-		setSelectedCourse('');
+	const scrollToTopHandler = () => {
+		setCoursesState((prev) => ({ ...prev, showCoursesDialog: false }));
+		setScrollToTop(true);
 	};
 
-	const deleteCourseReset = () => {
+	const showCoursesDialogHandler = (teacher, e) => {
+		e.stopPropagation();
+		setCoursesState((prev) => ({ ...prev, showCoursesDialog: true, selectedTeacher: teacher }));
+	};
+
+	const hideCoursesDialogHandler = () => {
+		setCoursesState((prev) => ({ ...prev, showCoursesDialog: false }));
+	};
+
+	const showDeleteDialogHandler = (course) => {
+		setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: true, selectedCourse: course }));
+	};
+
+	const hideDeleteDialogHandler = () => {
+		setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: false, selectedCourse: null }));
+	};
+
+	const submitDeleteCourse = () => {
+		dispatch(deleteCourse(coursesState.selectedCourse._id));
+	};
+
+	const showMakeAdminDialogHandler = (teacher, e) => {
+		e.stopPropagation();
+		setAdminState((prev) => ({ ...prev, showMakeAdminDialog: true, selectedTeacher: teacher }));
+	};
+
+	const hideMakeAdminDialogHandler = () => {
+		setAdminState((prev) => ({ ...prev, showMakeAdminDialog: false, selectedTeacher: null }));
+	};
+
+	const submitMakeAdmin = () => {
+		dispatch(makeAdmin(adminState.selectedTeacher._id));
+	};
+
+	const resetDeleteStateHandler = () => {
 		dispatch({ type: COURSE_DELETE_RESET });
 	};
-	const makeAdminReset = () => {
+
+	const resetAdminStateHandler = () => {
 		dispatch({ type: USER_MAKE_ADMIN_RESET });
 	};
-
-	const coursesModal = (
-		<Modal open={showCourses} onClose={() => setShowCourses(false)}>
-			<ModalBox>
-				<Typography variant='h4'>{`${selectedTeacher.name}'s courses`}</Typography>
-				{listCoursesLoading && <CircularProgress />}
-				{!listCoursesSuccess && (
-					<Typography variant='h5' color='error'>
-						{listCoursesError}
-					</Typography>
-				)}
-				{listCoursesSuccess && (
-					<List dense={true}>
-						{courses.map((course) => (
-							<React.Fragment key={course._id}>
-								<ListItem sx={{ gap: 2, minWidth: theme.spacing(40) }}>
-									<ListItemText primary={course.name} secondary={course.acronym} />
-									<IconButton
-										onClick={(e) => {
-											setSelectedCourse(e.target.id);
-										}}>
-										<Iconify id={course._id} icon='eva:trash-outline' />
-									</IconButton>
-								</ListItem>
-								<Divider />
-							</React.Fragment>
-						))}
-					</List>
-				)}
-				{listCoursesSuccess && courses.length === 0 && <Typography variant='h6'>This teacher has 0 courses</Typography>}
-				<Fab
-					sx={{ alignSelf: 'flex-end' }}
-					color='primary'
-					label='Add'
-					onClick={() => {
-						setShowCourses(false);
-						setGoToTop(true);
-					}}>
-					<Iconify sx={{ width: 32, height: 32 }} icon='eva:plus-outline' />
-				</Fab>
-			</ModalBox>
-		</Modal>
-	);
-
-	const confirmDelete = (
-		<Modal open={selectedCourse !== ''} onClose={() => setSelectedCourse('')}>
-			<ModalBox>
-				<Typography variant='h5'>Are you sure you want to delete this course?</Typography>
-				<Stack spacing={3} direction='row' sx={{ pt: 2 }}>
-					<LoadingButton
-						fullWidth
-						size='large'
-						type='button'
-						variant='contained'
-						loading={deleteCourseLoading}
-						onClick={deleteCourseHandler}>
-						Yes
-					</LoadingButton>
-					<Button
-						fullWidth
-						size='large'
-						color='error'
-						type='submit'
-						variant='contained'
-						onClick={() => setSelectedCourse('')}>
-						No
-					</Button>
-				</Stack>
-			</ModalBox>
-		</Modal>
-	);
-
-	const confirmAdmin = (
-		<Modal open={showConfirmAdmin} onClose={() => setShowConfirmAdmin(false)}>
-			<ModalBox>
-				<Typography variant='h5'>You are about to make {selectedTeacher?.name} an admin!</Typography>
-				<Stack spacing={3} direction='row' sx={{ pt: 2 }}>
-					<LoadingButton
-						fullWidth
-						size='large'
-						type='button'
-						variant='contained'
-						loading={makeAdminLoading}
-						onClick={() => setConfirmMakeAdmin(true)}>
-						Confirm
-					</LoadingButton>
-					<Button
-						fullWidth
-						size='large'
-						color='error'
-						type='submit'
-						variant='contained'
-						onClick={() => setShowConfirmAdmin(false)}>
-						Cancel
-					</Button>
-				</Stack>
-			</ModalBox>
-		</Modal>
-	);
 
 	return (
 		<>
@@ -327,6 +260,7 @@ const TeachersTable = () => {
 				<Typography sx={{ ml: 1 }} variant='h4'>
 					Teachers
 				</Typography>
+
 				<DataGrid
 					autoHeight={true}
 					rowsPerPageOptions={[5, 10, 15]}
@@ -335,37 +269,90 @@ const TeachersTable = () => {
 					columns={columns}
 					rows={teachersWithId}
 					pagination='true'></DataGrid>
-				{coursesModal}
-				{confirmDelete}
-				{confirmAdmin}
+
+				<Dialog open={coursesState.showCoursesDialog} onClose={hideCoursesDialogHandler}>
+					<DialogTitle>{coursesState.selectedTeacher?.name}'s courses</DialogTitle>
+					<DialogContent>
+						{listCoursesLoading && <CircularProgress />}
+						{!listCoursesSuccess && (
+							<Typography variant='h5' color='error'>
+								{listCoursesError}
+							</Typography>
+						)}
+						{listCoursesSuccess && courses.length > 0 && (
+							<List dense={true}>
+								{courses.map((course) => (
+									<React.Fragment key={course._id}>
+										<ListItem sx={{ gap: 2, minWidth: theme.spacing(40) }}>
+											<ListItemText primary={course.name} secondary={course.acronym} />
+											<Tooltip title='Delete this course'>
+												<IconButton color='error' onClick={showDeleteDialogHandler.bind(this, course)}>
+													<Iconify id={course._id} icon='eva:trash-outline' />
+												</IconButton>
+											</Tooltip>
+										</ListItem>
+										<Divider />
+									</React.Fragment>
+								))}
+							</List>
+						)}
+						{listCoursesSuccess && courses.length === 0 && (
+							<Typography>{coursesState.selectedTeacher?.name} has 0 courses!</Typography>
+						)}
+					</DialogContent>
+					<DialogActions>
+						<Button color='inherit' onClick={scrollToTopHandler}>
+							Create new course
+						</Button>
+						<Button color='error' onClick={hideCoursesDialogHandler}>
+							Leave
+						</Button>
+					</DialogActions>
+				</Dialog>
+				<ConfirmDialog
+					title='Confirm Delete Course'
+					message={`You are about to delete group ${coursesState.selectedCourse?.code}. Are you sure you want to delete it?`}
+					loading={deleteCourseLoading}
+					open={coursesState.showDeleteCourseDialog}
+					handleClose={hideDeleteDialogHandler}
+					handleConfirm={submitDeleteCourse}
+				/>
+				<ConfirmDialog
+					title='Confirm Make Admin'
+					message={`You are about to make ${adminState.selectedTeacher?.name} an admin. Are you sure?`}
+					loading={makeAdminLoading}
+					open={adminState.showMakeAdminDialog}
+					handleClose={hideMakeAdminDialogHandler}
+					handleConfirm={submitMakeAdmin}
+				/>
 			</Box>
 			<Toast
 				show={deleteCourseSuccess && !deleteCourseLoading}
-				timeout={500}
+				timeout={2000}
 				severity='success'
+				onClose={resetDeleteStateHandler}
 				message='Course deleted!'
-				onClose={deleteCourseReset}
 			/>
 			<Toast
 				show={deleteCourseError && !deleteCourseLoading}
-				timeout={500}
+				timeout={3000}
 				severity='error'
+				onClose={resetDeleteStateHandler}
 				message={deleteCourseError}
-				onClose={deleteCourseReset}
 			/>
 			<Toast
 				show={makeAdminSuccess && !makeAdminLoading}
-				timeout={500}
+				timeout={2000}
 				severity='success'
-				message='Admin granted!'
-				onClose={makeAdminReset}
+				onClose={resetAdminStateHandler}
+				message='Admin rank granted!'
 			/>
 			<Toast
 				show={makeAdminError && !makeAdminLoading}
-				timeout={500}
+				timeout={3000}
 				severity='error'
+				onClose={resetAdminStateHandler}
 				message={makeAdminError}
-				onClose={makeAdminReset}
 			/>
 		</>
 	);

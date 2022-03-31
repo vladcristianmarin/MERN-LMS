@@ -6,13 +6,15 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { listGroups } from '../../actions/groupActions';
 import Iconify from '../Iconify';
-import ModalBox from '../ModalBox';
+import ConfirmDialog from '../ConfirmDialog';
 
 const GroupsTable = () => {
 	const dispatch = useDispatch();
 
 	const [pageSize, setPageSize] = useState(5);
 	const [showAddStudents, setShowAddStudents] = useState(false);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [selectedGroup, setSelectedGroup] = useState(null);
 
 	const groupList = useSelector((state) => state.groupList);
 	const groups = groupList.groups || [];
@@ -24,6 +26,11 @@ const GroupsTable = () => {
 	useEffect(() => {
 		dispatch(listGroups());
 	}, [dispatch]);
+
+	const handleShowDeleteDialog = (group) => {
+		setShowDeleteDialog(true);
+		setSelectedGroup(group);
+	};
 
 	const columns = [
 		{ field: 'code', type: 'string', headerName: 'Code', flex: 1 },
@@ -84,11 +91,7 @@ const GroupsTable = () => {
 						</IconButton>
 					</Tooltip>
 					<Tooltip title='Delete Group'>
-						<IconButton
-							color='error'
-							onClick={() => {
-								console.log(params);
-							}}>
+						<IconButton color='error' onClick={handleShowDeleteDialog.bind(this, params.row)}>
 							<Iconify icon='eva:trash-outline' />
 						</IconButton>
 					</Tooltip>
@@ -103,13 +106,22 @@ const GroupsTable = () => {
 		},
 	}));
 
-	const addStudentsModal = (
-		<Modal disableScrollLock open={showAddStudents} onClose={() => setShowAddStudents(false)}>
-			<ModalBox>
-				<Typography variant='h4'>Add students</Typography>
-			</ModalBox>
-		</Modal>
-	);
+	// const addStudentsModal = (
+	// 	<Modal disableScrollLock open={showAddStudents} onClose={() => setShowAddStudents(false)}>
+	// 		<ModalBox>
+	// 			<Typography variant='h4'>Add students</Typography>
+	// 		</ModalBox>
+	// 	</Modal>
+	// );
+
+	const handleCloseDeleteDialog = () => {
+		setShowDeleteDialog(false);
+		setSelectedGroup(null);
+	};
+
+	const handleDeleteGroup = () => {
+		console.log('Deleted');
+	};
 
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
@@ -125,7 +137,14 @@ const GroupsTable = () => {
 				columns={columns}
 				rows={groupsWithId}
 				pagination='true'></StyledDataGrid>
-			{addStudentsModal}
+			<ConfirmDialog
+				open={showDeleteDialog}
+				handleClose={handleCloseDeleteDialog}
+				handleConfirm={handleDeleteGroup}
+				reducer='courseDelete'
+				title='Confirm Delete Group'
+				message={`You are about to delete group ${selectedGroup?.code}. Are you sure you want to delete it?`}
+			/>
 		</Box>
 	);
 };

@@ -1,33 +1,18 @@
-import { Alert, Collapse, IconButton } from '@mui/material';
-import { Box } from '@mui/system';
+import { Alert, Snackbar } from '@mui/material';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Iconify from './Iconify';
 
 const Toast = ({ show, timeout, severity, onClose, message }) => {
 	return ReactDOM.createPortal(
-		<Box
-			sx={{
-				width: '30%',
-				p: 3,
-				position: 'fixed',
-				top: 0,
-				right: 0,
-				textAlign: 'right',
-				zIndex: 9999,
-			}}>
-			<Collapse in={show} timeout={timeout}>
-				<Alert
-					severity={severity}
-					action={
-						<IconButton color='inherit' size='small' onClick={onClose}>
-							<Iconify icon='eva:close-outline' />
-						</IconButton>
-					}>
-					{message}
-				</Alert>
-			</Collapse>
-		</Box>,
+		<Snackbar
+			anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+			open={show}
+			autoHideDuration={timeout}
+			onClose={onClose}>
+			<Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
+				{message}
+			</Alert>
+		</Snackbar>,
 		document.getElementById('alert')
 	);
 };

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import * as Yup from 'yup';
 import { Card, Stack, TextField, Typography, Button, Chip, Autocomplete } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Form, FormikProvider, useFormik } from 'formik';
 import { LoadingButton } from '@mui/lab';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,9 +19,6 @@ const RootStyle = styled(Card)(({ theme }) => ({
 
 const CreateGroupForm = () => {
 	const dispatch = useDispatch();
-
-	const [showError, setShowError] = useState(false);
-	const [showSuccess, setShowSuccess] = useState(false);
 
 	const groupCreate = useSelector((state) => state.groupCreate);
 	const { error, loading, success } = groupCreate;
@@ -72,28 +69,25 @@ const CreateGroupForm = () => {
 		if (!loading) {
 			setSubmitting(false);
 		}
-		if (error) {
-			setShowError(true);
-			setShowSuccess(false);
-		}
 		if (success) {
-			setShowSuccess(true);
-			setShowError(false);
-			dispatch({ type: GROUP_CREATE_RESET });
 			handleReset();
 		}
 		// eslint-disable-next-line
-	}, [loading, error]);
+	}, [loading, success]);
+
+	const resetCreateState = () => {
+		dispatch({ type: GROUP_CREATE_RESET });
+	};
 
 	return (
 		<RootStyle>
-			<Toast show={showError} timeout={500} severity='error' message={error} onClose={() => setShowError(false)} />
+			<Toast show={error && !loading} timeout={3000} severity='error' message={error} onClose={resetCreateState} />
 			<Toast
-				show={showSuccess}
-				timeout={500}
+				show={success && !loading}
+				timeout={2000}
 				severity='success'
 				message='Group created!'
-				onClose={() => setShowSuccess(false)}
+				onClose={resetCreateState}
 			/>
 			<Typography
 				variant='h4'

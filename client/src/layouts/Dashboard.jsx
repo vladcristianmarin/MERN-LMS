@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { useSelector } from 'react-redux';
+import Footer from './Footer';
 
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
@@ -15,6 +16,7 @@ const Dashboard = () => {
 
 	const RootStyle = styled('div')({
 		display: 'flex',
+		flexDirection: 'column',
 		minHeight: '100%',
 		overflow: 'hidden',
 	});
@@ -43,6 +45,7 @@ const Dashboard = () => {
 			<MainStyle>
 				<Outlet />
 			</MainStyle>
+			<Footer />
 		</RootStyle>
 	);
 };

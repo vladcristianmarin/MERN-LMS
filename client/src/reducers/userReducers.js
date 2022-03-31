@@ -11,7 +11,7 @@ import {
 	USER_REGISTER_REQUEST,
 	USER_REGISTER_SUCCESS,
 	VERIFY_TOKEN,
-} from '../constants/userContstants';
+} from '../constants/userConstants';
 
 export const userLoginReducer = (state = {}, action) => {
 	switch (action.type) {
