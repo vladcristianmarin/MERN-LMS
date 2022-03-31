@@ -6,6 +6,7 @@ import {
 	GROUP_DELETE_FAIL,
 	GROUP_DELETE_REQUEST,
 	GROUP_DELETE_RESET,
+	GROUP_DELETE_SUCCESS,
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
@@ -43,7 +44,7 @@ export const groupDeleteReducer = (state = {}, action) => {
 	switch (action.type) {
 		case GROUP_DELETE_REQUEST:
 			return { loading: true };
-		case GROUP_CREATE_SUCCESS:
+		case GROUP_DELETE_SUCCESS:
 			return { loading: false, deletedGroup: action.payload, success: true };
 		case GROUP_DELETE_FAIL:
 			return { loading: false, error: action.payload, success: false };

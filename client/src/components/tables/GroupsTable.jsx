@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Modal } from '@mui/material';
+import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip } from '@mui/material';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { listGroups } from '../../actions/groupActions';
+import { deleteGroup, listGroups } from '../../actions/groupActions';
 import Iconify from '../Iconify';
 import ConfirmDialog from '../ConfirmDialog';
+import Toast from '../Toast';
+import { GROUP_DELETE_RESET } from '../../constants/groupConstants';
+import AddStudentsForm from '../forms/AddStudentsForm';
 
 const GroupsTable = () => {
 	const dispatch = useDispatch();
 
 	const [pageSize, setPageSize] = useState(5);
-	const [showAddStudents, setShowAddStudents] = useState(false);
-	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-	const [selectedGroup, setSelectedGroup] = useState(null);
+
+	const [groupsState, setGroupsState] = useState({
+		showDeleteGroupDialog: false,
+		showAddStudentsForm: false,
+		selectedGroup: null,
+	});
 
 	const groupList = useSelector((state) => state.groupList);
 	const groups = groupList.groups || [];
@@ -23,14 +29,19 @@ const GroupsTable = () => {
 		return { id: group._id, ...group };
 	});
 
+	const groupDelete = useSelector((state) => state.groupDelete);
+	const { error: deleteGroupError, loading: deleteGroupLoading, success: deleteGroupSuccess } = groupDelete;
+
 	useEffect(() => {
 		dispatch(listGroups());
 	}, [dispatch]);
 
-	const handleShowDeleteDialog = (group) => {
-		setShowDeleteDialog(true);
-		setSelectedGroup(group);
-	};
+	useEffect(() => {
+		if (deleteGroupSuccess && !deleteGroupLoading) {
+			setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: false, selectedGroup: null }));
+			dispatch(listGroups());
+		}
+	}, [dispatch, deleteGroupSuccess, deleteGroupLoading]);
 
 	const columns = [
 		{ field: 'code', type: 'string', headerName: 'Code', flex: 1 },
@@ -82,16 +93,12 @@ const GroupsTable = () => {
 			renderCell: (params) => (
 				<Stack direction='row'>
 					<Tooltip title='Add students'>
-						<IconButton
-							color='success'
-							onClick={() => {
-								setShowAddStudents(true);
-							}}>
+						<IconButton color='success' onClick={showAddStudentsFormHandler.bind(this, params.row)}>
 							<Iconify icon='eva:plus-outline' />
 						</IconButton>
 					</Tooltip>
 					<Tooltip title='Delete Group'>
-						<IconButton color='error' onClick={handleShowDeleteDialog.bind(this, params.row)}>
+						<IconButton color='error' onClick={showDeleteDialogHandler.bind(this, params.row)}>
 							<Iconify icon='eva:trash-outline' />
 						</IconButton>
 					</Tooltip>
@@ -100,28 +107,35 @@ const GroupsTable = () => {
 		},
 	];
 
+	const showDeleteDialogHandler = (group) => {
+		setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: true, selectedGroup: group }));
+	};
+
+	const hideDeleteDialogHandler = () => {
+		setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: false, selectedGroup: null }));
+	};
+
+	const submitDelete = () => {
+		dispatch(deleteGroup(groupsState.selectedGroup._id));
+	};
+
+	const resetDeleteStateHandler = () => {
+		dispatch({ type: GROUP_DELETE_RESET });
+	};
+
+	const showAddStudentsFormHandler = (group) => {
+		setGroupsState((prev) => ({ ...prev, showAddStudentsForm: true, selectedGroup: group }));
+	};
+
+	const hideAddStudentsFormHandler = () => {
+		setGroupsState((prev) => ({ ...prev, showAddStudentsForm: false, selectedGroup: null }));
+	};
+
 	const StyledDataGrid = styled(DataGrid)(() => ({
 		'& .MuiDataGrid-cell--withRenderer': {
 			overflow: 'auto',
 		},
 	}));
-
-	// const addStudentsModal = (
-	// 	<Modal disableScrollLock open={showAddStudents} onClose={() => setShowAddStudents(false)}>
-	// 		<ModalBox>
-	// 			<Typography variant='h4'>Add students</Typography>
-	// 		</ModalBox>
-	// 	</Modal>
-	// );
-
-	const handleCloseDeleteDialog = () => {
-		setShowDeleteDialog(false);
-		setSelectedGroup(null);
-	};
-
-	const handleDeleteGroup = () => {
-		console.log('Deleted');
-	};
 
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
@@ -137,13 +151,33 @@ const GroupsTable = () => {
 				columns={columns}
 				rows={groupsWithId}
 				pagination='true'></StyledDataGrid>
+
 			<ConfirmDialog
-				open={showDeleteDialog}
-				handleClose={handleCloseDeleteDialog}
-				handleConfirm={handleDeleteGroup}
-				reducer='courseDelete'
+				open={groupsState.showDeleteGroupDialog}
+				handleClose={hideDeleteDialogHandler}
+				handleConfirm={submitDelete}
+				loading={deleteGroupLoading}
 				title='Confirm Delete Group'
-				message={`You are about to delete group ${selectedGroup?.code}. Are you sure you want to delete it?`}
+				message={`You are about to delete group ${groupsState.selectedGroup?.code}. Are you sure you want to delete it?`}
+			/>
+			<AddStudentsForm
+				open={groupsState.showAddStudentsForm}
+				handleClose={hideAddStudentsFormHandler}
+				group={groupsState.selectedGroup}
+			/>
+			<Toast
+				show={deleteGroupSuccess && !deleteGroupLoading}
+				timeout={2000}
+				severity='success'
+				onClose={resetDeleteStateHandler}
+				message='Group deleted!'
+			/>
+			<Toast
+				show={deleteGroupError && !deleteGroupLoading}
+				timeout={3000}
+				severity='error'
+				onClose={resetDeleteStateHandler}
+				message={deleteGroupError}
 			/>
 		</Box>
 	);

@@ -150,7 +150,7 @@ const CreateGroupForm = () => {
 							<LoadingButton fullWidth size='large' type='submit' variant='contained' loading={isSubmitting}>
 								Create
 							</LoadingButton>
-							<Button fullWidth size='large' color='error' type='submit' variant='contained' onClick={handleReset}>
+							<Button fullWidth size='large' color='error' variant='contained' onClick={handleReset}>
 								Cancel
 							</Button>
 						</Stack>
