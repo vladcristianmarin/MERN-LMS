@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { COURSE_CREATE_RESET } from '../../constants/courseConstants';
 import Toast from '../Toast';
 import { createCourse } from '../../actions/courseActions';
-import { listTeachers } from '../../actions/teacherActions';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
@@ -51,10 +50,6 @@ const CreateCourseForm = () => {
 
 	const { errors, touched, setFieldValue, isSubmitting, setSubmitting, handleSubmit, handleReset, getFieldProps } =
 		formik;
-
-	useEffect(() => {
-		dispatch(listTeachers());
-	}, [dispatch]);
 
 	useEffect(() => {
 		if (!loading) {

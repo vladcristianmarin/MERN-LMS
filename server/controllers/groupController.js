@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Group from '../models/groupModel.js';
 import Student from '../models/studentModel.js';
+import Course from '../models/courseModel.js';
 
 //* UTILS
 
@@ -142,4 +143,36 @@ const deleteGroup = asyncHandler(async (req, res) => {
 	res.send(deletedGroup);
 });
 
-export { createGroup, addStudents, getGroups, deleteGroup };
+//* @description    Assign a course to a group
+//* @route          POST /api/groups/:id/courses
+//* @access         Protected / Admin
+
+const addCourseToGroup = asyncHandler(async (req, res) => {
+	const group = await Group.findOne({ _id: req.params.id });
+	if (!group) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+	const course = await Course.findOne({ _id: req.body.courseId });
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+
+	group.courses.forEach((crs) => {
+		if (course._id.equals(crs)) {
+			res.status(401);
+			throw new Error(`Group already enrolled in this course!`);
+		}
+	});
+
+	const updatedGroup = await Group.findOneAndUpdate(
+		{ _id: group._id },
+		{ $addToSet: { courses: course._id } },
+		{ new: true }
+	);
+
+	res.status(201).send(updatedGroup);
+});
+
+export { createGroup, addStudents, getGroups, deleteGroup, addCourseToGroup };

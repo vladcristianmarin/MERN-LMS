@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Toast from '../Toast';
 import { GROUP_CREATE_RESET } from '../../constants/groupConstants';
 import { createGroup } from '../../actions/groupActions';
-import { listStudents } from '../../actions/studentActions';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
@@ -60,10 +59,6 @@ const CreateGroupForm = () => {
 		handleReset,
 		getFieldProps,
 	} = formik;
-
-	useEffect(() => {
-		dispatch(listStudents());
-	}, [dispatch]);
 
 	useEffect(() => {
 		if (!loading) {

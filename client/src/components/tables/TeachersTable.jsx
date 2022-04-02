@@ -76,7 +76,6 @@ const TeachersTable = () => {
 			setCountries(data);
 		};
 		fetchCountries();
-		dispatch(listTeachers());
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -93,7 +92,7 @@ const TeachersTable = () => {
 	}, [dispatch, coursesState.selectedTeacher, coursesState.showCoursesDialog]);
 
 	useEffect(() => {
-		if (deleteCourseSuccess && !deleteCourseLoading) {
+		if (deleteCourseSuccess && !deleteCourseLoading && coursesState.selectedTeacher) {
 			setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: false, selectedCourse: null }));
 			dispatch(listTeacherCourses(coursesState.selectedTeacher._id));
 		}

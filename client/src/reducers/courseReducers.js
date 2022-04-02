@@ -7,6 +7,9 @@ import {
 	COURSE_DELETE_REQUEST,
 	COURSE_DELETE_RESET,
 	COURSE_DELETE_SUCCESS,
+	LIST_COURSES_FAIL,
+	LIST_COURSES_REQUEST,
+	LIST_COURSES_SUCCESS,
 } from '../constants/courseConstants';
 
 export const courseCreateReducer = (state = {}, action) => {
@@ -19,6 +22,19 @@ export const courseCreateReducer = (state = {}, action) => {
 			return { loading: false, error: action.payload, success: false };
 		case COURSE_CREATE_RESET:
 			return { loading: false };
+		default:
+			return state;
+	}
+};
+
+export const courseListReducer = (state = { courses: [] }, action) => {
+	switch (action.type) {
+		case LIST_COURSES_REQUEST:
+			return { loading: true };
+		case LIST_COURSES_SUCCESS:
+			return { loading: false, courses: action.payload, success: true };
+		case LIST_COURSES_FAIL:
+			return { loading: false, error: action.payload, success: false };
 		default:
 			return state;
 	}

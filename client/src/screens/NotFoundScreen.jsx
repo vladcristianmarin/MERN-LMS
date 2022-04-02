@@ -15,13 +15,13 @@ const NotFoundScreen = () => {
 	return (
 		<RootStyle>
 			<Container>
-				<Box sx={{ maxWidht: 480, margin: 'auto', textAlign: 'center' }}>
+				<Box sx={{ maxWidth: 480, margin: 'auto', textAlign: 'center' }}>
 					<Typography variant='h3' paragraph>
 						Sorry, page not found!
 					</Typography>
 					<Typography sx={{ color: 'text.secondary' }}>
-						Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve
-						mistyped the URL? Be sure to check your spelling.
+						Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be sure to check your
+						spelling.
 					</Typography>
 
 					<Box

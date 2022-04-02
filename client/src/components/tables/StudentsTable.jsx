@@ -4,7 +4,6 @@ import { Avatar, Link as MUILink, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { listStudents } from '../../actions/studentActions';
 
 const StudentsTable = () => {
 	const dispatch = useDispatch();
@@ -25,7 +24,6 @@ const StudentsTable = () => {
 			setCountries(data);
 		};
 		fetchCountries();
-		dispatch(listStudents());
 	}, [dispatch]);
 
 	const columns = [

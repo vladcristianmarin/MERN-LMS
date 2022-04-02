@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { sidebarReducer } from './reducers/sidebarReducers';
 import { userLoginReducer, userMakeAdminReducer, userRegisterReducer } from './reducers/userReducers';
-import { courseCreateReducer, courseDeleteReducer } from './reducers/courseReducers';
+import { courseCreateReducer, courseDeleteReducer, courseListReducer } from './reducers/courseReducers';
 import { teacherListCoursesReducer, teacherListReducer } from './reducers/teacherReducers';
 import {
 	groupAddStudentsReducer,
@@ -20,6 +20,7 @@ const reducer = combineReducers({
 	userMakeAdmin: userMakeAdminReducer,
 	courseCreate: courseCreateReducer,
 	courseDelete: courseDeleteReducer,
+	courseList: courseListReducer,
 	groupCreate: groupCreateReducer,
 	groupAddStudents: groupAddStudentsReducer,
 	groupDelete: groupDeleteReducer,
@@ -38,6 +39,7 @@ const initialState = {
 	teacherList: { teachers: [] },
 	studentList: { students: [] },
 	groupList: { groups: [] },
+	courseList: { courses: [] },
 	teacherListCourses: { courses: [] },
 };
 

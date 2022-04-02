@@ -13,7 +13,7 @@ import {
 	DialogTitle,
 	TextField,
 } from '@mui/material';
-import { listStudents } from '../../actions/studentActions';
+
 import { addStudents } from '../../actions/groupActions';
 
 const AddStudentsForm = ({ open, handleClose, group }) => {
@@ -43,10 +43,6 @@ const AddStudentsForm = ({ open, handleClose, group }) => {
 	});
 
 	const { errors, touched, values, setFieldValue, isSubmitting, setSubmitting, handleSubmit, handleReset } = formik;
-
-	useEffect(() => {
-		dispatch(listStudents());
-	}, [dispatch]);
 
 	useEffect(() => {
 		if (!loading) {

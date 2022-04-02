@@ -1,16 +1,22 @@
 import { Container, Divider, Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CreateGroupForm from '../components/forms/CreateGroupForm';
 import CreateCourseForm from '../components/forms/CreateCourseForm';
 import StudentsTable from '../components/tables/StudentsTable';
 import { useNavigate } from 'react-router-dom';
 import TeachersTable from '../components/tables/TeachersTable';
 import GroupsTable from '../components/tables/GroupsTable';
+import { listGroups } from '../actions/groupActions';
+import { listTeachers } from '../actions/teacherActions';
+import { listStudents } from '../actions/studentActions';
+import { listCourses } from '../actions/courseActions';
+import CoursesTable from '../components/tables/CoursesTable';
 
 const AdminHomeScreen = () => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
@@ -20,6 +26,14 @@ const AdminHomeScreen = () => {
 			navigate('/login', { replace: true });
 		}
 	}, [userInfo, navigate]);
+
+	useEffect(() => {
+		console.log('one time only');
+		dispatch(listGroups());
+		dispatch(listCourses());
+		dispatch(listTeachers());
+		dispatch(listStudents());
+	}, [dispatch]);
 
 	return (
 		<Container maxWidth='xl'>
@@ -43,6 +57,7 @@ const AdminHomeScreen = () => {
 			<StudentsTable />
 			<TeachersTable />
 			<GroupsTable />
+			<CoursesTable />
 		</Container>
 	);
 };

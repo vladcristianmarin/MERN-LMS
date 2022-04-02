@@ -6,7 +6,31 @@ import {
 	COURSE_DELETE_FAIL,
 	COURSE_DELETE_REQUEST,
 	COURSE_DELETE_SUCCESS,
+	LIST_COURSES_FAIL,
+	LIST_COURSES_REQUEST,
+	LIST_COURSES_SUCCESS,
 } from '../constants/courseConstants';
+
+export const listCourses = () => async (dispatch, getState) => {
+	try {
+		dispatch({ type: LIST_COURSES_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get('/api/courses', config);
+
+		dispatch({ type: LIST_COURSES_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: LIST_COURSES_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
 
 export const createCourse = (name, acronym, teacher, description) => async (dispatch, getState) => {
 	try {

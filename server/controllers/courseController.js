@@ -38,7 +38,7 @@ const createCourse = asyncHandler(async (req, res) => {
 //* @access         Protected / Admin
 
 const getCourses = asyncHandler(async (_req, res) => {
-	const courses = await Course.find({});
+	const courses = await Course.find({}).populate('teacher');
 	res.send(courses);
 });
 

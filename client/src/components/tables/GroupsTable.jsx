@@ -10,15 +10,19 @@ import ConfirmDialog from '../ConfirmDialog';
 import Toast from '../Toast';
 import { GROUP_ADD_STUDENTS_RESET, GROUP_DELETE_RESET } from '../../constants/groupConstants';
 import AddStudentsForm from '../forms/AddStudentsForm';
+import { useTheme } from '@emotion/react';
+import AddCourseToGroupForm from '../forms/AddCourseToGroupFrom';
 
 const GroupsTable = () => {
 	const dispatch = useDispatch();
+	const theme = useTheme();
 
 	const [pageSize, setPageSize] = useState(5);
 
 	const [groupsState, setGroupsState] = useState({
 		showDeleteGroupDialog: false,
 		showAddStudentsForm: false,
+		showAddCourseForm: false,
 		selectedGroup: null,
 	});
 
@@ -34,10 +38,6 @@ const GroupsTable = () => {
 
 	const groupAddStudents = useSelector((state) => state.groupAddStudents);
 	const { error: addStudentsError, loading: addStudentsLoading, success: addStudentsSuccess } = groupAddStudents;
-
-	useEffect(() => {
-		dispatch(listGroups());
-	}, [dispatch]);
 
 	useEffect(() => {
 		if (deleteGroupSuccess && !deleteGroupLoading) {
@@ -96,11 +96,24 @@ const GroupsTable = () => {
 		{
 			field: 'actions',
 			type: 'actions',
+			flex: 1,
 			renderCell: (params) => (
 				<Stack direction='row'>
 					<Tooltip title='Add students'>
 						<IconButton color='success' onClick={showAddStudentsFormHandler.bind(this, params.row)}>
 							<Iconify icon='eva:plus-outline' />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title='Enroll in course'>
+						<IconButton
+							sx={{ color: theme.palette.success.dark }}
+							onClick={showAddCourseFormHandler.bind(this, params.row)}>
+							<Iconify icon='eva:book-outline' />
+						</IconButton>
+					</Tooltip>
+					<Tooltip title='Edit group'>
+						<IconButton color='secondary' onClick={() => {}}>
+							<Iconify icon='eva:edit-2-outline' />
 						</IconButton>
 					</Tooltip>
 					<Tooltip title='Delete Group'>
@@ -137,6 +150,14 @@ const GroupsTable = () => {
 		setGroupsState((prev) => ({ ...prev, showAddStudentsForm: false, selectedGroup: null }));
 	};
 
+	const showAddCourseFormHandler = (group) => {
+		setGroupsState((prev) => ({ ...prev, showAddCourseForm: true, selectedGroup: group }));
+	};
+
+	const hideAddCourseFormHandler = () => {
+		setGroupsState((prev) => ({ ...prev, showAddCourseForm: false, selectedGroup: null }));
+	};
+
 	const resetAddStudentsState = () => {
 		dispatch({ type: GROUP_ADD_STUDENTS_RESET });
 	};
@@ -146,8 +167,6 @@ const GroupsTable = () => {
 			overflow: 'auto',
 		},
 	}));
-
-	console.log(addStudentsError, !addStudentsLoading);
 
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
@@ -175,6 +194,11 @@ const GroupsTable = () => {
 			<AddStudentsForm
 				open={groupsState.showAddStudentsForm}
 				handleClose={hideAddStudentsFormHandler}
+				group={groupsState.selectedGroup}
+			/>
+			<AddCourseToGroupForm
+				open={groupsState.showAddCourseForm}
+				handleClose={hideAddCourseFormHandler}
 				group={groupsState.selectedGroup}
 			/>
 			<Toast
