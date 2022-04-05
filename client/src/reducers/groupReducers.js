@@ -11,6 +11,10 @@ import {
 	GROUP_DELETE_REQUEST,
 	GROUP_DELETE_RESET,
 	GROUP_DELETE_SUCCESS,
+	GROUP_ENROLL_COURSE_FAIL,
+	GROUP_ENROLL_COURSE_REQUEST,
+	GROUP_ENROLL_COURSE_RESET,
+	GROUP_ENROLL_COURSE_SUCCESS,
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
@@ -69,6 +73,21 @@ export const groupAddStudentsReducer = (state = {}, action) => {
 		case GROUP_ADD_STUDENTS_FAIL:
 			return { loading: false, error: action.payload, success: false };
 		case GROUP_ADD_STUDENTS_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+export const groupEnrollCourseReducer = (state = {}, action) => {
+	switch (action.type) {
+		case GROUP_ENROLL_COURSE_REQUEST:
+			return { loading: true };
+		case GROUP_ENROLL_COURSE_SUCCESS:
+			return { loading: false, group: action.payload, success: true };
+		case GROUP_ENROLL_COURSE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case GROUP_ENROLL_COURSE_RESET: {
 			return {};
 		}
 		default:

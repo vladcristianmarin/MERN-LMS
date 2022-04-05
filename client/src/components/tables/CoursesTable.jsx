@@ -7,6 +7,7 @@ import Iconify from '../Iconify';
 import { deleteCourse, listCourses } from '../../actions/courseActions';
 import Toast from '../Toast';
 import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
+import CustomToolbar from '../forms/CustomToolbar';
 
 const CoursesTable = () => {
 	const dispatch = useDispatch();
@@ -21,7 +22,9 @@ const CoursesTable = () => {
 	const courseList = useSelector((state) => state.courseList);
 	const courses = courseList.courses || [];
 
-	const coursesWithId = courses.map((group) => {
+	const { loading: courseListLoading } = courseList;
+
+	const coursesToRender = courses.map((group) => {
 		return { id: group._id, ...group };
 	});
 
@@ -97,6 +100,10 @@ const CoursesTable = () => {
 		dispatch({ type: COURSE_DELETE_RESET });
 	};
 
+	const refreshHandler = () => {
+		dispatch(listCourses());
+	};
+
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
 			<Typography sx={{ ml: 1 }} variant='h4'>
@@ -110,8 +117,12 @@ const CoursesTable = () => {
 				onPageSizeChange={pageSizeChangeHandler}
 				rowsPerPageOptions={[5, 10, 15]}
 				columns={columns}
-				rows={coursesWithId}
-				pagination='true'></DataGrid>
+				rows={coursesToRender}
+				pagination='true'
+				loading={courseListLoading}
+				components={{
+					Toolbar: () => <CustomToolbar refreshHandler={refreshHandler} fileName='CoursesTable' />,
+				}}></DataGrid>
 			<ConfirmDialog
 				title='Confirm Delete Course'
 				message={`You are about to delete group ${coursesState.selectedCourse?.code}. Are you sure you want to delete it?`}

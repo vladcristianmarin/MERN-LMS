@@ -22,10 +22,15 @@ const findStudentIds = async (students) => {
 
 const assignGroupToStudent = async (group) => {
 	for (const stud of group.students) {
-		console.log(stud);
 		const updatedStudent = await Student.findOne({ _id: stud });
 		updatedStudent.group = group._id;
 		await updatedStudent.save();
+	}
+};
+
+const populateCoursesTeacher = async (group) => {
+	for (const course of group.courses) {
+		await course.populate('teacher');
 	}
 };
 
@@ -117,7 +122,10 @@ const addStudents = asyncHandler(async (req, res) => {
 //* @access         Protected / Admin
 
 const getGroups = asyncHandler(async (_req, res) => {
-	const groups = await Group.find({}).populate('students');
+	const groups = await Group.find({}).populate('students').populate('courses');
+	for (const group of groups) {
+		await populateCoursesTeacher(group);
+	}
 	res.send(groups);
 });
 

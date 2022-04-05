@@ -9,6 +9,9 @@ import {
 	GROUP_DELETE_FAIL,
 	GROUP_DELETE_REQUEST,
 	GROUP_DELETE_SUCCESS,
+	GROUP_ENROLL_COURSE_FAIL,
+	GROUP_ENROLL_COURSE_REQUEST,
+	GROUP_ENROLL_COURSE_SUCCESS,
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
@@ -93,6 +96,27 @@ export const addStudents = (groupId, students) => async (dispatch, getState) => 
 	} catch (error) {
 		dispatch({
 			type: GROUP_ADD_STUDENTS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const enrollCourse = (groupId, courseId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: GROUP_ENROLL_COURSE_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.post(`/api/groups/${groupId}/courses`, { courseId }, config);
+
+		dispatch({ type: GROUP_ENROLL_COURSE_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: GROUP_ENROLL_COURSE_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

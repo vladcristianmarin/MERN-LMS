@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip } from '@mui/material';
+import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Divider } from '@mui/material';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
@@ -8,10 +8,15 @@ import { deleteGroup, listGroups } from '../../actions/groupActions';
 import Iconify from '../Iconify';
 import ConfirmDialog from '../ConfirmDialog';
 import Toast from '../Toast';
-import { GROUP_ADD_STUDENTS_RESET, GROUP_DELETE_RESET } from '../../constants/groupConstants';
+import {
+	GROUP_ADD_STUDENTS_RESET,
+	GROUP_DELETE_RESET,
+	GROUP_ENROLL_COURSE_RESET,
+} from '../../constants/groupConstants';
 import AddStudentsForm from '../forms/AddStudentsForm';
 import { useTheme } from '@emotion/react';
-import AddCourseToGroupForm from '../forms/AddCourseToGroupFrom';
+import EnrollCourseForm from '../forms/EnrollCourseForm';
+import CustomToolbar from '../forms/CustomToolbar';
 
 const GroupsTable = () => {
 	const dispatch = useDispatch();
@@ -29,15 +34,20 @@ const GroupsTable = () => {
 	const groupList = useSelector((state) => state.groupList);
 	const groups = groupList.groups || [];
 
-	const groupsWithId = groups.map((group) => {
+	const groupsToRender = groups.map((group) => {
 		return { id: group._id, ...group };
 	});
+
+	const { loading: groupListLoading } = groupList;
 
 	const groupDelete = useSelector((state) => state.groupDelete);
 	const { error: deleteGroupError, loading: deleteGroupLoading, success: deleteGroupSuccess } = groupDelete;
 
 	const groupAddStudents = useSelector((state) => state.groupAddStudents);
 	const { error: addStudentsError, loading: addStudentsLoading, success: addStudentsSuccess } = groupAddStudents;
+
+	const groupEnrollCourse = useSelector((state) => state.groupEnrollCourse);
+	const { error: enrollCourseError, loading: enrollCourseLoading, success: enrollCourseSuccess } = groupEnrollCourse;
 
 	useEffect(() => {
 		if (deleteGroupSuccess && !deleteGroupLoading) {
@@ -51,6 +61,7 @@ const GroupsTable = () => {
 
 	const columns = [
 		{ field: 'code', type: 'string', headerName: 'Code', flex: 1 },
+
 		{
 			field: 'school',
 			type: 'string',
@@ -76,7 +87,7 @@ const GroupsTable = () => {
 				return (
 					<List sx={{ alignSelf: 'flex-start' }}>
 						{emails.map((email, i) => (
-							<ListItem key={i}>
+							<ListItem key={i} sx={{ p: 0, m: 0 }}>
 								<MUILink
 									color='text.primary'
 									component={Link}
@@ -88,6 +99,32 @@ const GroupsTable = () => {
 									{email}
 								</MUILink>
 							</ListItem>
+						))}
+					</List>
+				);
+			},
+		},
+		{
+			field: 'courses',
+			type: 'singleSelect',
+			headerName: 'Courses',
+			flex: 1,
+			valueGetter: (value) => ({ ...value.row.courses.map((course) => `${course.acronym} - ${course.teacher.name}`) }),
+			renderCell: (params) => {
+				console.log(params.row);
+				const courses = Object.values(params.formattedValue);
+				return (
+					<List sx={{ alignSelf: 'flex-start' }}>
+						{courses.map((course, i) => (
+							<React.Fragment key={i}>
+								<ListItem sx={{ m: 0, p: 0 }}>
+									<Tooltip
+										title={`${params.row.courses[i].name} - ${params.row.courses[i].teacher.name} (${params.row.courses[i].teacher.email})`}>
+										<span>{course}</span>
+									</Tooltip>
+								</ListItem>
+								<Divider />
+							</React.Fragment>
 						))}
 					</List>
 				);
@@ -126,6 +163,10 @@ const GroupsTable = () => {
 		},
 	];
 
+	const refreshHandler = () => {
+		dispatch(listGroups());
+	};
+
 	const showDeleteDialogHandler = (group) => {
 		setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: true, selectedGroup: group }));
 	};
@@ -162,9 +203,14 @@ const GroupsTable = () => {
 		dispatch({ type: GROUP_ADD_STUDENTS_RESET });
 	};
 
+	const resetEnrollCourseState = () => {
+		dispatch({ type: GROUP_ENROLL_COURSE_RESET });
+	};
+
 	const StyledDataGrid = styled(DataGrid)(() => ({
 		'& .MuiDataGrid-cell--withRenderer': {
-			overflow: 'auto',
+			overflowY: 'auto',
+			marginBottom: '10px',
 		},
 	}));
 
@@ -175,13 +221,23 @@ const GroupsTable = () => {
 			</Typography>
 			<StyledDataGrid
 				autoHeight={true}
-				rowHeight={60}
+				rowHeight={65}
 				pageSize={pageSize}
 				onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
 				rowsPerPageOptions={[5, 10, 15]}
 				columns={columns}
-				rows={groupsWithId}
-				pagination='true'></StyledDataGrid>
+				rows={groupsToRender}
+				loading={groupListLoading}
+				pagination='true'
+				components={{
+					Toolbar: () => (
+						<CustomToolbar
+							refreshHandler={refreshHandler}
+							fields={['code', 'school', 'yearOfStudy']}
+							fileName='GroupsTable'
+						/>
+					),
+				}}></StyledDataGrid>
 
 			<ConfirmDialog
 				open={groupsState.showDeleteGroupDialog}
@@ -196,7 +252,7 @@ const GroupsTable = () => {
 				handleClose={hideAddStudentsFormHandler}
 				group={groupsState.selectedGroup}
 			/>
-			<AddCourseToGroupForm
+			<EnrollCourseForm
 				open={groupsState.showAddCourseForm}
 				handleClose={hideAddCourseFormHandler}
 				group={groupsState.selectedGroup}
@@ -228,6 +284,20 @@ const GroupsTable = () => {
 				severity='error'
 				message={addStudentsError}
 				onClose={resetAddStudentsState}
+			/>
+			<Toast
+				show={enrollCourseSuccess && !enrollCourseLoading}
+				timeout={2000}
+				severity='success'
+				message='Group enrolled in course!'
+				onClose={resetEnrollCourseState}
+			/>
+			<Toast
+				show={enrollCourseError && !enrollCourseLoading}
+				timeout={3000}
+				severity='error'
+				message={enrollCourseError}
+				onClose={resetEnrollCourseState}
 			/>
 		</Box>
 	);

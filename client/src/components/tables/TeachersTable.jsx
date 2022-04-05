@@ -31,6 +31,7 @@ import { USER_MAKE_ADMIN_RESET } from '../../constants/userConstants';
 import Iconify from '../Iconify';
 import Toast from '../Toast';
 import ConfirmDialog from '../ConfirmDialog';
+import CustomToolbar from '../forms/CustomToolbar';
 
 const TeachersTable = () => {
 	const dispatch = useDispatch();
@@ -52,7 +53,11 @@ const TeachersTable = () => {
 	const teacherList = useSelector((state) => state.teacherList);
 	const teachers = teacherList.teachers || [];
 
-	const teachersWithId = teachers.map((teach) => {
+	const { loading: listTeachersLoading } = teacherList;
+
+	console.log(listTeachersLoading);
+
+	const teachersToRender = teachers.map((teach) => {
 		return { id: teach._id, ...teach };
 	});
 
@@ -253,6 +258,10 @@ const TeachersTable = () => {
 		dispatch({ type: USER_MAKE_ADMIN_RESET });
 	};
 
+	const refreshHandler = () => {
+		dispatch(listTeachers());
+	};
+
 	return (
 		<>
 			<Box sx={{ width: '100%', p: 2 }}>
@@ -266,8 +275,12 @@ const TeachersTable = () => {
 					pageSize={pageSize}
 					onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
 					columns={columns}
-					rows={teachersWithId}
-					pagination='true'></DataGrid>
+					rows={teachersToRender}
+					pagination='true'
+					loading={listTeachersLoading}
+					components={{
+						Toolbar: () => <CustomToolbar refreshHandler={refreshHandler} fileName='TeachersTable' />,
+					}}></DataGrid>
 
 				<Dialog open={coursesState.showCoursesDialog} onClose={hideCoursesDialogHandler}>
 					<DialogTitle>{coursesState.selectedTeacher?.name}'s courses</DialogTitle>

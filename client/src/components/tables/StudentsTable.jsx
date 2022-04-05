@@ -4,6 +4,8 @@ import { Avatar, Link as MUILink, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
+import CustomToolbar from '../forms/CustomToolbar';
+import { listStudents } from '../../actions/studentActions';
 
 const StudentsTable = () => {
 	const dispatch = useDispatch();
@@ -14,7 +16,9 @@ const StudentsTable = () => {
 	const studentList = useSelector((state) => state.studentList);
 	const students = studentList.students || [];
 
-	const studentsWithId = students.map((stud) => {
+	const { loading: studentListLoading } = studentList;
+
+	const studentsToRender = students.map((stud) => {
 		return { id: stud._id, ...stud };
 	});
 
@@ -110,6 +114,10 @@ const StudentsTable = () => {
 		},
 	];
 
+	const refreshHandler = () => {
+		dispatch(listStudents());
+	};
+
 	return (
 		<Box sx={{ width: '100%', p: 2 }}>
 			<Typography sx={{ ml: 1 }} variant='h4'>
@@ -121,8 +129,12 @@ const StudentsTable = () => {
 				pageSize={pageSize}
 				onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
 				columns={columns}
-				rows={studentsWithId}
-				pagination='true'></DataGrid>
+				rows={studentsToRender}
+				pagination='true'
+				loading={studentListLoading}
+				components={{
+					Toolbar: () => <CustomToolbar refreshHandler={refreshHandler} fileName='StudentsTable' />,
+				}}></DataGrid>
 		</Box>
 	);
 };

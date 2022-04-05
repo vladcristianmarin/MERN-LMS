@@ -9,6 +9,7 @@ import {
 	groupAddStudentsReducer,
 	groupCreateReducer,
 	groupDeleteReducer,
+	groupEnrollCourseReducer,
 	groupListReducer,
 } from './reducers/groupReducers';
 import { studentListReducer } from './reducers/studentReducers';
@@ -25,6 +26,7 @@ const reducer = combineReducers({
 	groupAddStudents: groupAddStudentsReducer,
 	groupDelete: groupDeleteReducer,
 	groupList: groupListReducer,
+	groupEnrollCourse: groupEnrollCourseReducer,
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
 	studentList: studentListReducer,
