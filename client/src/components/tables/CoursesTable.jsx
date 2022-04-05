@@ -1,13 +1,20 @@
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+//* REACT
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+//* MUI
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+
+//* CUSTOM COMPONENTS
 import ConfirmDialog from '../ConfirmDialog';
 import Iconify from '../Iconify';
-import { deleteCourse, listCourses } from '../../actions/courseActions';
 import Toast from '../Toast';
+import CustomToolbar from '../tables/CustomToolbar';
+
+//* FUNCTIONS && CONSTANTS
+import { deleteCourse, listCourses } from '../../actions/courseActions';
 import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
-import CustomToolbar from '../forms/CustomToolbar';
 
 const CoursesTable = () => {
 	const dispatch = useDispatch();

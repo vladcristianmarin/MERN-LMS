@@ -1,5 +1,11 @@
+//* REACT
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+//* MUI
+import { useTheme } from '@emotion/react';
+import { DataGrid } from '@mui/x-data-grid';
 import {
 	Avatar,
 	Checkbox,
@@ -19,19 +25,22 @@ import {
 	DialogActions,
 	Button,
 } from '@mui/material';
-import { useTheme } from '@emotion/react';
-import { DataGrid } from '@mui/x-data-grid';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { listTeacherCourses, listTeachers } from '../../actions/teacherActions';
-import { deleteCourse } from '../../actions/courseActions';
-import { makeAdmin } from '../../actions/userActions';
-import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
-import { USER_MAKE_ADMIN_RESET } from '../../constants/userConstants';
+
+//* CUSTOM COMPONENTS
 import Iconify from '../Iconify';
 import Toast from '../Toast';
 import ConfirmDialog from '../ConfirmDialog';
-import CustomToolbar from '../forms/CustomToolbar';
+import CustomToolbar from '../tables/CustomToolbar';
+
+//* FUNCTIONS && CONSTANTS
+import { makeAdmin } from '../../actions/userActions';
+import { deleteCourse } from '../../actions/courseActions';
+import { listTeacherCourses, listTeachers } from '../../actions/teacherActions';
+import { COURSE_DELETE_RESET } from '../../constants/courseConstants';
+import { USER_MAKE_ADMIN_RESET } from '../../constants/userConstants';
+
+//* EXTRAS
+import axios from 'axios';
 
 const TeachersTable = () => {
 	const dispatch = useDispatch();

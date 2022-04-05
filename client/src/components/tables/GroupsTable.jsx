@@ -1,22 +1,29 @@
+//* REACT
 import React, { useState, useEffect } from 'react';
-import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Divider } from '@mui/material';
-import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteGroup, listGroups } from '../../actions/groupActions';
+import { Link } from 'react-router-dom';
+
+//* MUI
+import styled from '@emotion/styled';
+import { useTheme } from '@emotion/react';
+import { DataGrid } from '@mui/x-data-grid';
+import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Divider } from '@mui/material';
+
+//* CUSTOM COMPONENTS
 import Iconify from '../Iconify';
 import ConfirmDialog from '../ConfirmDialog';
 import Toast from '../Toast';
+import AddStudentsForm from '../forms/AddStudentsForm';
+import EnrollCourseForm from '../forms/EnrollCourseForm';
+import CustomToolbar from '../tables/CustomToolbar';
+
+//* FUNCTIONS && CONSTANTS
+import { deleteGroup, listGroups } from '../../actions/groupActions';
 import {
 	GROUP_ADD_STUDENTS_RESET,
 	GROUP_DELETE_RESET,
 	GROUP_ENROLL_COURSE_RESET,
 } from '../../constants/groupConstants';
-import AddStudentsForm from '../forms/AddStudentsForm';
-import { useTheme } from '@emotion/react';
-import EnrollCourseForm from '../forms/EnrollCourseForm';
-import CustomToolbar from '../forms/CustomToolbar';
 
 const GroupsTable = () => {
 	const dispatch = useDispatch();

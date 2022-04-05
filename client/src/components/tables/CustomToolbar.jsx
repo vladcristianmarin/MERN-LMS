@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { Button } from '@mui/material';
 import {
 	GridToolbarColumnsButton,
@@ -6,7 +8,7 @@ import {
 	GridToolbarExport,
 	GridToolbarFilterButton,
 } from '@mui/x-data-grid';
-import React from 'react';
+
 import Iconify from '../Iconify';
 
 const CustomToolbar = ({ refreshHandler, fileName, fields = undefined }) => {

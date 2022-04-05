@@ -1,11 +1,20 @@
+//* REACT
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Avatar, Link as MUILink, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import CustomToolbar from '../forms/CustomToolbar';
+import { Link } from 'react-router-dom';
+
+//* MUI
+import { DataGrid } from '@mui/x-data-grid';
+import { Avatar, Link as MUILink, Typography, Box } from '@mui/material';
+
+//* CUSTOM COMPONENTS
+import CustomToolbar from '../tables/CustomToolbar';
+
+//* FUNCTIONS && CONSTANTS
 import { listStudents } from '../../actions/studentActions';
+
+//* EXTRAS
+import axios from 'axios';
 
 const StudentsTable = () => {
 	const dispatch = useDispatch();
