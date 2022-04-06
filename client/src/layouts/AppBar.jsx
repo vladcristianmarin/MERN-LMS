@@ -21,7 +21,7 @@ const AppBar = () => {
 	};
 
 	return (
-		<StyledAppBar>
+		<StyledAppBar open={isOpen}>
 			<Toolbar>
 				<IconButton
 					color='inherit'
