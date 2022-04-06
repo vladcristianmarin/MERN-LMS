@@ -1,11 +1,4 @@
-import {
-	alpha,
-	Badge,
-	IconButton,
-	Box,
-	Typography,
-	ClickAwayListener,
-} from '@mui/material';
+import { alpha, Badge, IconButton, Box, Typography } from '@mui/material';
 import React, { useState, useRef } from 'react';
 import Iconify from './Iconify';
 import MenuPopover from './MenuPopover';
@@ -22,11 +15,7 @@ const Notifications = () => {
 				ref={anchorRef}
 				sx={{
 					...(isOpen && {
-						bgcolor: (theme) =>
-							alpha(
-								theme.palette.primary.main,
-								theme.palette.action.focusOpacity
-							),
+						bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
 					}),
 				}}
 				onClick={() => setIsOpen((prev) => !prev.isOpen)}>
@@ -34,11 +23,7 @@ const Notifications = () => {
 					<Iconify icon='eva-bell-fill' />
 				</Badge>
 			</IconButton>
-			<MenuPopover
-				open={isOpen}
-				onClose={() => setIsOpen(false)}
-				anchorEl={anchorRef.current}
-				sx={{ width: 360 }}>
+			<MenuPopover open={isOpen} onClose={() => setIsOpen(false)} anchorEl={anchorRef.current} sx={{ width: 360 }}>
 				<Box
 					sx={{
 						display: 'flex',

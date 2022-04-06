@@ -64,8 +64,6 @@ const TeachersTable = () => {
 
 	const { loading: listTeachersLoading } = teacherList;
 
-	console.log(listTeachersLoading);
-
 	const teachersToRender = teachers.map((teach) => {
 		return { id: teach._id, ...teach };
 	});

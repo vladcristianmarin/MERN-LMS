@@ -118,7 +118,6 @@ const GroupsTable = () => {
 			flex: 1,
 			valueGetter: (value) => ({ ...value.row.courses.map((course) => `${course.acronym} - ${course.teacher.name}`) }),
 			renderCell: (params) => {
-				console.log(params.row);
 				const courses = Object.values(params.formattedValue);
 				return (
 					<List sx={{ alignSelf: 'flex-start' }}>

@@ -1,4 +1,4 @@
-import Iconify from '../components/Iconify';
+import Iconify from '../../components/Iconify';
 
 const getIcon = (name) => <Iconify icon={name} width={23} height={23} />;
 

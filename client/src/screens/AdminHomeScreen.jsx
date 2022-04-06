@@ -1,6 +1,6 @@
 import { Container, Divider, Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CreateGroupForm from '../components/forms/CreateGroupForm';
 import CreateCourseForm from '../components/forms/CreateCourseForm';
@@ -27,13 +27,14 @@ const AdminHomeScreen = () => {
 		}
 	}, [userInfo, navigate]);
 
-	useEffect(() => {
-		console.log('one time only');
+	const handleFetchData = useCallback(() => {
 		dispatch(listGroups());
 		dispatch(listCourses());
 		dispatch(listTeachers());
 		dispatch(listStudents());
 	}, [dispatch]);
+
+	useEffect(handleFetchData, [handleFetchData]);
 
 	return (
 		<Container maxWidth='xl'>

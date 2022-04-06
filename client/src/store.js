@@ -36,7 +36,7 @@ const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localS
 const authTokenFromStorage = localStorage.getItem('authToken') ? JSON.parse(localStorage.getItem('authToken')) : null;
 
 const initialState = {
-	sidebar: { isOpen: true },
+	sidebar: { isOpen: false },
 	userLogin: { userInfo: userInfoFromStorage, authToken: authTokenFromStorage },
 	teacherList: { teachers: [] },
 	studentList: { students: [] },
