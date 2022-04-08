@@ -72,11 +72,6 @@ const CoursesTable = () => {
 			type: 'actions',
 			renderCell: (params) => (
 				<Stack direction='row'>
-					<Tooltip title='Edit Course'>
-						<IconButton color='secondary' onClick={() => {}}>
-							<Iconify icon='eva:edit-2-outline' />
-						</IconButton>
-					</Tooltip>
 					<Tooltip title='Delete Course'>
 						<IconButton color='error' onClick={showDeleteDialogHandler.bind(this, params.row)}>
 							<Iconify icon='eva:trash-outline' />

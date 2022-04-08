@@ -53,7 +53,7 @@ const AdminHomeScreen = () => {
 				</Grid>
 			</Grid>
 
-			<Divider sx={{ mb: 5 }} />
+			<Divider sx={{ m: 5 }} />
 
 			<StudentsTable />
 			<TeachersTable />

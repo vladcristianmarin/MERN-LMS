@@ -23,6 +23,7 @@ export const StyledDrawerHeader = styled('div')(({ theme }) => ({
 export const StyledDrawerAccount = styled('div')(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
+	marginTop: theme.spacing(2),
 	padding: theme.spacing(2, 2.5),
 	borderRadius: Number(theme.shape.borderRadius) * 1.5,
 	backgroundColor: theme.palette.grey[500_12],

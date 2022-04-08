@@ -30,7 +30,7 @@ const DrawerMenu = () => {
 					</Typography>
 				</MUILink>
 				<IconButton onClick={handleDrawerClose}>
-					<Iconify icon='eva:arrowhead-right-outline' />
+					<Iconify icon='eva:arrowhead-left-outline' />
 				</IconButton>
 			</StyledDrawerHeader>
 			<Divider />

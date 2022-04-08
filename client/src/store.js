@@ -12,7 +12,7 @@ import {
 	groupEnrollCourseReducer,
 	groupListReducer,
 } from './reducers/groupReducers';
-import { studentListReducer } from './reducers/studentReducers';
+import { studentChangeGroupReducer, studentListReducer } from './reducers/studentReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -30,6 +30,7 @@ const reducer = combineReducers({
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
 	studentList: studentListReducer,
+	studentChangeGroup: studentChangeGroupReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;

@@ -4,17 +4,44 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 //* MUI
-import { DataGrid } from '@mui/x-data-grid';
-import { Avatar, Link as MUILink, Typography, Box } from '@mui/material';
+import { DataGrid, useGridApiContext } from '@mui/x-data-grid';
+import { Avatar, Link as MUILink, Typography, Box, Autocomplete, TextField } from '@mui/material';
 
 //* CUSTOM COMPONENTS
+import Toast from '../Toast';
 import CustomToolbar from '../tables/CustomToolbar';
 
 //* FUNCTIONS && CONSTANTS
-import { listStudents } from '../../actions/studentActions';
+import { changeGroup, listStudents } from '../../actions/studentActions';
 
 //* EXTRAS
 import axios from 'axios';
+import { STUDENT_CHANGE_GROUP_RESET } from '../../constants/studentConstants';
+
+const AutocompleteGroupEditCell = ({ id, field }) => {
+	const apiRef = useGridApiContext();
+	const groupList = useSelector((state) => state.groupList);
+	const groups = groupList.groups || [];
+	const options = groups.map((group) => group.code);
+
+	const groupLoading = groupList.loading;
+
+	const handleGroupChange = (_e, newValue) => {
+		apiRef.current.setEditCellValue({ id, field, value: newValue });
+	};
+
+	return (
+		<Autocomplete
+			key={groupLoading}
+			id='group-autocomplete'
+			options={options}
+			sx={{ flex: 1 }}
+			loading={groupLoading}
+			onChange={handleGroupChange}
+			renderInput={(params) => <TextField {...params} margin='none' size='small' variant='standard' label='Group' />}
+		/>
+	);
+};
 
 const StudentsTable = () => {
 	const dispatch = useDispatch();
@@ -26,6 +53,14 @@ const StudentsTable = () => {
 	const students = studentList.students || [];
 
 	const { loading: studentListLoading } = studentList;
+
+	const studentChangeGroup = useSelector((state) => state.studentChangeGroup);
+	const {
+		loading: studentChangeGroupLoading,
+		error: studentChangeGroupError,
+		success: studentChangeGroupSuccess,
+		student,
+	} = studentChangeGroup;
 
 	const studentsToRender = students.map((stud) => {
 		return { id: stud._id, ...stud };
@@ -79,6 +114,7 @@ const StudentsTable = () => {
 			type: 'string',
 			headerName: 'Phone',
 			flex: 1,
+
 			renderCell: (params) => {
 				return (
 					<MUILink
@@ -105,6 +141,7 @@ const StudentsTable = () => {
 		},
 		{
 			field: 'score',
+			type: 'number',
 			headerName: 'Score',
 			flex: 1,
 			renderCell: (params) => {
@@ -117,14 +154,25 @@ const StudentsTable = () => {
 			type: 'string',
 			headerName: 'Group',
 			flex: 1,
+			editable: true,
+			renderEditCell: (params) => <AutocompleteGroupEditCell {...params} />,
 			renderCell: (params) => {
 				return params.row.group?.code;
 			},
 		},
 	];
 
+	const editCommitHandler = (newValue, _e) => {
+		dispatch(changeGroup(newValue.id, newValue.value));
+		console.log(newValue);
+	};
+
 	const refreshHandler = () => {
 		dispatch(listStudents());
+	};
+
+	const resetStudentChangeGroupState = () => {
+		dispatch({ type: STUDENT_CHANGE_GROUP_RESET });
 	};
 
 	return (
@@ -139,11 +187,26 @@ const StudentsTable = () => {
 				onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
 				columns={columns}
 				rows={studentsToRender}
-				pagination='true'
+				pagination={true}
 				loading={studentListLoading}
+				onCellEditCommit={editCommitHandler}
 				components={{
 					Toolbar: () => <CustomToolbar refreshHandler={refreshHandler} fileName='StudentsTable' />,
 				}}></DataGrid>
+			<Toast
+				show={studentChangeGroupSuccess && !studentChangeGroupLoading}
+				timeout={2000}
+				severity='success'
+				message={student ? `${student?.name} moved from ${student?.oldGroup} to ${student?.newGroup}` : ''}
+				onClose={resetStudentChangeGroupState}
+			/>
+			<Toast
+				show={studentChangeGroupError && !studentChangeGroupLoading}
+				timeout={3000}
+				severity='error'
+				message={studentChangeGroupError}
+				onClose={resetStudentChangeGroupState}
+			/>
 		</Box>
 	);
 };
