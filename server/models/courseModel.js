@@ -29,6 +29,14 @@ const courseSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	weekday: {
+		type: String,
+		required: true,
+	},
+	hour: {
+		type: Date,
+		required: true,
+	},
 	resources: [resourceSchema],
 });
 

@@ -9,6 +9,7 @@ import { Avatar, Link as MUILink, Typography, Box, Autocomplete, TextField } fro
 
 //* CUSTOM COMPONENTS
 import Toast from '../Toast';
+import ConfirmDialog from '../ConfirmDialog';
 import CustomToolbar from '../tables/CustomToolbar';
 
 //* FUNCTIONS && CONSTANTS
@@ -32,10 +33,11 @@ const AutocompleteGroupEditCell = ({ id, field }) => {
 
 	return (
 		<Autocomplete
-			key={groupLoading}
 			id='group-autocomplete'
-			options={options}
+			disableClearable
 			sx={{ flex: 1 }}
+			key={groupLoading}
+			options={options}
 			loading={groupLoading}
 			onChange={handleGroupChange}
 			renderInput={(params) => <TextField {...params} margin='none' size='small' variant='standard' label='Group' />}
@@ -48,6 +50,9 @@ const StudentsTable = () => {
 
 	const [countries, setCountries] = useState([]);
 	const [pageSize, setPageSize] = useState(5);
+
+	const [selectedStudent, setSelectedStudent] = useState(null);
+	const [changeGroupState, setChangeGroupState] = useState({ showConfirmChangeGroup: false, newGroup: null });
 
 	const studentList = useSelector((state) => state.studentList);
 	const students = studentList.students || [];
@@ -162,9 +167,29 @@ const StudentsTable = () => {
 		},
 	];
 
-	const editCommitHandler = (newValue, _e) => {
-		dispatch(changeGroup(newValue.id, newValue.value));
-		console.log(newValue);
+	const editStartHandler = (params) => {
+		setSelectedStudent(params.row);
+	};
+
+	const editStopHandler = (_params, e) => {
+		if (e instanceof PointerEvent) {
+			setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: false, newGroup: null }));
+			e.defaultMuiPrevented = true;
+		}
+	};
+
+	const editCommitHandler = ({ value }) => {
+		if (!(typeof value === 'object'))
+			setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: true, newGroup: value }));
+	};
+
+	const submitEdit = () => {
+		dispatch(changeGroup(selectedStudent.id, changeGroupState.newGroup));
+		setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: false, newGroup: null }));
+	};
+
+	const closeDialogHandler = () => {
+		setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: false, newGroup: null }));
 	};
 
 	const refreshHandler = () => {
@@ -189,10 +214,28 @@ const StudentsTable = () => {
 				rows={studentsToRender}
 				pagination={true}
 				loading={studentListLoading}
+				onCellEditStart={editStartHandler}
+				onCellEditStop={editStopHandler}
 				onCellEditCommit={editCommitHandler}
 				components={{
-					Toolbar: () => <CustomToolbar refreshHandler={refreshHandler} fileName='StudentsTable' />,
+					Toolbar: () => (
+						<CustomToolbar
+							refreshHandler={refreshHandler}
+							fileName='StudentsTable'
+							loading={studentChangeGroupLoading}
+						/>
+					),
 				}}></DataGrid>
+			<ConfirmDialog
+				title='Confirm change group!'
+				message={`You are about to move ${selectedStudent?.name} (${selectedStudent?.email}) from ${selectedStudent?.group.code} 
+									to ${changeGroupState.newGroup}. 
+									Are you sure you want to do this?`}
+				open={changeGroupState.showConfirmChangeGroup}
+				loading={studentChangeGroupLoading}
+				handleConfirm={submitEdit}
+				handleClose={closeDialogHandler}
+			/>
 			<Toast
 				show={studentChangeGroupSuccess && !studentChangeGroupLoading}
 				timeout={2000}

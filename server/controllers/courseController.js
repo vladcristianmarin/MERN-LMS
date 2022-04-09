@@ -7,7 +7,7 @@ import Teacher from '../models/teacherModel.js';
 //* @access         Protected / Admin
 
 const createCourse = asyncHandler(async (req, res) => {
-	const { name, acronym, teacher, description } = req.body;
+	const { name, acronym, teacher, description, weekday, hour } = req.body;
 	const foundTeacher = await Teacher.findOne({ email: teacher });
 
 	if (!foundTeacher) {
@@ -20,6 +20,8 @@ const createCourse = asyncHandler(async (req, res) => {
 		acronym,
 		teacher: foundTeacher._id,
 		description,
+		weekday,
+		hour,
 	});
 
 	foundTeacher.courses.push(createdCourse._id);

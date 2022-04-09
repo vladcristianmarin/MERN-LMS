@@ -43,7 +43,7 @@ const CreateCourseForm = () => {
 
 	const CreateCourseSchema = Yup.object().shape({
 		name: Yup.string().required('Name is required'),
-		acronym: Yup.string().required('Acronym is required').max(5, 'Acronym is too long. (Avoid dots)'),
+		acronym: Yup.string().required('Acronym is required').max(10, 'Acronym is too long. (Avoid dots)'),
 		teacher: Yup.string().email("Teacher's email is required").required('Teacher is required'),
 		description: Yup.string().required('Description is required'),
 		weekday: Yup.string().required('Weekday is required'),
@@ -61,8 +61,8 @@ const CreateCourseForm = () => {
 		},
 		validationSchema: CreateCourseSchema,
 		onSubmit(values) {
-			const { name, acronym, teacher, description } = values;
-			dispatch(createCourse(name, acronym, teacher, description));
+			const { name, acronym, teacher, description, weekday, hour } = values;
+			dispatch(createCourse(name, acronym, teacher, description, weekday, hour));
 		},
 	});
 
@@ -84,6 +84,7 @@ const CreateCourseForm = () => {
 		}
 		if (success) {
 			handleReset();
+			setFieldValue('hour', '');
 		}
 		// eslint-disable-next-line
 	}, [loading, success]);
@@ -140,9 +141,10 @@ const CreateCourseForm = () => {
 							helperText={touched.description && errors.description}
 						/>
 						<Autocomplete
-							key={loading}
-							disablePortal
 							id='teachers'
+							disablePortal
+							key={loading}
+							loading={loading}
 							options={teachersEmails}
 							onChange={(_e, value, reason) => {
 								setFieldValue('teacher', value);

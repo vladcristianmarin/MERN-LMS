@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import {
 	GridToolbarColumnsButton,
 	GridToolbarContainer,
@@ -11,7 +11,7 @@ import {
 
 import Iconify from '../Iconify';
 
-const CustomToolbar = ({ refreshHandler, fileName, fields = undefined }) => {
+const CustomToolbar = ({ refreshHandler, fileName, fields = undefined, loading = false }) => {
 	return (
 		<GridToolbarContainer>
 			<Button onClick={refreshHandler}>
@@ -22,11 +22,13 @@ const CustomToolbar = ({ refreshHandler, fileName, fields = undefined }) => {
 			<GridToolbarColumnsButton />
 			<GridToolbarDensitySelector />
 			<GridToolbarExport
+				sx={{ mr: 'auto' }}
 				csvOptions={{
 					fileName,
 					fields,
 				}}
 			/>
+			{loading && <CircularProgress sx={{ p: 0.5 }} />}
 		</GridToolbarContainer>
 	);
 };

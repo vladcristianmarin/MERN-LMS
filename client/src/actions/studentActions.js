@@ -3,6 +3,7 @@ import {
 	LIST_STUDENTS_FAIL,
 	LIST_STUDENTS_REQUEST,
 	LIST_STUDENTS_SUCCESS,
+	LIST_STUDENTS_UPDATE,
 	STUDENT_CHANGE_GROUP_FAIL,
 	STUDENT_CHANGE_GROUP_REQUEST,
 	STUDENT_CHANGE_GROUP_SUCCESS,
@@ -38,12 +39,18 @@ export const changeGroup = (studentId, newGroup) => async (dispatch, getState) =
 
 		const config = { headers: { Authorization: `Bearer ${authToken}` } };
 
-		//axios
+		const { data } = await axios.put(`/api/students/${studentId}/changeGroup`, { newGroup }, config);
 
 		dispatch({
 			type: STUDENT_CHANGE_GROUP_SUCCESS,
-			payload: { name: 'DUMMY', newGroup: 'newGroup', oldGroup: 'oldGroup' },
+			payload: { name: data.student.name, newGroup: data.newGroup, oldGroup: data.oldGroup },
 		});
+
+		const { students } = getState().studentList;
+		const modifiedStudentIndex = students.findIndex((stud) => stud._id === studentId);
+		students[modifiedStudentIndex].group.code = newGroup;
+
+		dispatch({ type: LIST_STUDENTS_UPDATE, payload: students });
 	} catch (error) {
 		dispatch({
 			type: STUDENT_CHANGE_GROUP_FAIL,

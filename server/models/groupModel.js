@@ -35,10 +35,6 @@ const groupSchema = mongoose.Schema({
 	],
 });
 
-groupSchema.post('validate', async function (error, doc, next) {
-	console.log(error);
-});
-
 groupSchema.post('save', async function (error, _doc, next) {
 	if (error.name === 'MongoServerError' && error.code === 11000) {
 		const duplicateStudent = await Student.findOne({ _id: error.keyValue.students });

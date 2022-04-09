@@ -32,7 +32,7 @@ export const listCourses = () => async (dispatch, getState) => {
 	}
 };
 
-export const createCourse = (name, acronym, teacher, description) => async (dispatch, getState) => {
+export const createCourse = (name, acronym, teacher, description, weekday, hour) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: COURSE_CREATE_REQUEST });
 
@@ -42,7 +42,7 @@ export const createCourse = (name, acronym, teacher, description) => async (disp
 
 		const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` } };
 
-		const { data } = await axios.post('/api/courses', { name, acronym, teacher, description }, config);
+		const { data } = await axios.post('/api/courses', { name, acronym, teacher, description, weekday, hour }, config);
 
 		dispatch({ type: COURSE_CREATE_SUCCESS, payload: data });
 	} catch (error) {

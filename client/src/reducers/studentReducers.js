@@ -2,6 +2,7 @@ import {
 	LIST_STUDENTS_FAIL,
 	LIST_STUDENTS_REQUEST,
 	LIST_STUDENTS_SUCCESS,
+	LIST_STUDENTS_UPDATE,
 	STUDENT_CHANGE_GROUP_FAIL,
 	STUDENT_CHANGE_GROUP_REQUEST,
 	STUDENT_CHANGE_GROUP_RESET,
@@ -16,6 +17,8 @@ export const studentListReducer = (state = { teachers: [] }, action) => {
 			return { loading: false, students: action.payload, success: true };
 		case LIST_STUDENTS_FAIL:
 			return { loading: false, error: action.payload, success: false };
+		case LIST_STUDENTS_UPDATE:
+			return { students: action.payload };
 		default:
 			return state;
 	}
