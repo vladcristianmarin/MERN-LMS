@@ -68,7 +68,25 @@ const CoursesTable = () => {
 			valueGetter: (value) => value.row.teacher.name,
 		},
 		{
+			field: 'weekday',
+			type: 'string',
+			headerName: 'Day',
+			flex: 1,
+			valueGetter: (row) => row.value?.replace(/\w/, (firstLetter) => firstLetter.toUpperCase()),
+		},
+		{
+			field: 'hour',
+			type: 'string',
+			headerName: 'Hour',
+			flex: 1,
+			valueGetter: (row) => {
+				const date = new Date(row.value);
+				return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+			},
+		},
+		{
 			field: 'actions',
+			headerName: 'Actions',
 			type: 'actions',
 			renderCell: (params) => (
 				<Stack direction='row'>

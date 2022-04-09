@@ -139,6 +139,7 @@ const GroupsTable = () => {
 		{
 			field: 'actions',
 			type: 'actions',
+			headerName: 'Actions',
 			flex: 1,
 			renderCell: (params) => (
 				<Stack direction='row'>

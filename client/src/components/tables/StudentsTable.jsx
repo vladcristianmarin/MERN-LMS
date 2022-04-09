@@ -160,10 +160,8 @@ const StudentsTable = () => {
 			headerName: 'Group',
 			flex: 1,
 			editable: true,
+			valueGetter: (params) => params.row.group?.code,
 			renderEditCell: (params) => <AutocompleteGroupEditCell {...params} />,
-			renderCell: (params) => {
-				return params.row.group?.code;
-			},
 		},
 	];
 

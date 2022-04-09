@@ -47,7 +47,7 @@ const CreateCourseForm = () => {
 		teacher: Yup.string().email("Teacher's email is required").required('Teacher is required'),
 		description: Yup.string().required('Description is required'),
 		weekday: Yup.string().required('Weekday is required'),
-		hour: Yup.date().required('Hour is required'),
+		hour: Yup.string().required('Hour is required').nullable(),
 	});
 
 	const formik = useFormik({
@@ -84,13 +84,18 @@ const CreateCourseForm = () => {
 		}
 		if (success) {
 			handleReset();
-			setFieldValue('hour', '');
+			setFieldValue('hour', null);
 		}
 		// eslint-disable-next-line
 	}, [loading, success]);
 
 	const resetCreateState = () => {
 		dispatch({ type: COURSE_CREATE_RESET });
+	};
+
+	const cancelFormHandler = () => {
+		handleReset();
+		setFieldValue('hour', null);
 	};
 
 	return (
@@ -220,7 +225,7 @@ const CreateCourseForm = () => {
 								loading={isSubmitting}>
 								Create
 							</LoadingButton>
-							<Button fullWidth color='error' size='large' type='submit' variant='contained' onClick={handleReset}>
+							<Button fullWidth color='error' size='large' variant='contained' onClick={cancelFormHandler}>
 								Cancel
 							</Button>
 						</Stack>
