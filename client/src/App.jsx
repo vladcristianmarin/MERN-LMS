@@ -7,6 +7,8 @@ import ScrollToTop from './components/ScrollToTop';
 import Routes from './router';
 import AuthCheck from './components/AuthCheck';
 
+import './index.css';
+
 const App = () => {
 	return (
 		<ThemeConfig>
