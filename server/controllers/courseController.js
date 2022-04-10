@@ -63,4 +63,46 @@ const deleteCourse = asyncHandler(async (req, res) => {
 	res.send(deletedCourse);
 });
 
-export { createCourse, getCourses, deleteCourse };
+const updateCourse = asyncHandler(async (req, res) => {
+	const updates = Object.keys(req.body);
+	const allowUpdates = ['name', 'acronym', 'teacher', 'weekday', 'hour'];
+	const isValidOperation = updates.every((update) => allowUpdates.includes(update));
+
+	if (!isValidOperation) {
+		res.status(400);
+		throw new Error('Invalid updates!');
+	}
+
+	const course = await Course.findOne({
+		_id: req.params.id,
+	}).populate('teacher');
+
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+
+	if (req.body.teacher) {
+		const oldTeacher = await Teacher.findOne({ _id: course.teacher._id }).populate('courses');
+		const newTeacher = await Teacher.findOne({ _id: req.body.teacher._id }).populate('courses');
+
+		if (!oldTeacher || !newTeacher) {
+			res.status(404);
+			throw new Error('Old/New Teacher not found!');
+		}
+
+		oldTeacher.courses = oldTeacher.courses.filter((c) => !c._id.equals(course._id));
+		newTeacher.courses.push(course);
+
+		await oldTeacher.save();
+		await newTeacher.save();
+	}
+
+	updates.forEach((update) => (course[update] = req.body[update]));
+
+	await course.save();
+
+	res.status(201).send(course);
+});
+
+export { createCourse, getCourses, deleteCourse, updateCourse };

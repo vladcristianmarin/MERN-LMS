@@ -5,6 +5,6 @@ import { changeStudentGroup, getStudents } from '../controllers/studentControlle
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.route('/').get(protect, admin, getStudents);
-router.route('/:id/changeGroup').put(protect, admin, changeStudentGroup);
+router.route('/:id/changeGroup').patch(protect, admin, changeStudentGroup);
 
 export default router;

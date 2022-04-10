@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { sidebarReducer } from './reducers/sidebarReducers';
 import { userLoginReducer, userMakeAdminReducer, userRegisterReducer } from './reducers/userReducers';
-import { courseCreateReducer, courseDeleteReducer, courseListReducer } from './reducers/courseReducers';
+import { courseCreateReducer, courseDeleteReducer, courseListReducer, courseUpdateReducer } from './reducers/courseReducers';
 import { teacherListCoursesReducer, teacherListReducer } from './reducers/teacherReducers';
 import {
 	groupAddStudentsReducer,
@@ -21,6 +21,7 @@ const reducer = combineReducers({
 	userMakeAdmin: userMakeAdminReducer,
 	courseCreate: courseCreateReducer,
 	courseDelete: courseDeleteReducer,
+	courseUpdate: courseUpdateReducer,
 	courseList: courseListReducer,
 	groupCreate: groupCreateReducer,
 	groupAddStudents: groupAddStudentsReducer,

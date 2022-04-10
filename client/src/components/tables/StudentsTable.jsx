@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 //* MUI
 import { DataGrid, useGridApiContext } from '@mui/x-data-grid';
-import { Avatar, Link as MUILink, Typography, Box, Autocomplete, TextField } from '@mui/material';
+import { Avatar, Link as MUILink, Typography, Box, FormControl, Select, MenuItem } from '@mui/material';
 
 //* CUSTOM COMPONENTS
 import Toast from '../Toast';
@@ -19,29 +19,30 @@ import { changeGroup, listStudents } from '../../actions/studentActions';
 import axios from 'axios';
 import { STUDENT_CHANGE_GROUP_RESET } from '../../constants/studentConstants';
 
-const AutocompleteGroupEditCell = ({ id, field }) => {
+const GroupEditCell = ({ id, field, row }) => {
 	const apiRef = useGridApiContext();
+	const [group, setGroup] = useState(row.group);
 	const groupList = useSelector((state) => state.groupList);
 	const groups = groupList.groups || [];
-	const options = groups.map((group) => group.code);
 
-	const groupLoading = groupList.loading;
+	useEffect(() => {
+		apiRef.current.setEditCellValue({ id, field, value: group });
+		// eslint-disable-next-line
+	}, [group]);
 
-	const handleGroupChange = (_e, newValue) => {
-		apiRef.current.setEditCellValue({ id, field, value: newValue });
+	const handleGroupChange = (e) => {
+		setGroup(groups.filter((item) => item._id === e.target.value).shift());
 	};
-
 	return (
-		<Autocomplete
-			id='group-autocomplete'
-			disableClearable
-			sx={{ flex: 1 }}
-			key={groupLoading}
-			options={options}
-			loading={groupLoading}
-			onChange={handleGroupChange}
-			renderInput={(params) => <TextField {...params} margin='none' size='small' variant='standard' label='Group' />}
-		/>
+		<FormControl fullWidth>
+			<Select id='group-select' value={group._id} onChange={handleGroupChange}>
+				{groups.map((item) => (
+					<MenuItem key={item._id} value={item._id}>
+						{item.code}
+					</MenuItem>
+				))}
+			</Select>
+		</FormControl>
 	);
 };
 
@@ -78,6 +79,12 @@ const StudentsTable = () => {
 		};
 		fetchCountries();
 	}, [dispatch]);
+
+	useEffect(() => {
+		if (studentChangeGroupSuccess && !studentChangeGroupLoading) {
+			dispatch(listStudents());
+		}
+	}, [dispatch, studentChangeGroupSuccess, studentChangeGroupLoading]);
 
 	const columns = [
 		{
@@ -161,7 +168,7 @@ const StudentsTable = () => {
 			flex: 1,
 			editable: true,
 			valueGetter: (params) => params.row.group?.code,
-			renderEditCell: (params) => <AutocompleteGroupEditCell {...params} />,
+			renderEditCell: (params) => <GroupEditCell {...params} />,
 		},
 	];
 
@@ -176,9 +183,9 @@ const StudentsTable = () => {
 		}
 	};
 
-	const editCommitHandler = ({ value }) => {
-		if (!(typeof value === 'object'))
-			setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: true, newGroup: value }));
+	const editCommitHandler = ({ value }, e) => {
+		if (!(e instanceof PointerEvent))
+			setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: true, newGroup: value.code }));
 	};
 
 	const submitEdit = () => {

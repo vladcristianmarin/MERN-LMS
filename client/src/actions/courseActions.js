@@ -6,6 +6,9 @@ import {
 	COURSE_DELETE_FAIL,
 	COURSE_DELETE_REQUEST,
 	COURSE_DELETE_SUCCESS,
+	COURSE_UPDATE_FAIL,
+	COURSE_UPDATE_REQUEST,
+	COURSE_UPDATE_SUCCESS,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
@@ -69,6 +72,36 @@ export const deleteCourse = (courseId) => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: COURSE_DELETE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const updateCourse = (courseId, updates) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: COURSE_UPDATE_REQUEST,
+		});
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${authToken}`,
+			},
+		};
+
+		const { data } = await axios.patch(`/api/courses/${courseId}`, updates, config);
+		dispatch({
+			type: COURSE_UPDATE_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: COURSE_UPDATE_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

@@ -7,6 +7,10 @@ import {
 	COURSE_DELETE_REQUEST,
 	COURSE_DELETE_RESET,
 	COURSE_DELETE_SUCCESS,
+	COURSE_UPDATE_FAIL,
+	COURSE_UPDATE_REQUEST,
+	COURSE_UPDATE_RESET,
+	COURSE_UPDATE_SUCCESS,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
@@ -49,6 +53,22 @@ export const courseDeleteReducer = (state = {}, action) => {
 		case COURSE_DELETE_FAIL:
 			return { loading: false, error: action.payload, success: false };
 		case COURSE_DELETE_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+
+export const courseUpdateReducer = (state = {}, action) => {
+	switch (action.type) {
+		case COURSE_UPDATE_REQUEST:
+			return { loading: true };
+		case COURSE_UPDATE_SUCCESS:
+			return { loading: false, updatedCourse: action.payload, success: true };
+		case COURSE_UPDATE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case COURSE_UPDATE_RESET: {
 			return {};
 		}
 		default:

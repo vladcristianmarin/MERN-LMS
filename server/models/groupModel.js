@@ -25,7 +25,7 @@ const groupSchema = mongoose.Schema({
 				unique: true,
 			},
 		],
-		validate: (v) => Array.isArray(v) && v.length > 0,
+		validate: (v) => Array.isArray(v),
 	},
 	courses: [
 		{
