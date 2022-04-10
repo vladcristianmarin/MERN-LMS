@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+	LIST_STUDENTS_CLIENT_UPDATE,
 	LIST_STUDENTS_FAIL,
 	LIST_STUDENTS_REQUEST,
 	LIST_STUDENTS_SUCCESS,
@@ -44,6 +45,13 @@ export const changeGroup = (studentId, newGroup) => async (dispatch, getState) =
 			type: STUDENT_CHANGE_GROUP_SUCCESS,
 			payload: { name: data.student.name, newGroup: data.newGroup, oldGroup: data.oldGroup },
 		});
+
+		const students = getState().studentList.students || [];
+		const studentIndex = students.findIndex((stud) => stud._id === studentId);
+		if (studentIndex > -1) {
+			students[studentIndex].group.code = data.newGroup;
+			dispatch({ type: LIST_STUDENTS_CLIENT_UPDATE, payload: students });
+		}
 	} catch (error) {
 		dispatch({
 			type: STUDENT_CHANGE_GROUP_FAIL,

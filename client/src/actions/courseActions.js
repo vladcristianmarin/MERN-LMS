@@ -9,6 +9,7 @@ import {
 	COURSE_UPDATE_FAIL,
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_SUCCESS,
+	LIST_COURSES_CLIENT_UPDATE,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
@@ -46,8 +47,11 @@ export const createCourse = (name, acronym, teacher, description, weekday, hour)
 		const config = { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` } };
 
 		const { data } = await axios.post('/api/courses', { name, acronym, teacher, description, weekday, hour }, config);
-
 		dispatch({ type: COURSE_CREATE_SUCCESS, payload: data });
+
+		const courses = getState().courseList.courses || [];
+		courses.push(data);
+		dispatch({ type: LIST_COURSES_CLIENT_UPDATE, payload: courses });
 	} catch (error) {
 		dispatch({
 			type: COURSE_CREATE_FAIL,
@@ -67,8 +71,11 @@ export const deleteCourse = (courseId) => async (dispatch, getState) => {
 		const config = { headers: { Authorization: `Bearer ${authToken}` } };
 
 		const { data } = await axios.delete(`/api/courses/${courseId}`, config);
-
 		dispatch({ type: COURSE_DELETE_SUCCESS, payload: data });
+
+		const courses = getState().courseList.courses || [];
+		const updatedCourses = courses.filter((course) => !(course._id === data._id));
+		dispatch({ type: LIST_COURSES_CLIENT_UPDATE, payload: updatedCourses });
 	} catch (error) {
 		dispatch({
 			type: COURSE_DELETE_FAIL,
@@ -95,10 +102,14 @@ export const updateCourse = (courseId, updates) => async (dispatch, getState) =>
 		};
 
 		const { data } = await axios.patch(`/api/courses/${courseId}`, updates, config);
-		dispatch({
-			type: COURSE_UPDATE_SUCCESS,
-			payload: data,
-		});
+		dispatch({ type: COURSE_UPDATE_SUCCESS, payload: data });
+
+		const courses = getState().courseList.courses || [];
+		const courseIndex = courses.findIndex((course) => course._id === courseId);
+		if (courseIndex > -1) {
+			courses[courseIndex] = data;
+			dispatch({ type: LIST_COURSES_CLIENT_UPDATE, payload: courses });
+		}
 	} catch (error) {
 		dispatch({
 			type: COURSE_UPDATE_FAIL,

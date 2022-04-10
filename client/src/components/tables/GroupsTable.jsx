@@ -1,13 +1,12 @@
 //* REACT
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 //* MUI
 import styled from '@emotion/styled';
 import { useTheme } from '@emotion/react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Link as MUILink, Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Divider } from '@mui/material';
+import { Typography, Box, List, ListItem, IconButton, Stack, Tooltip, Chip } from '@mui/material';
 
 //* CUSTOM COMPONENTS
 import Iconify from '../Iconify';
@@ -18,11 +17,14 @@ import EnrollCourseForm from '../forms/EnrollCourseForm';
 import CustomToolbar from '../tables/CustomToolbar';
 
 //* FUNCTIONS && CONSTANTS
-import { deleteGroup, listGroups } from '../../actions/groupActions';
+import { deleteGroup, listGroups, removeCourse, removeStudent, updateGroup } from '../../actions/groupActions';
 import {
 	GROUP_ADD_STUDENTS_RESET,
 	GROUP_DELETE_RESET,
 	GROUP_ENROLL_COURSE_RESET,
+	GROUP_REMOVE_COURSE_RESET,
+	GROUP_REMOVE_STUDENT_RESET,
+	GROUP_UPDATE_RESET,
 } from '../../constants/groupConstants';
 
 const GroupsTable = () => {
@@ -35,7 +37,11 @@ const GroupsTable = () => {
 		showDeleteGroupDialog: false,
 		showAddStudentsForm: false,
 		showAddCourseForm: false,
+		showDeleteStudentDialog: false,
+		showDeleteCourseDialog: false,
 		selectedGroup: null,
+		selectedStudent: null,
+		selectedCourse: null,
 	});
 
 	const groupList = useSelector((state) => state.groupList);
@@ -50,39 +56,41 @@ const GroupsTable = () => {
 	const groupDelete = useSelector((state) => state.groupDelete);
 	const { error: deleteGroupError, loading: deleteGroupLoading, success: deleteGroupSuccess } = groupDelete;
 
+	const groupUpdate = useSelector((state) => state.groupUpdate);
+	const { error: updateGroupError, loading: updateGroupLoading, success: updateGroupSuccess } = groupUpdate;
+
 	const groupAddStudents = useSelector((state) => state.groupAddStudents);
 	const { error: addStudentsError, loading: addStudentsLoading, success: addStudentsSuccess } = groupAddStudents;
+
+	const groupRemoveStudent = useSelector((state) => state.groupRemoveStudent);
+	const {
+		error: removeStudentError,
+		loading: removeStudentLoading,
+		success: removeStudentSuccess,
+	} = groupRemoveStudent;
 
 	const groupEnrollCourse = useSelector((state) => state.groupEnrollCourse);
 	const { error: enrollCourseError, loading: enrollCourseLoading, success: enrollCourseSuccess } = groupEnrollCourse;
 
-	useEffect(() => {
-		if (deleteGroupSuccess && !deleteGroupLoading) {
-			setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: false, selectedGroup: null }));
-			dispatch(listGroups());
-		}
-		if (addStudentsSuccess && !addStudentsLoading) {
-			dispatch(listGroups());
-		}
-	}, [dispatch, deleteGroupSuccess, deleteGroupLoading, addStudentsSuccess, addStudentsLoading]);
+	const groupRemoveCourse = useSelector((state) => state.groupRemoveCourse);
+	const { error: removeCourseError, loading: removeCourseLoading, success: removeCourseSuccess } = groupRemoveCourse;
 
 	const columns = [
-		{ field: 'code', type: 'string', headerName: 'Code', flex: 1 },
+		{ field: 'code', type: 'string', headerName: 'Code', flex: 1, editable: true },
 
 		{
 			field: 'school',
 			type: 'string',
 			headerName: 'School',
 			flex: 1,
-			renderCell: (params) => {
-				return (
-					<Tooltip title={params.row.school}>
-						<div className='MuiDataGrid-cellContent'>{params.row.school}</div>
-					</Tooltip>
-				);
-			},
+			editable: true,
+			renderCell: (params) => (
+				<Tooltip title={params.row.school}>
+					<div className='MuiDataGrid-cellContent'>{params.row.school}</div>
+				</Tooltip>
+			),
 		},
-		{ field: 'yearOfStudy', type: 'string', headerName: 'Year', flex: 1 },
+		{ field: 'yearOfStudy', type: 'string', headerName: 'Year', flex: 1, editable: true },
 		{
 			field: 'students',
 			type: 'singleSelect',
@@ -90,21 +98,33 @@ const GroupsTable = () => {
 			flex: 1,
 			valueGetter: (value) => ({ ...value.row.students.map((stud) => stud.email) }),
 			renderCell: (params) => {
-				const emails = Object.values(params.formattedValue);
+				const students = params.row.students.map((stud) => ({ id: stud._id, email: stud.email, name: stud.name }));
 				return (
 					<List sx={{ alignSelf: 'flex-start' }}>
-						{emails.map((email, i) => (
-							<ListItem key={i} sx={{ p: 0, m: 0 }}>
-								<MUILink
-									color='text.primary'
-									component={Link}
-									to='#'
-									onClick={(e) => {
-										e.preventDefault();
-										window.location.href = `mailto:${email}`;
-									}}>
-									{email}
-								</MUILink>
+						{students.map((stud) => (
+							<ListItem key={stud.id} sx={{ p: 0, m: 0, mb: 0.5 }}>
+								<Chip
+									variant='outlined'
+									color='primary'
+									label={stud.email}
+									deleteIcon={
+										<IconButton
+											color='error'
+											sx={{
+												p: 0.2,
+												m: 0.2,
+											}}>
+											<Iconify
+												width='20px'
+												height='20px'
+												style={{ color: theme.palette.error.main }}
+												icon='eva:close-outline'
+											/>
+										</IconButton>
+									}
+									onDelete={showRemoveStudentDialogHandler.bind(this, params.row, stud)}
+									onClick={(_e) => (window.location.href = `mailto:${stud.email}`)}
+								/>
 							</ListItem>
 						))}
 					</List>
@@ -118,19 +138,35 @@ const GroupsTable = () => {
 			flex: 1,
 			valueGetter: (value) => ({ ...value.row.courses.map((course) => `${course.acronym} - ${course.teacher.name}`) }),
 			renderCell: (params) => {
-				const courses = Object.values(params.formattedValue);
+				const courses = params.row.courses;
 				return (
 					<List sx={{ alignSelf: 'flex-start' }}>
-						{courses.map((course, i) => (
-							<React.Fragment key={i}>
-								<ListItem sx={{ m: 0, p: 0 }}>
-									<Tooltip
-										title={`${params.row.courses[i].name} - ${params.row.courses[i].teacher.name} (${params.row.courses[i].teacher.email})`}>
-										<span>{course}</span>
-									</Tooltip>
-								</ListItem>
-								<Divider />
-							</React.Fragment>
+						{courses.map((course) => (
+							<ListItem key={course._id} sx={{ p: 0, m: 0, mb: 0.5 }}>
+								<Tooltip title={`${course.name} | ${course.teacher.name} (${course.teacher.email})`}>
+									<Chip
+										variant='outlined'
+										color='primary'
+										label={`${course.acronym.toUpperCase()} - ${course.teacher.name}`}
+										deleteIcon={
+											<IconButton
+												color='error'
+												sx={{
+													p: 0.2,
+													m: 0.2,
+												}}>
+												<Iconify
+													width='20px'
+													height='20px'
+													style={{ color: theme.palette.error.main }}
+													icon='eva:close-outline'
+												/>
+											</IconButton>
+										}
+										onDelete={showRemoveCourseDialogHandler.bind(this, params.row, course)}
+									/>
+								</Tooltip>
+							</ListItem>
 						))}
 					</List>
 				);
@@ -179,10 +215,7 @@ const GroupsTable = () => {
 
 	const submitDelete = () => {
 		dispatch(deleteGroup(groupsState.selectedGroup._id));
-	};
-
-	const resetDeleteStateHandler = () => {
-		dispatch({ type: GROUP_DELETE_RESET });
+		setGroupsState((prev) => ({ ...prev, showDeleteGroupDialog: false, selectedGroup: null }));
 	};
 
 	const showAddStudentsFormHandler = (group) => {
@@ -201,12 +234,98 @@ const GroupsTable = () => {
 		setGroupsState((prev) => ({ ...prev, showAddCourseForm: false, selectedGroup: null }));
 	};
 
+	const showRemoveStudentDialogHandler = (group, student) => {
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteStudentDialog: true,
+			selectedGroup: group,
+			selectedStudent: student,
+		}));
+	};
+
+	const hideRemoveStudentDialogHandler = () => {
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteStudentDialog: false,
+			selectedGroup: null,
+			selectedStudent: null,
+		}));
+	};
+
+	const submitRemoveStudent = () => {
+		dispatch(removeStudent(groupsState.selectedGroup.id, groupsState.selectedStudent.id));
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteStudentDialog: false,
+			selectedGroup: null,
+			selectedStudent: null,
+		}));
+	};
+
+	const showRemoveCourseDialogHandler = (group, student) => {
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteCourseDialog: true,
+			selectedGroup: group,
+			selectedCourse: student,
+		}));
+	};
+
+	const hideRemoveCourseDialogHandler = () => {
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteCourseDialog: false,
+			selectedGroup: null,
+			selectedCourse: null,
+		}));
+	};
+
+	const submitRemoveCourse = () => {
+		dispatch(removeCourse(groupsState.selectedGroup.id, groupsState.selectedCourse._id));
+		setGroupsState((prev) => ({
+			...prev,
+			showDeleteCourseDialog: false,
+			selectedGroup: null,
+			selectedCourse: null,
+		}));
+	};
+
+	const editCommitHandler = (target, e) => {
+		if (!(e instanceof PointerEvent)) {
+			const updates = {};
+			updates[target.field] = typeof target.value === 'string' ? target.value.trim() : target.value;
+			dispatch(updateGroup(target.id, updates));
+		}
+	};
+
+	const editStopHandler = (_params, e) => {
+		if (e instanceof PointerEvent) {
+			e.defaultMuiPrevented = true;
+		}
+	};
+
 	const resetAddStudentsState = () => {
 		dispatch({ type: GROUP_ADD_STUDENTS_RESET });
 	};
 
+	const resetRemoveStudentStateHandler = () => {
+		dispatch({ type: GROUP_REMOVE_STUDENT_RESET });
+	};
+
+	const resetDeleteStateHandler = () => {
+		dispatch({ type: GROUP_DELETE_RESET });
+	};
+
+	const resetUpdateStateHandler = () => {
+		dispatch({ type: GROUP_UPDATE_RESET });
+	};
+
 	const resetEnrollCourseState = () => {
 		dispatch({ type: GROUP_ENROLL_COURSE_RESET });
+	};
+
+	const resetRemoveCourseStateHandler = () => {
+		dispatch({ type: GROUP_REMOVE_COURSE_RESET });
 	};
 
 	const StyledDataGrid = styled(DataGrid)(() => ({
@@ -231,16 +350,18 @@ const GroupsTable = () => {
 				rows={groupsToRender}
 				loading={groupListLoading}
 				pagination='true'
+				onCellEditCommit={editCommitHandler}
+				onCellEditStop={editStopHandler}
 				components={{
 					Toolbar: () => (
 						<CustomToolbar
 							refreshHandler={refreshHandler}
 							fields={['code', 'school', 'yearOfStudy']}
 							fileName='GroupsTable'
+							loading={addStudentsLoading || deleteGroupLoading || updateGroupLoading || enrollCourseLoading}
 						/>
 					),
 				}}></StyledDataGrid>
-
 			<ConfirmDialog
 				open={groupsState.showDeleteGroupDialog}
 				handleClose={hideDeleteDialogHandler}
@@ -248,6 +369,24 @@ const GroupsTable = () => {
 				loading={deleteGroupLoading}
 				title='Confirm Delete Group'
 				message={`You are about to delete group ${groupsState.selectedGroup?.code}. Are you sure you want to delete it?`}
+			/>
+			<ConfirmDialog
+				open={groupsState.showDeleteStudentDialog}
+				handleClose={hideRemoveStudentDialogHandler}
+				handleConfirm={submitRemoveStudent}
+				loading={removeStudentLoading}
+				title='Confirm remove Student from Group'
+				message={`You are about to remove ${groupsState.selectedStudent?.name} (${groupsState.selectedStudent?.email}) 
+				from group ${groupsState.selectedGroup?.code}. Are you sure you want to do it?`}
+			/>
+			<ConfirmDialog
+				open={groupsState.showDeleteCourseDialog}
+				handleClose={hideRemoveCourseDialogHandler}
+				handleConfirm={submitRemoveCourse}
+				loading={removeCourseLoading}
+				title='Confirm remove Course from Group'
+				message={`You are about to remove ${groupsState.selectedCourse?.name} (${groupsState.selectedCourse?.acronym}) 
+				from group ${groupsState.selectedGroup?.code}. Are you sure you want to do it?`}
 			/>
 			<AddStudentsForm
 				open={groupsState.showAddStudentsForm}
@@ -300,6 +439,48 @@ const GroupsTable = () => {
 				severity='error'
 				message={enrollCourseError}
 				onClose={resetEnrollCourseState}
+			/>
+			<Toast
+				show={updateGroupSuccess && !updateGroupLoading}
+				timeout={2000}
+				severity='success'
+				onClose={resetUpdateStateHandler}
+				message='Group updated!'
+			/>
+			<Toast
+				show={updateGroupError && !updateGroupLoading}
+				timeout={3000}
+				severity='error'
+				onClose={resetUpdateStateHandler}
+				message={updateGroupError}
+			/>
+			<Toast
+				show={removeStudentSuccess && !removeStudentLoading}
+				timeout={2000}
+				severity='success'
+				onClose={resetRemoveStudentStateHandler}
+				message='Student removed!'
+			/>
+			<Toast
+				show={removeStudentError && !removeStudentLoading}
+				timeout={3000}
+				severity='error'
+				onClose={resetRemoveStudentStateHandler}
+				message={removeStudentError}
+			/>
+			<Toast
+				show={removeCourseSuccess && !removeCourseLoading}
+				timeout={2000}
+				severity='success'
+				onClose={resetRemoveCourseStateHandler}
+				message='Course removed!'
+			/>
+			<Toast
+				show={removeCourseError && !removeCourseLoading}
+				timeout={3000}
+				severity='error'
+				onClose={resetRemoveCourseStateHandler}
+				message={removeCourseError}
 			/>
 		</Box>
 	);

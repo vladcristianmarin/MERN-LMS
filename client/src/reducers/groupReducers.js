@@ -15,6 +15,19 @@ import {
 	GROUP_ENROLL_COURSE_REQUEST,
 	GROUP_ENROLL_COURSE_RESET,
 	GROUP_ENROLL_COURSE_SUCCESS,
+	GROUP_REMOVE_COURSE_FAIL,
+	GROUP_REMOVE_COURSE_REQUEST,
+	GROUP_REMOVE_COURSE_RESET,
+	GROUP_REMOVE_COURSE_SUCCESS,
+	GROUP_REMOVE_STUDENT_FAIL,
+	GROUP_REMOVE_STUDENT_REQUEST,
+	GROUP_REMOVE_STUDENT_RESET,
+	GROUP_REMOVE_STUDENT_SUCCESS,
+	GROUP_UPDATE_FAIL,
+	GROUP_UPDATE_REQUEST,
+	GROUP_UPDATE_RESET,
+	GROUP_UPDATE_SUCCESS,
+	LIST_GROUPS_CLIENT_UPDATE,
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
@@ -43,6 +56,8 @@ export const groupListReducer = (state = { groups: [] }, action) => {
 			return { loading: false, groups: action.payload, success: true };
 		case LIST_GROUPS_FAIL:
 			return { loading: false, error: action.payload, success: false };
+		case LIST_GROUPS_CLIENT_UPDATE:
+			return { groups: action.payload };
 		default:
 			return state;
 	}
@@ -79,6 +94,23 @@ export const groupAddStudentsReducer = (state = {}, action) => {
 			return state;
 	}
 };
+
+export const groupRemoveStudentReducer = (state = {}, action) => {
+	switch (action.type) {
+		case GROUP_REMOVE_STUDENT_REQUEST:
+			return { loading: true };
+		case GROUP_REMOVE_STUDENT_SUCCESS:
+			return { loading: false, removedStudent: action.payload, success: true };
+		case GROUP_REMOVE_STUDENT_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case GROUP_REMOVE_STUDENT_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+
 export const groupEnrollCourseReducer = (state = {}, action) => {
 	switch (action.type) {
 		case GROUP_ENROLL_COURSE_REQUEST:
@@ -88,6 +120,38 @@ export const groupEnrollCourseReducer = (state = {}, action) => {
 		case GROUP_ENROLL_COURSE_FAIL:
 			return { loading: false, error: action.payload, success: false };
 		case GROUP_ENROLL_COURSE_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+
+export const groupRemoveCourseReducer = (state = {}, action) => {
+	switch (action.type) {
+		case GROUP_REMOVE_COURSE_REQUEST:
+			return { loading: true };
+		case GROUP_REMOVE_COURSE_SUCCESS:
+			return { loading: false, group: action.payload, success: true };
+		case GROUP_REMOVE_COURSE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case GROUP_REMOVE_COURSE_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+
+export const groupUpdateReducer = (state = {}, action) => {
+	switch (action.type) {
+		case GROUP_UPDATE_REQUEST:
+			return { loading: true };
+		case GROUP_UPDATE_SUCCESS:
+			return { loading: false, updatedCourse: action.payload, success: true };
+		case GROUP_UPDATE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case GROUP_UPDATE_RESET: {
 			return {};
 		}
 		default:

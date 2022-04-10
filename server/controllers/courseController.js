@@ -32,7 +32,8 @@ const createCourse = asyncHandler(async (req, res) => {
 		throw new Error('Invalid course data!');
 	}
 
-	res.status(201).send(createdCourse);
+	const courseWithTeacher = await Course.findOne({ _id: createdCourse._id }).populate('teacher');
+	res.status(201).send(courseWithTeacher);
 });
 
 //* @description    Gets all courses

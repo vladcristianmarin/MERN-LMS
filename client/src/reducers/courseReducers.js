@@ -11,6 +11,7 @@ import {
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_RESET,
 	COURSE_UPDATE_SUCCESS,
+	LIST_COURSES_CLIENT_UPDATE,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
@@ -39,6 +40,8 @@ export const courseListReducer = (state = { courses: [] }, action) => {
 			return { loading: false, courses: action.payload, success: true };
 		case LIST_COURSES_FAIL:
 			return { loading: false, error: action.payload, success: false };
+		case LIST_COURSES_CLIENT_UPDATE:
+			return { courses: action.payload };
 		default:
 			return state;
 	}

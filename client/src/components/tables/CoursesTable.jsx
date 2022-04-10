@@ -125,19 +125,6 @@ const CoursesTable = () => {
 	const courseUpdate = useSelector((state) => state.courseUpdate);
 	const { error: updateCourseError, loading: updateCourseLoading, success: updateCourseSuccess } = courseUpdate;
 
-	useEffect(() => {
-		if (deleteCourseSuccess && !deleteCourseLoading) {
-			setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: false, selectedCourse: null }));
-			dispatch(listCourses());
-		}
-	}, [dispatch, deleteCourseSuccess, deleteCourseLoading]);
-
-	useEffect(() => {
-		if (updateCourseSuccess && !updateCourseLoading) {
-			dispatch(listCourses());
-		}
-	}, [dispatch, updateCourseSuccess, updateCourseLoading]);
-
 	const columns = [
 		{
 			field: 'name',
@@ -224,7 +211,7 @@ const CoursesTable = () => {
 	const editCommitHandler = (target, e) => {
 		if (!(e instanceof PointerEvent)) {
 			const updates = {};
-			updates[target.field] = target.value;
+			updates[target.field] = typeof target.value === 'string' ? target.value.trim() : target.value;
 			dispatch(updateCourse(target.id, updates));
 		}
 	};
@@ -271,7 +258,8 @@ const CoursesTable = () => {
 				}}></DataGrid>
 			<ConfirmDialog
 				title='Confirm Delete Course'
-				message={`You are about to delete group ${coursesState.selectedCourse?.code}. Are you sure you want to delete it?`}
+				message={`You are about to delete course ${coursesState.selectedCourse?.name} (${coursesState.selectedCourse?.acronym}).
+				 Are you sure you want to delete it?`}
 				loading={deleteCourseLoading}
 				open={coursesState.showDeleteCourseDialog}
 				handleClose={hideDeleteDialogHandler}

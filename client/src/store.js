@@ -3,7 +3,12 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { sidebarReducer } from './reducers/sidebarReducers';
 import { userLoginReducer, userMakeAdminReducer, userRegisterReducer } from './reducers/userReducers';
-import { courseCreateReducer, courseDeleteReducer, courseListReducer, courseUpdateReducer } from './reducers/courseReducers';
+import {
+	courseCreateReducer,
+	courseDeleteReducer,
+	courseListReducer,
+	courseUpdateReducer,
+} from './reducers/courseReducers';
 import { teacherListCoursesReducer, teacherListReducer } from './reducers/teacherReducers';
 import {
 	groupAddStudentsReducer,
@@ -11,6 +16,9 @@ import {
 	groupDeleteReducer,
 	groupEnrollCourseReducer,
 	groupListReducer,
+	groupRemoveCourseReducer,
+	groupRemoveStudentReducer,
+	groupUpdateReducer,
 } from './reducers/groupReducers';
 import { studentChangeGroupReducer, studentListReducer } from './reducers/studentReducers';
 
@@ -25,9 +33,12 @@ const reducer = combineReducers({
 	courseList: courseListReducer,
 	groupCreate: groupCreateReducer,
 	groupAddStudents: groupAddStudentsReducer,
+	groupRemoveStudent: groupRemoveStudentReducer,
 	groupDelete: groupDeleteReducer,
+	groupUpdate: groupUpdateReducer,
 	groupList: groupListReducer,
 	groupEnrollCourse: groupEnrollCourseReducer,
+	groupRemoveCourse: groupRemoveCourseReducer,
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
 	studentList: studentListReducer,

@@ -40,6 +40,9 @@ groupSchema.post('save', async function (error, _doc, next) {
 		const duplicateStudent = await Student.findOne({ _id: error.keyValue.students });
 		next(new Error(`Student ${duplicateStudent.name}(${duplicateStudent.email}) already in another group!`));
 	}
+	if (error.errors.yearOfStudy.path === 'yearOfStudy') {
+		next(new Error('Year must be a number!'));
+	}
 	next();
 });
 

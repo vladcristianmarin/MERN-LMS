@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 //* MUI
 import { DataGrid, useGridApiContext } from '@mui/x-data-grid';
-import { Avatar, Link as MUILink, Typography, Box, FormControl, Select, MenuItem } from '@mui/material';
+import { Avatar, Link as MUILink, Typography, Box, FormControl, Select, MenuItem, Stack } from '@mui/material';
 
 //* CUSTOM COMPONENTS
 import Toast from '../Toast';
@@ -33,6 +33,18 @@ const GroupEditCell = ({ id, field, row }) => {
 	const handleGroupChange = (e) => {
 		setGroup(groups.filter((item) => item._id === e.target.value).shift());
 	};
+
+	if (!group) {
+		return (
+			<Stack direction='column'>
+				<Typography variant='subtitle1' color='error'>
+					Cannot do this!
+				</Typography>
+				<Typography variant='caption'>Press ESC to abort!</Typography>
+			</Stack>
+		);
+	}
+
 	return (
 		<FormControl fullWidth>
 			<Select id='group-select' value={group._id} onChange={handleGroupChange}>
@@ -80,11 +92,11 @@ const StudentsTable = () => {
 		fetchCountries();
 	}, [dispatch]);
 
-	useEffect(() => {
-		if (studentChangeGroupSuccess && !studentChangeGroupLoading) {
-			dispatch(listStudents());
-		}
-	}, [dispatch, studentChangeGroupSuccess, studentChangeGroupLoading]);
+	// useEffect(() => {
+	// 	if (studentChangeGroupSuccess && !studentChangeGroupLoading) {
+	// 		dispatch(listStudents());
+	// 	}
+	// }, [dispatch, studentChangeGroupSuccess, studentChangeGroupLoading]);
 
 	const columns = [
 		{
@@ -184,7 +196,7 @@ const StudentsTable = () => {
 	};
 
 	const editCommitHandler = ({ value }, e) => {
-		if (!(e instanceof PointerEvent))
+		if (!(e instanceof PointerEvent) && value)
 			setChangeGroupState((state) => ({ ...state, showConfirmChangeGroup: true, newGroup: value.code }));
 	};
 
@@ -233,7 +245,7 @@ const StudentsTable = () => {
 				}}></DataGrid>
 			<ConfirmDialog
 				title='Confirm change group!'
-				message={`You are about to move ${selectedStudent?.name} (${selectedStudent?.email}) from ${selectedStudent?.group.code} 
+				message={`You are about to move ${selectedStudent?.name} (${selectedStudent?.email}) from ${selectedStudent?.group?.code} 
 									to ${changeGroupState.newGroup}. 
 									Are you sure you want to do this?`}
 				open={changeGroupState.showConfirmChangeGroup}

@@ -59,7 +59,8 @@ const createGroup = asyncHandler(async (req, res) => {
 	await assignGroupToStudent(createdGroup);
 
 	if (createdGroup) {
-		return res.status(201).send(createdGroup);
+		const groupWithStudents = await Group.findOne({ _id: createdGroup._id }).populate('students');
+		return res.status(201).send(groupWithStudents);
 	}
 
 	res.status(400);
@@ -117,6 +118,30 @@ const addStudents = asyncHandler(async (req, res) => {
 	res.status(201).send(updatedGroup);
 });
 
+const removeStudent = asyncHandler(async (req, res) => {
+	const { groupId, studentId } = req.params;
+
+	const group = await Group.findOne({ _id: groupId });
+	const student = await Student.findOne({ _id: studentId });
+
+	if (!group) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+	if (!student) {
+		res.status(404);
+		throw new Error('Student not found!');
+	}
+
+	student.group = undefined;
+	group.students = group.students.filter((stud) => !stud._id.equals(student._id));
+
+	await group.save();
+	await student.save();
+
+	res.send(student);
+});
+
 //* @description    Get all groups
 //* @route          GET /api/groups
 //* @access         Protected / Admin
@@ -161,7 +186,7 @@ const addCourseToGroup = asyncHandler(async (req, res) => {
 		res.status(404);
 		throw new Error('Group not found!');
 	}
-	const course = await Course.findOne({ _id: req.body.courseId });
+	const course = await Course.findOne({ _id: req.body.courseId }).populate('teacher');
 	if (!course) {
 		res.status(404);
 		throw new Error('Course not found!');
@@ -178,9 +203,64 @@ const addCourseToGroup = asyncHandler(async (req, res) => {
 		{ _id: group._id },
 		{ $addToSet: { courses: course._id } },
 		{ new: true }
-	);
+	).populate('courses');
 
-	res.status(201).send(updatedGroup);
+	res.status(201).send({ updatedGroup, course });
 });
 
-export { createGroup, addStudents, getGroups, deleteGroup, addCourseToGroup };
+const removeCourse = asyncHandler(async (req, res) => {
+	const { groupId, courseId } = req.params;
+
+	const group = await Group.findOne({ _id: groupId });
+	const course = await Course.findOne({ _id: courseId });
+
+	if (!group) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+
+	group.courses = group.courses.filter((c) => !c._id.equals(course._id));
+
+	await group.save();
+
+	res.send({ updatedGroup: group, course });
+});
+
+const updateGroup = asyncHandler(async (req, res) => {
+	const updates = Object.keys(req.body);
+	const allowUpdates = ['code', 'school', 'yearOfStudy'];
+	const isValidOperation = updates.every((update) => allowUpdates.includes(update));
+
+	if (!isValidOperation) {
+		res.status(400);
+		throw new Error('Invalid updates!');
+	}
+
+	const group = await Group.findOne({
+		_id: req.params.id,
+	});
+
+	if (!group) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+
+	updates.forEach((update) => {
+		if (update === 'yearOfStudy') {
+			const year = parseInt(req.body.yearOfStudy);
+			group.yearOfStudy = year;
+			return;
+		}
+		group[update] = req.body[update];
+	});
+
+	await group.save();
+
+	res.status(201).send(group);
+});
+
+export { createGroup, addStudents, removeStudent, getGroups, deleteGroup, updateGroup, addCourseToGroup, removeCourse };
