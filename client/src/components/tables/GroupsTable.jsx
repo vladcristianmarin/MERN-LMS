@@ -76,7 +76,7 @@ const GroupsTable = () => {
 	const { error: removeCourseError, loading: removeCourseLoading, success: removeCourseSuccess } = groupRemoveCourse;
 
 	const columns = [
-		{ field: 'code', type: 'string', headerName: 'Code', flex: 1, editable: true },
+		{ field: 'code', type: 'string', headerName: 'Code', flex: 0.5, editable: true },
 
 		{
 			field: 'school',
@@ -90,20 +90,21 @@ const GroupsTable = () => {
 				</Tooltip>
 			),
 		},
-		{ field: 'yearOfStudy', type: 'string', headerName: 'Year', flex: 1, editable: true },
+		{ field: 'yearOfStudy', type: 'string', headerName: 'Year', flex: 0.5, editable: true },
 		{
 			field: 'students',
 			type: 'singleSelect',
 			headerName: 'Students',
-			flex: 1,
+			flex: 1.2,
 			valueGetter: (value) => ({ ...value.row.students.map((stud) => stud.email) }),
 			renderCell: (params) => {
 				const students = params.row.students.map((stud) => ({ id: stud._id, email: stud.email, name: stud.name }));
 				return (
-					<List sx={{ alignSelf: 'flex-start' }}>
+					<List sx={{ alignSelf: 'flex-start', flex: 1 }}>
 						{students.map((stud) => (
 							<ListItem key={stud.id} sx={{ p: 0, m: 0, mb: 0.5 }}>
 								<Chip
+									sx={{ flex: 1, justifyContent: 'space-between', px: 1 }}
 									variant='outlined'
 									color='primary'
 									label={stud.email}
@@ -135,16 +136,17 @@ const GroupsTable = () => {
 			field: 'courses',
 			type: 'singleSelect',
 			headerName: 'Courses',
-			flex: 1,
+			flex: 0.8,
 			valueGetter: (value) => ({ ...value.row.courses.map((course) => `${course.acronym} - ${course.teacher.name}`) }),
 			renderCell: (params) => {
 				const courses = params.row.courses;
 				return (
-					<List sx={{ alignSelf: 'flex-start' }}>
+					<List sx={{ alignSelf: 'flex-start', flex: 1 }}>
 						{courses.map((course) => (
 							<ListItem key={course._id} sx={{ p: 0, m: 0, mb: 0.5 }}>
 								<Tooltip title={`${course.name} | ${course.teacher.name} (${course.teacher.email})`}>
 									<Chip
+										sx={{ flex: 1, justifyContent: 'space-between', px: 1 }}
 										variant='outlined'
 										color='primary'
 										label={`${course.acronym.toUpperCase()} - ${course.teacher.name}`}
@@ -330,8 +332,11 @@ const GroupsTable = () => {
 
 	const StyledDataGrid = styled(DataGrid)(() => ({
 		'& .MuiDataGrid-cell--withRenderer': {
-			overflow: 'auto',
+			overflowY: 'auto',
 			marginBottom: '10px',
+		},
+		'& .MuiDataGrid-cell--withRenderer:hover': {
+			overflowX: 'auto',
 		},
 		minHeight: '400px',
 	}));

@@ -14,15 +14,15 @@ export const StyledDrawer = styled(Drawer)(({ _theme, open }) => ({
 
 export const StyledDrawerHeader = styled('div')(({ theme }) => ({
 	position: 'fixed',
+	width: drawerWidth,
 	boxShadow: theme.customShadows.z1,
 	background: theme.palette.background.default,
-	width: drawerWidth,
 	display: 'flex',
 	alignItems: 'center',
 	padding: theme.spacing(0, 1),
 	justifyContent: 'space-between',
 	minHeight: '64px',
-	zIndex: 99999,
+	zIndex: 9999,
 }));
 
 export const StyledDrawerAccount = styled('div')(({ theme }) => ({
