@@ -3,11 +3,11 @@ import { DialogTitle, Drawer } from '@mui/material';
 
 const drawerWidth = 280;
 
-export const StyledDrawer = styled(Drawer)(() => ({
+export const StyledDrawer = styled(Drawer)(({ _theme, open }) => ({
 	width: drawerWidth,
 	flexShrink: 0,
 	'& .MuiDrawer-paper': {
-		width: drawerWidth,
+		width: open ? drawerWidth : '0px',
 		boxSizing: 'border-box',
 	},
 }));

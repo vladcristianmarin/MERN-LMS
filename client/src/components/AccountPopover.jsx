@@ -45,8 +45,9 @@ const AccountPopover = () => {
 			icon: 'eva:log-out-outline',
 			linkTo: '/',
 			onClick() {
+				dispatch(logout(navigate));
+				setIsOpen(false);
 				navigate('/login', { replace: true });
-				dispatch(logout());
 			},
 		},
 	];

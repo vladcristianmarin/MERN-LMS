@@ -37,9 +37,17 @@ const AdminHomeScreen = () => {
 	useEffect(handleFetchData, [handleFetchData]);
 
 	return (
-		<Container>
-			<Box sx={{ pb: 5 }}>
-				<Typography variant='h4'>{`Hi 👋! Welcome to Dashboard, ${userInfo?.name}.`}</Typography>
+		<Container maxWidth='xl'>
+			<Box sx={{ pb: 5, display: 'flex', flexDirection: 'column' }}>
+				<Box sx={{ display: 'flex', alignItems: 'center', alignContent: 'center', gap: 0.5 }}>
+					<Typography variant='h3'>Hello,</Typography>
+					<Typography variant='h3' sx={{ fontWeight: (theme) => theme.typography.fontWeightLight }}>
+						{userInfo?.name} 👋
+					</Typography>
+				</Box>
+				<Typography variant='h5' sx={{ fontWeight: (theme) => theme.typography.fontWeightLight }}>
+					Welcome to the admin Dashboard!
+				</Typography>
 			</Box>
 
 			<Divider sx={{ mb: 5 }} />

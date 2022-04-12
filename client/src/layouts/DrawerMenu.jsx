@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Avatar, Container, Divider, IconButton, Link as MUILink, Typography } from '@mui/material';
+import { Avatar, Divider, IconButton, Link as MUILink, Typography } from '@mui/material';
 
 import Navigation from './Navigation';
 import Iconify from '../components/Iconify';
@@ -27,7 +27,7 @@ const DrawerMenu = () => {
 	};
 
 	return (
-		<Container>
+		<Box>
 			<StyledDrawer variant='persistent' anchor='left' open={isOpen}>
 				<StyledDrawerHeader>
 					<MUILink underline='none' to='/' component={Link}>
@@ -61,7 +61,7 @@ const DrawerMenu = () => {
 					GENERAL
 				</Typography>
 				<Navigation navConfig={generalSidebarConfig()} />
-				{userInfo.role === 'Teacher' && (
+				{userInfo?.role === 'Teacher' && (
 					<>
 						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
 							TEACHER
@@ -69,7 +69,7 @@ const DrawerMenu = () => {
 						<Navigation navConfig={teacherSidebarConfig(userInfo)} />
 					</>
 				)}
-				{userInfo.role === 'Student' && (
+				{userInfo?.role === 'Student' && (
 					<>
 						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
 							STUDENT
@@ -77,7 +77,7 @@ const DrawerMenu = () => {
 						<Navigation navConfig={studentSidebarConfig(userInfo)} />
 					</>
 				)}
-				{userInfo.isAdmin && (
+				{userInfo?.isAdmin && (
 					<>
 						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
 							ADMIN
@@ -86,7 +86,7 @@ const DrawerMenu = () => {
 					</>
 				)}
 			</StyledDrawer>
-		</Container>
+		</Box>
 	);
 };
 

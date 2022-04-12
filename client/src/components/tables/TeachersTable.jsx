@@ -24,7 +24,6 @@ import {
 	DialogContent,
 	DialogActions,
 	Button,
-	Container,
 } from '@mui/material';
 
 //* CUSTOM COMPONENTS
@@ -271,7 +270,7 @@ const TeachersTable = () => {
 	};
 
 	return (
-		<Container>
+		<Box>
 			<Box sx={{ width: '100%', p: 2 }}>
 				<Typography sx={{ ml: 1 }} variant='h4'>
 					Teachers
@@ -374,7 +373,7 @@ const TeachersTable = () => {
 				onClose={resetAdminStateHandler}
 				message={makeAdminError}
 			/>
-		</Container>
+		</Box>
 	);
 };
 

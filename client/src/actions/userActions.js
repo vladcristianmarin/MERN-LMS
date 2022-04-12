@@ -3,7 +3,8 @@ import {
 	USER_LOGIN_FAIL,
 	USER_LOGIN_REQUEST,
 	USER_LOGIN_SUCCESS,
-	USER_LOGOUT,
+	USER_LOGOUT_REQUEST,
+	USER_LOGOUT_SUCCESS,
 	USER_MAKE_ADMIN_FAIL,
 	USER_MAKE_ADMIN_REQUEST,
 	USER_MAKE_ADMIN_SUCCESS,
@@ -39,21 +40,31 @@ export const login = (email, password, remember) => async (dispatch) => {
 	}
 };
 
-export const logout = () => async (dispatch, getState) => {
-	const {
-		userLogin: { authToken },
-	} = getState();
+export const logout = (navigate) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: USER_LOGOUT_REQUEST });
+		const {
+			userLogin: { authToken },
+		} = getState();
 
-	const config = {
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${authToken}`,
-		},
-	};
-	await axios.post('/api/users/logout', {}, config);
-	dispatch({ type: USER_LOGOUT });
-	localStorage.removeItem('userInfo');
-	localStorage.removeItem('authToken');
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${authToken}`,
+			},
+		};
+		await axios.post('/api/users/logout', {}, config);
+
+		localStorage.removeItem('userInfo');
+		localStorage.removeItem('authToken');
+		dispatch({ type: USER_LOGOUT_SUCCESS });
+		navigate('/login', { replace: true });
+	} catch (error) {
+		dispatch({
+			type: USER_LOGIN_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
 };
 
 export const register = (userData) => async (dispatch) => {

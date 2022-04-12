@@ -2,7 +2,9 @@ import {
 	USER_LOGIN_FAIL,
 	USER_LOGIN_REQUEST,
 	USER_LOGIN_SUCCESS,
-	USER_LOGOUT,
+	USER_LOGOUT_FAIL,
+	USER_LOGOUT_REQUEST,
+	USER_LOGOUT_SUCCESS,
 	USER_MAKE_ADMIN_FAIL,
 	USER_MAKE_ADMIN_REQUEST,
 	USER_MAKE_ADMIN_RESET,
@@ -18,17 +20,28 @@ export const userLoginReducer = (state = {}, action) => {
 		case VERIFY_TOKEN:
 			return { ...state, expired: action.payload };
 		case USER_LOGIN_REQUEST:
-			return { loading: true };
+			return { ...state, loading: true };
 		case USER_LOGIN_SUCCESS:
 			return {
+				...state,
 				loading: false,
 				userInfo: action.payload.user,
 				authToken: action.payload.token,
 			};
 		case USER_LOGIN_FAIL:
-			return { loading: false, userInfo: null, error: action.payload };
-		case USER_LOGOUT:
-			return { userInfo: null, authToken: null };
+			return { ...state, loading: false, userInfo: null, error: action.payload };
+
+		case USER_LOGOUT_REQUEST:
+			return { ...state, logoutLoading: true };
+		case USER_LOGOUT_SUCCESS:
+			return {
+				...state,
+				logoutLoading: false,
+				userInfo: null,
+				authToken: null,
+			};
+		case USER_LOGOUT_FAIL:
+			return { ...state, logoutLoading: false, logoutError: action.payload };
 		default:
 			return state;
 	}
