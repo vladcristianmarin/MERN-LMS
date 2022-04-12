@@ -27,8 +27,8 @@ const Router = () => {
 		},
 		{ path: '/login', element: <LoginScreen /> },
 		{ path: '/register', element: <RegisterScreen /> },
-		{ path: '404', element: <NotFoundScreen /> },
-		{ path: '*', element: <Navigate to='/404' replace /> },
+		{ path: '/page-not-found', element: <NotFoundScreen /> },
+		{ path: '*', element: <Navigate to='/page-not-found' replace /> },
 	]);
 };
 
