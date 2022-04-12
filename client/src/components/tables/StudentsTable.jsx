@@ -92,12 +92,6 @@ const StudentsTable = () => {
 		fetchCountries();
 	}, [dispatch]);
 
-	// useEffect(() => {
-	// 	if (studentChangeGroupSuccess && !studentChangeGroupLoading) {
-	// 		dispatch(listStudents());
-	// 	}
-	// }, [dispatch, studentChangeGroupSuccess, studentChangeGroupLoading]);
-
 	const columns = [
 		{
 			field: 'avatar',
@@ -223,6 +217,7 @@ const StudentsTable = () => {
 				Students
 			</Typography>
 			<DataGrid
+				sx={{ minHeight: '400px' }}
 				autoHeight={true}
 				rowsPerPageOptions={[5, 10, 15]}
 				pageSize={pageSize}

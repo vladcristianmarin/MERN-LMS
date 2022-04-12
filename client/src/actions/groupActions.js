@@ -113,7 +113,7 @@ export const addStudents = (groupId, students) => async (dispatch, getState) => 
 		const groups = getState().groupList.groups || [];
 		const groupIndex = groups.findIndex((group) => group._id === groupId);
 		if (groupIndex > -1) {
-			groups[groupIndex] = data;
+			groups[groupIndex] = { ...groups[groupIndex], students: data.students };
 			dispatch({ type: LIST_GROUPS_CLIENT_UPDATE, payload: groups });
 		}
 	} catch (error) {

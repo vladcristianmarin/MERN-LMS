@@ -37,9 +37,9 @@ const AdminHomeScreen = () => {
 	useEffect(handleFetchData, [handleFetchData]);
 
 	return (
-		<Container maxWidth='xl'>
+		<Container>
 			<Box sx={{ pb: 5 }}>
-				<Typography variant='h4'>{`Hi, Welcome back ${userInfo?.name}!`}</Typography>
+				<Typography variant='h4'>{`Hi 👋! Welcome to Dashboard, ${userInfo?.name}.`}</Typography>
 			</Box>
 
 			<Divider sx={{ mb: 5 }} />

@@ -240,6 +240,7 @@ const CoursesTable = () => {
 				Courses
 			</Typography>
 			<DataGrid
+				sx={{ minHeight: '400px' }}
 				autoHeight={true}
 				rowHeight={60}
 				pageSize={pageSize}

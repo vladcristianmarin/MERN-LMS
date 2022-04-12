@@ -13,17 +13,22 @@ export const StyledDrawer = styled(Drawer)(() => ({
 }));
 
 export const StyledDrawerHeader = styled('div')(({ theme }) => ({
+	position: 'fixed',
+	boxShadow: theme.customShadows.z1,
+	background: theme.palette.background.default,
+	width: drawerWidth,
 	display: 'flex',
 	alignItems: 'center',
 	padding: theme.spacing(0, 1),
 	justifyContent: 'space-between',
 	minHeight: '64px',
+	zIndex: 99999,
 }));
 
 export const StyledDrawerAccount = styled('div')(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
-	marginTop: theme.spacing(2),
+	marginTop: theme.spacing(12),
 	padding: theme.spacing(2, 2.5),
 	borderRadius: Number(theme.shape.borderRadius) * 1.5,
 	backgroundColor: theme.palette.grey[500_12],

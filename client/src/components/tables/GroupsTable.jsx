@@ -330,9 +330,10 @@ const GroupsTable = () => {
 
 	const StyledDataGrid = styled(DataGrid)(() => ({
 		'& .MuiDataGrid-cell--withRenderer': {
-			overflowY: 'auto',
+			overflow: 'auto',
 			marginBottom: '10px',
 		},
+		minHeight: '400px',
 	}));
 
 	return (
@@ -350,6 +351,7 @@ const GroupsTable = () => {
 				rows={groupsToRender}
 				loading={groupListLoading}
 				pagination='true'
+				density='comfortable'
 				onCellEditCommit={editCommitHandler}
 				onCellEditStop={editStopHandler}
 				components={{
