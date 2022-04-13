@@ -1,6 +1,7 @@
 import {
 	USER_LOGIN_FAIL,
 	USER_LOGIN_REQUEST,
+	USER_LOGIN_RESET,
 	USER_LOGIN_SUCCESS,
 	USER_LOGOUT_FAIL,
 	USER_LOGOUT_REQUEST,
@@ -42,6 +43,9 @@ export const userLoginReducer = (state = {}, action) => {
 			};
 		case USER_LOGOUT_FAIL:
 			return { ...state, logoutLoading: false, logoutError: action.payload };
+
+		case USER_LOGIN_RESET:
+			return {};
 		default:
 			return state;
 	}

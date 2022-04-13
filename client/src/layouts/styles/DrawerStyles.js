@@ -7,7 +7,7 @@ export const StyledDrawer = styled(Drawer)(({ _theme, open }) => ({
 	width: drawerWidth,
 	flexShrink: 0,
 	'& .MuiDrawer-paper': {
-		width: open ? drawerWidth : '0px',
+		width: drawerWidth,
 		boxSizing: 'border-box',
 	},
 }));

@@ -81,6 +81,7 @@ const TeacherEditCell = ({ id, field, row }) => {
 
 	useEffect(() => {
 		apiRef.current.setEditCellValue({ id, field, value: teacher });
+
 		// eslint-disable-next-line
 	}, [teacher]);
 
@@ -124,6 +125,12 @@ const CoursesTable = () => {
 
 	const courseUpdate = useSelector((state) => state.courseUpdate);
 	const { error: updateCourseError, loading: updateCourseLoading, success: updateCourseSuccess } = courseUpdate;
+
+	useEffect(() => {
+		if (deleteCourseSuccess && !deleteCourseLoading) {
+			setCoursesState((prev) => ({ ...prev, showDeleteCourseDialog: false, selectedCourse: null }));
+		}
+	}, [deleteCourseLoading, deleteCourseSuccess]);
 
 	const columns = [
 		{
@@ -208,6 +215,7 @@ const CoursesTable = () => {
 	const submitDeleteCourse = () => {
 		dispatch(deleteCourse(coursesState.selectedCourse._id));
 	};
+
 	const editCommitHandler = (target, e) => {
 		if (!(e instanceof PointerEvent)) {
 			const updates = {};

@@ -16,6 +16,7 @@ import {
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../Iconify';
 import { login } from '../../actions/userActions';
+import { USER_LOGIN_RESET } from '../../constants/userConstants';
 
 const LoginForm = () => {
 	const navigate = useNavigate();
@@ -35,7 +36,8 @@ const LoginForm = () => {
 			remember: true,
 		},
 		validationSchema: LoginSchema,
-		onSubmit({ email, password, remember }, actions) {
+		onSubmit({ email, password, remember }) {
+			dispatch({ type: USER_LOGIN_RESET });
 			dispatch(login(email, password, remember));
 		},
 	});
