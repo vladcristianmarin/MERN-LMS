@@ -40,7 +40,7 @@ const HourEditCell = ({ id, field, row }) => {
 					ampm={false}
 					value={hour}
 					onChange={handleGroupChange}
-					renderInput={(params) => <TextField color='secondary' {...params} onChange={handleTextFieldChange} />}
+					renderInput={(params) => <TextField {...params} onChange={handleTextFieldChange} />}
 				/>
 			</FormControl>
 		</LocalizationProvider>

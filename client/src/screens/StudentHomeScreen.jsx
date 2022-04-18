@@ -27,7 +27,7 @@ const StudentHomeScreen = () => {
 					<Box sx={{ p: 0, position: 'relative' }}>
 						<Box
 							component='img'
-							src='/images/illustration_group_students.jpg'
+							src='/images/illustration_profile_card_background.jpg'
 							alt='Group of people'
 							sx={{
 								objectFit: 'fill',
