@@ -20,7 +20,12 @@ import {
 	groupRemoveStudentReducer,
 	groupUpdateReducer,
 } from './reducers/groupReducers';
-import { studentChangeGroupReducer, studentListReducer } from './reducers/studentReducers';
+import {
+	studentChangeGroupReducer,
+	studentListReducer,
+	studentMyCoursesReducer,
+	studentMyGroupReducer,
+} from './reducers/studentReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -42,6 +47,8 @@ const reducer = combineReducers({
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
 	studentList: studentListReducer,
+	studentMyGroup: studentMyGroupReducer,
+	studentMyCourses: studentMyCoursesReducer,
 	studentChangeGroup: studentChangeGroupReducer,
 });
 

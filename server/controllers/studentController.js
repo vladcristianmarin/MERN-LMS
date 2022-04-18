@@ -11,6 +11,29 @@ const getStudents = asyncHandler(async (req, res) => {
 	res.send(students);
 });
 
+const getMyGroup = asyncHandler(async (req, res) => {
+	const group = await Group.findById(req.user.group);
+	if (!group) {
+		res.status(404);
+		throw new Error('You are not assigned to a group!');
+	}
+	res.send(group);
+});
+
+const getMyCourses = asyncHandler(async (req, res) => {
+	const group = await Group.findById(req.user.group).populate('courses');
+	if (!group) {
+		res.status(404);
+		throw new Error("You are not assigned to a group! You can't be assigned in courses");
+	}
+	const { courses } = group;
+	if (!courses) {
+		res.status(404);
+		throw new Error('Your group has not been assigned to any courses yet!');
+	}
+	res.send(courses);
+});
+
 const changeStudentGroup = asyncHandler(async (req, res) => {
 	const studentId = req.params.id;
 	const newGroupCode = req.body.newGroup;
@@ -48,4 +71,4 @@ const changeStudentGroup = asyncHandler(async (req, res) => {
 	res.status(201).send({ student, oldGroup: oldGroup.code, newGroup: newGroup.code });
 });
 
-export { getStudents, changeStudentGroup };
+export { getStudents, changeStudentGroup, getMyCourses, getMyGroup };

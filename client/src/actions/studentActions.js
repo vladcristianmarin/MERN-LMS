@@ -7,7 +7,55 @@ import {
 	STUDENT_CHANGE_GROUP_FAIL,
 	STUDENT_CHANGE_GROUP_REQUEST,
 	STUDENT_CHANGE_GROUP_SUCCESS,
+	STUDENT_MY_COURSES_FAIL,
+	STUDENT_MY_COURSES_REQUEST,
+	STUDENT_MY_COURSES_SUCCESS,
+	STUDENT_MY_GROUP_FAIL,
+	STUDENT_MY_GROUP_REQUEST,
+	STUDENT_MY_GROUP_SUCCESS,
 } from '../constants/studentConstants';
+
+export const getMyGroup = () => async (dispatch, getState) => {
+	try {
+		dispatch({ type: STUDENT_MY_GROUP_REQUEST });
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+		const { data } = await axios.get('/api/students/mygroup', config);
+		dispatch({
+			type: STUDENT_MY_GROUP_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: STUDENT_MY_GROUP_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const getMyCourses = () => async (dispatch, getState) => {
+	try {
+		dispatch({ type: STUDENT_MY_COURSES_REQUEST });
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+		const { data } = await axios.get('/api/students/mycourses', config);
+		dispatch({
+			type: STUDENT_MY_COURSES_SUCCESS,
+			payload: data,
+		});
+	} catch (error) {
+		dispatch({
+			type: STUDENT_MY_COURSES_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
 
 export const listStudents = () => async (dispatch, getState) => {
 	try {

@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, ButtonBase, Card, Typography } from '@mui/material';
 import Iconify from '../../components/Iconify';
 import axios from 'axios';
 import styled from '@emotion/styled';
+import { getMyCourses, getMyGroup } from '../../actions/studentActions';
 
 const ProfileInfoBox = () => {
+	const dispatch = useDispatch();
+
 	const { userInfo } = useSelector((state) => state.userLogin);
+	const { group } = useSelector((state) => state.studentMyGroup);
+	const { courses } = useSelector((state) => state.studentMyCourses);
 	const [countries, setCountries] = useState([]);
 
 	useEffect(() => {
@@ -15,7 +20,9 @@ const ProfileInfoBox = () => {
 			setCountries(data);
 		};
 		fetchCountries();
-	}, []);
+		dispatch(getMyGroup());
+		dispatch(getMyCourses());
+	}, [dispatch]);
 
 	const StyledCard = styled(Card)(({ theme }) => ({
 		display: 'flex',
@@ -58,7 +65,7 @@ const ProfileInfoBox = () => {
 					<StyledCard>
 						<StyledIcon icon='eva:book-outline' />
 						<Typography variant='h4' color='primary.dark'>
-							24
+							{courses?.length || 0}
 						</Typography>
 						<Typography variant='body1' color='text.secondary' mt='-10px'>
 							Courses
@@ -69,7 +76,7 @@ const ProfileInfoBox = () => {
 					<StyledCard>
 						<StyledIcon icon='eva:people-outline' />
 						<Typography variant='h4' color='primary.dark'>
-							1087
+							{group?.code || 'None'}
 						</Typography>
 						<Typography variant='body1' color='text.secondary' mt='-10px'>
 							Group
