@@ -2,6 +2,12 @@ import asyncHandler from 'express-async-handler';
 import Group from '../models/groupModel.js';
 import Student from '../models/studentModel.js';
 
+const populateCoursesTeacher = async (courses) => {
+	for (const course of courses) {
+		await course.populate('teacher');
+	}
+};
+
 //* @description    Gets all students
 //* @route          GET /api/students
 //* @access         Protected / Admin
@@ -31,6 +37,9 @@ const getMyCourses = asyncHandler(async (req, res) => {
 		res.status(404);
 		throw new Error('Your group has not been assigned to any courses yet!');
 	}
+
+	await populateCoursesTeacher(courses);
+
 	res.send(courses);
 });
 

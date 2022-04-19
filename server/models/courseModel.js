@@ -37,6 +37,10 @@ const courseSchema = mongoose.Schema({
 		type: Date,
 		required: true,
 	},
+	inCall: {
+		type: Boolean,
+		default: false,
+	},
 	resources: [resourceSchema],
 });
 

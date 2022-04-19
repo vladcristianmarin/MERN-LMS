@@ -22,7 +22,7 @@ const studentSidebarConfig = (userInfo) => {
 	return [
 		{
 			title: 'My Courses',
-			path: `/courses/${userInfo.groupId}`,
+			path: `/student/courses`,
 			icon: getIcon('eva:book-outline'),
 		},
 		{

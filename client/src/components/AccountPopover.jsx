@@ -73,7 +73,7 @@ const AccountPopover = () => {
 					}),
 				}}
 				onClick={() => setIsOpen((prev) => !prev.isOpen)}>
-				<Avatar src={userInfo?.avatar} alt={`${userInfo?.name} profile picture`} sx={{ bgcolor: 'primary.dark' }}>
+				<Avatar alt={`${userInfo?.name} profile picture`} sx={{ bgcolor: 'primary.dark' }}>
 					{userInfo?.name[0].toUpperCase()}
 				</Avatar>
 			</IconButton>

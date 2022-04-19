@@ -1,50 +1,11 @@
-import styled from '@emotion/styled';
-import { Typography, Link as MUILink, Card, Container, Stack, Divider } from '@mui/material';
+import { Typography, Link as MUILink, Container, Stack, Divider } from '@mui/material';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from '../components/forms/LoginForm';
+import { ContentStyle, HeaderStyle, RootStyle, SectionStyle } from './styles/GeneralStyles';
 
 const LoginScreen = () => {
-	const RootStyle = styled('div')(({ theme }) => ({
-		[theme.breakpoints.up('md')]: { display: 'flex' },
-	}));
-
-	const HeaderStyle = styled('header')(({ theme }) => ({
-		top: 0,
-		zIndex: 9,
-		lineHeight: 0,
-		width: '100%',
-		display: 'flex',
-		alignItems: 'center',
-		position: 'absolute',
-		padding: theme.spacing(1.5),
-		justifyContent: 'space-between',
-		[theme.breakpoints.up('md')]: {
-			alignItems: 'flex-start',
-			padding: theme.spacing(7, 5, 0, 7),
-		},
-	}));
-
-	const SectionStyle = styled(Card)(({ theme }) => ({
-		width: '100%',
-		maxWidth: 464,
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		margin: theme.spacing(2, 0, 2, 2),
-	}));
-
-	const ContentStyle = styled('div')(({ theme }) => ({
-		maxWidth: 480,
-		margin: 'auto',
-		display: 'flex',
-		minHeight: '100vh',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		padding: theme.spacing(12, 0),
-	}));
-
 	return (
 		<RootStyle title='Register | WeKlass'>
 			<HeaderStyle>

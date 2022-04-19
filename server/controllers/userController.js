@@ -1,8 +1,12 @@
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
+import sharp from 'sharp';
 import User from '../models/userModel.js';
 import Student from '../models/studentModel.js';
 import Teacher from '../models/teacherModel.js';
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 //* @description    Checks if token is expired
 //* @route          GET /api/users/verifiy

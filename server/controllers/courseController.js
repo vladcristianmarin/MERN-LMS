@@ -66,7 +66,7 @@ const deleteCourse = asyncHandler(async (req, res) => {
 
 const updateCourse = asyncHandler(async (req, res) => {
 	const updates = Object.keys(req.body);
-	const allowUpdates = ['name', 'acronym', 'teacher', 'weekday', 'hour'];
+	const allowUpdates = ['name', 'acronym', 'teacher', 'weekday', 'hour', 'description'];
 	const isValidOperation = updates.every((update) => allowUpdates.includes(update));
 
 	if (!isValidOperation) {

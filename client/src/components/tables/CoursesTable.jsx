@@ -147,7 +147,8 @@ const CoursesTable = () => {
 				);
 			},
 		},
-		{ field: 'acronym', type: 'string', headerName: 'Acronym', flex: 1, editable: true },
+		{ field: 'acronym', type: 'string', headerName: 'Acronym', flex: 0.5, editable: true },
+		{ field: 'description', type: 'string', headerName: 'Description', flex: 1.4, editable: true },
 		{
 			field: 'teacher',
 			type: 'string',
