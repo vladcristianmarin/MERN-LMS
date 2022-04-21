@@ -14,10 +14,11 @@ const getMessages = asyncHandler(async (req, res) => {
 });
 
 //* @description    Creates a new message
-//* @route          POST /api/messages
+//* @route          POST /api/messages/:chatId
 //* @access         Protected
 const sendMessage = asyncHandler(async (req, res) => {
-	const { content, chatId } = req.body;
+	const { chatId } = req.params;
+	const { content } = req.body;
 
 	if (!content) {
 		res.status(400);

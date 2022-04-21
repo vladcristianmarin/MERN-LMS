@@ -20,7 +20,7 @@ const fetchChats = asyncHandler(async (req, res) => {
 //* @route          POST /api/chat/group
 //* @access         Protected / Admin
 const createGroupChat = asyncHandler(async (req, res) => {
-	if (!req.body.users || req.body.name) {
+	if (!req.body.users || !req.body.name) {
 		res.status(400);
 		throw new Error('Invalid chat data');
 	}
@@ -38,20 +38,21 @@ const createGroupChat = asyncHandler(async (req, res) => {
 		admin: req.body.admin || req.user,
 	});
 
-	const fullGroupChat = await Chat.findOne({ _id: groupChat._id }).populate('users').populate('admin');
+	const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+		.populate('users', '-courses -groups')
+		.populate('admin');
 	res.status(201).send(fullGroupChat);
 });
 
 //* @description    Remove user from group chat
-//* @route          DELETE /api/chat/group/:userId
+//* @route          DELETE /api/chat/group
 //* @access         Protected / Admin
 const removeFromGroupChat = asyncHandler(async (req, res) => {
-	const { chatId } = req.body;
-	const { userId } = req.params;
+	const { chatId, userId } = req.body;
 
 	const removed = await Chat.findByIdAndUpdate(chatId, { $pull: { users: userId } }, { new: true })
-		.populate('users')
-		.populate('groupAdmin');
+		.populate('users', '-courses -groups')
+		.populate('admin');
 	if (!removed) {
 		res.status(404);
 		throw new Error('Chat not found!');
@@ -60,14 +61,13 @@ const removeFromGroupChat = asyncHandler(async (req, res) => {
 });
 
 //* @description    Add user to group chat
-//* @route          PUT /api/chat/group/:userId
+//* @route          PUT /api/chat/group/
 //* @access         Protected / Admin
 const addToGroupChat = asyncHandler(async (req, res) => {
-	const { chatId } = req.body;
-	const { userId } = req.params;
+	const { chatId, userId } = req.body;
 	const added = await Chat.findByIdAndUpdate(chatId, { $push: { users: userId } }, { new: true })
-		.populate('users')
-		.populate('groupAdmin');
+		.populate('users', '-courses -groups')
+		.populate('admin');
 	if (!added) {
 		res.status(404);
 		throw new Error('Chat not found!');
@@ -76,14 +76,13 @@ const addToGroupChat = asyncHandler(async (req, res) => {
 });
 
 //* @description    Update chat name
-//* @route          PATCH /api/chat/group/:chatId
+//* @route          PATCH /api/chat/group/
 //* @access         Protected / Admin
 const renameGroupChat = asyncHandler(async (req, res) => {
-	const { chatId } = req.params;
-	const { newName } = req.body;
+	const { newName, chatId } = req.body;
 	const updatedChat = await Chat.findByIdAndUpdate(chatId, { chatName: newName }, { new: true })
-		.populate('users')
-		.populate('groupAdmin');
+		.populate('users', '-courses -groups')
+		.populate('admin');
 
 	if (!updatedChat) {
 		res.status(404);
