@@ -88,7 +88,7 @@ const CoursesList = ({ courses }) => {
 										variant='contained'
 										color='primary'
 										startIcon={<Iconify icon='eva:message-circle-outline' />}
-										onClick={navigateToChat.bind(this, course.chatId)}>
+										onClick={navigateToChat.bind(this, course.chat)}>
 										CHAT
 									</Button>
 								</Tooltip>

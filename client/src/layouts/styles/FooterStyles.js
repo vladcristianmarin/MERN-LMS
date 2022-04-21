@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 const drawerWidth = 280;
 
 export const FooterStyles = styled('footer')(({ theme, open }) => {
-	console.log(open);
 	return {
 		gridColumn: '1/-1',
 		display: 'flex',

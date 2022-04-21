@@ -26,6 +26,7 @@ import {
 	studentMyCoursesReducer,
 	studentMyGroupReducer,
 } from './reducers/studentReducers';
+import { chatListReducer } from './reducers/chatReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -50,6 +51,7 @@ const reducer = combineReducers({
 	studentMyGroup: studentMyGroupReducer,
 	studentMyCourses: studentMyCoursesReducer,
 	studentChangeGroup: studentChangeGroupReducer,
+	chatList: chatListReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
