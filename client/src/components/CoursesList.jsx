@@ -4,7 +4,6 @@ import {
 	alpha,
 	Avatar,
 	Card,
-	IconButton,
 	List,
 	ListItem,
 	Stack,
@@ -21,7 +20,7 @@ const CoursesList = ({ courses }) => {
 	const theme = useTheme();
 
 	return (
-		<List sx={{ overflow: 'auto' }}>
+		<List>
 			{courses?.map((course) => (
 				<ListItem key={course._id}>
 					<Card
