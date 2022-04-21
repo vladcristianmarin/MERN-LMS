@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Card, Container, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMyCourses } from '../actions/studentActions';
 import CoursesList from '../components/CoursesList';

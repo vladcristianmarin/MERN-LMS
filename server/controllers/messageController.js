@@ -30,8 +30,8 @@ const sendMessage = asyncHandler(async (req, res) => {
 	}
 
 	let msg = await Message.create({ sender: req.user._id, content, chat: chatId });
-	msg = await msg.populate('sender', 'name avatar').execPopulate();
-	msg = await msg.populate('chat').execPopulate();
+	msg = await Message.populate(msg, { path: 'sender', select: 'name avatar' });
+	msg = await Message.populate(msg, 'chat');
 	msg = await User.populate(msg, {
 		path: 'chat.users',
 		select: 'name pic email',

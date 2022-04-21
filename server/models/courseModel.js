@@ -41,6 +41,8 @@ const courseSchema = mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+	chat: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }],
 	resources: [resourceSchema],
 });
 

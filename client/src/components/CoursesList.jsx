@@ -14,10 +14,16 @@ import {
 } from '@mui/material';
 import Iconify from './Iconify';
 import { Box } from '@mui/system';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CoursesList = ({ courses }) => {
+	const navigate = useNavigate();
 	const theme = useTheme();
+
+	const navigateToChat = (chatId) => {
+		console.log(chatId);
+		navigate(`/student/courses/chat/${chatId}`, { replace: true });
+	};
 
 	return (
 		<List>
@@ -58,7 +64,7 @@ const CoursesList = ({ courses }) => {
 							<Stack direction='row' alignItems='center' gap={0.5}>
 								<Avatar
 									sx={{ bgcolor: theme.palette.primary.main }}
-									src={course.teacher.avatar}
+									// src={course.teacher.avatar}
 									alt={course.teacher.name}>
 									{course.teacher.name[0]}
 								</Avatar>
@@ -78,7 +84,11 @@ const CoursesList = ({ courses }) => {
 									</Tooltip>
 								)}
 								<Tooltip title='Course Chat'>
-									<Button variant='contained' color='primary' startIcon={<Iconify icon='eva:message-circle-outline' />}>
+									<Button
+										variant='contained'
+										color='primary'
+										startIcon={<Iconify icon='eva:message-circle-outline' />}
+										onClick={navigateToChat.bind(this, course.chatId)}>
 										CHAT
 									</Button>
 								</Tooltip>
