@@ -118,6 +118,10 @@ const addStudents = asyncHandler(async (req, res) => {
 	res.status(201).send(updatedGroup);
 });
 
+//* @description    Removes student from a group
+//* @route          DELETE /api/groups//:groupId/students/:studentId
+//* @access         Private / Admin
+
 const removeStudent = asyncHandler(async (req, res) => {
 	const { groupId, studentId } = req.params;
 
@@ -208,6 +212,10 @@ const addCourseToGroup = asyncHandler(async (req, res) => {
 	res.status(201).send({ updatedGroup, course });
 });
 
+//* @description    Removes course from a group
+//* @route          DELETE /api/groups/:groupId/courses/:courseId
+//* @access         Private / Admin
+
 const removeCourse = asyncHandler(async (req, res) => {
 	const { groupId, courseId } = req.params;
 
@@ -229,6 +237,10 @@ const removeCourse = asyncHandler(async (req, res) => {
 
 	res.send({ updatedGroup: group, course });
 });
+
+//* @description    Updates a group
+//* @route          PATCH /api/groups/:id
+//* @access         Private / Admin
 
 const updateGroup = asyncHandler(async (req, res) => {
 	const updates = Object.keys(req.body);

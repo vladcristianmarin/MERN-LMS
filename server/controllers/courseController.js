@@ -64,6 +64,10 @@ const deleteCourse = asyncHandler(async (req, res) => {
 	res.send(deletedCourse);
 });
 
+//* @description    Updates a course
+//* @route          PATCH /api/courses/:id
+//* @access         Private / Admin
+
 const updateCourse = asyncHandler(async (req, res) => {
 	const updates = Object.keys(req.body);
 	const allowUpdates = ['name', 'acronym', 'teacher', 'weekday', 'hour', 'description'];
