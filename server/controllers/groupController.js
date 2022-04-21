@@ -2,37 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Group from '../models/groupModel.js';
 import Student from '../models/studentModel.js';
 import Course from '../models/courseModel.js';
-
-//* UTILS
-
-//* used in createGroup and addStudents
-
-const findStudentIds = async (students) => {
-	return Promise.all(
-		students.map(async (stud) => {
-			const foundStud = await Student.findOne({ email: stud });
-			if (foundStud) {
-				return foundStud._id;
-			}
-			res.status(400);
-			throw new Error(`${stud} does not exists!`);
-		})
-	);
-};
-
-const assignGroupToStudent = async (group) => {
-	for (const stud of group.students) {
-		const updatedStudent = await Student.findOne({ _id: stud });
-		updatedStudent.group = group._id;
-		await updatedStudent.save();
-	}
-};
-
-const populateCoursesTeacher = async (group) => {
-	for (const course of group.courses) {
-		await course.populate('teacher');
-	}
-};
+import Chat from '../models/chatModel.js';
 
 //* @description    Creates new group
 //* @route          POST /api/groups
@@ -41,26 +11,19 @@ const populateCoursesTeacher = async (group) => {
 const createGroup = asyncHandler(async (req, res) => {
 	const { code, school, yearOfStudy, students: studentsEmails } = req.body;
 
-	const groupExists = await Group.findOne({ code });
-
-	if (groupExists) {
-		res.status(400);
-		throw new Error('Group already exists!');
-	}
-
 	const students = await Student.find({ email: { $in: studentsEmails } });
 
 	const createdGroup = await Group.create({ code, school, yearOfStudy, students });
 
 	await Student.updateMany({ email: { $in: studentsEmails } }, { group: createdGroup });
 
-	if (createdGroup) {
-		await Group.populate(createdGroup, 'students');
-		return res.status(201).send(createdGroup);
+	if (!createdGroup) {
+		res.status(400);
+		throw new Error('Invalid group data');
 	}
 
-	res.status(400);
-	throw new Error('Invalid group data');
+	await Group.populate(createdGroup, 'students');
+	res.status(201).send(createdGroup);
 });
 
 //* @description    Adds new students in existing group
@@ -156,7 +119,7 @@ const deleteGroup = asyncHandler(async (req, res) => {
 //* @route          POST /api/groups/:id/courses
 //* @access         Protected / Admin
 
-const addCourseToGroup = asyncHandler(async (req, res) => {
+const addCourse = asyncHandler(async (req, res) => {
 	const group = await Group.findOne({ _id: req.params.id });
 	if (!group) {
 		res.status(404);
@@ -167,6 +130,8 @@ const addCourseToGroup = asyncHandler(async (req, res) => {
 		res.status(404);
 		throw new Error('Course not found!');
 	}
+
+	await Chat.findOneAndUpdate({ course: course._id }, { $addToSet: { users: { $each: [...group.students] } } });
 
 	group.courses.forEach((crs) => {
 		if (course._id.equals(crs)) {
@@ -193,6 +158,10 @@ const removeCourse = asyncHandler(async (req, res) => {
 
 	const group = await Group.findByIdAndUpdate(groupId, { $pull: { courses: courseId } });
 	const course = await Course.findOne({ _id: courseId });
+
+	const studentsIds = group.students.map((stud) => stud._id);
+	console.log(studentsIds);
+	await Chat.findOneAndUpdate({ course: course._id }, { $pull: { users: { $in: [...studentsIds] } } }, { multi: true });
 
 	if (!group) {
 		res.status(404);
@@ -243,4 +212,13 @@ const updateGroup = asyncHandler(async (req, res) => {
 	res.status(201).send(group);
 });
 
-export { createGroup, addStudents, removeStudent, getGroups, deleteGroup, updateGroup, addCourseToGroup, removeCourse };
+export {
+	createGroup,
+	addStudents,
+	removeStudent,
+	getGroups,
+	deleteGroup,
+	updateGroup,
+	addCourse as addCourseToGroup,
+	removeCourse,
+};

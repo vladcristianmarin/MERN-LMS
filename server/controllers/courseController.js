@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler';
+import Chat from '../models/chatModel.js';
 import Course from '../models/courseModel.js';
 import Teacher from '../models/teacherModel.js';
 
@@ -24,14 +25,22 @@ const createCourse = asyncHandler(async (req, res) => {
 		hour,
 	});
 
-	await Teacher.updateOne({ _id: foundTeacher._id }, { $push: { courses: createdCourse._id } });
-
 	if (!createdCourse) {
 		res.status(400);
 		throw new Error('Invalid course data!');
 	}
 
+	await Teacher.updateOne({ _id: foundTeacher._id }, { $push: { courses: createdCourse._id } });
+	const courseChat = await Chat.create({
+		chatName: `${acronym}'s Chat`,
+		users: [foundTeacher._id],
+		admin: foundTeacher._id,
+		course: createdCourse._id,
+	});
+
 	createdCourse = await Course.populate(createdCourse, 'teacher');
+	createdCourse.chat = courseChat._id;
+	await createdCourse.save();
 	res.status(201).send(createdCourse);
 });
 
@@ -49,14 +58,13 @@ const getCourses = asyncHandler(async (_req, res) => {
 //* @access         Protected / Admin
 
 const deleteCourse = asyncHandler(async (req, res) => {
-	const deletedCourse = await Course.findOne({ _id: req.params.id });
+	const deletedCourse = await Course.findByIdAndDelete(req.params.id);
 	if (!deletedCourse) {
 		res.status(404);
 		throw new Error('Course not found!');
 	}
 	await Teacher.findByIdAndUpdate(deleteCourse.teacher, { $pull: { courses: deleteCourse._id } });
-
-	await deletedCourse.remove();
+	await Chat.findOneAndDelete({ course: deletedCourse._id });
 
 	res.send(deletedCourse);
 });
@@ -87,6 +95,10 @@ const updateCourse = asyncHandler(async (req, res) => {
 	if (req.body.teacher) {
 		await Teacher.findByIdAndUpdate(course.teacher, { $pull: { courses: course._id } });
 		await Teacher.findByIdAndUpdate(req.body.teacher._id, { $push: { courses: course._id } });
+	}
+
+	if (req.body.acronym) {
+		await Chat.findOneAndUpdate({ course: course._id }, { chatName: `${req.body.acronym}'s Chat` });
 	}
 
 	updates.forEach((update) => (course[update] = req.body[update]));
