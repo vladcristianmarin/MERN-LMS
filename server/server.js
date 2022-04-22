@@ -1,3 +1,4 @@
+import { Server } from 'socket.io';
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -49,4 +50,25 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3030;
 
-app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold));
+const server = app.listen(
+	PORT,
+	console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
+);
+
+const io = new Server(server, {
+	pingTimeout: 60000,
+	cors: { origin: 'http://localhost:3000' },
+});
+
+io.on('connection', (socket) => {
+	console.log('connected to server');
+	socket.on('setup', (user) => {
+		socket.join(user._id);
+		socket.emit('connected');
+	});
+
+	socket.on('join chat', (room) => {
+		socket.join(room);
+		console.log('User Joined Room: ' + room);
+	});
+});

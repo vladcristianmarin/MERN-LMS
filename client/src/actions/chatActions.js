@@ -1,5 +1,41 @@
 import axios from 'axios';
-import { LIST_USER_CHATS_FAIL, LIST_USER_CHATS_REQUEST, LIST_USER_CHATS_SUCCESS } from '../constants/chatConstants';
+import {
+	CHANGE_SELECTED_CHAT,
+	GET_CHAT_INFO_FAIL,
+	GET_CHAT_INFO_REQUEST,
+	GET_CHAT_INFO_SUCCESS,
+	LIST_CHAT_MESSAGES_FAIL,
+	LIST_CHAT_MESSAGES_REQUEST,
+	LIST_CHAT_MESSAGES_SUCCESS,
+	LIST_USER_CHATS_FAIL,
+	LIST_USER_CHATS_REQUEST,
+	LIST_USER_CHATS_SUCCESS,
+} from '../constants/chatConstants';
+
+export const changeSelectedChat = (chat) => (dispatch) => {
+	dispatch({ type: CHANGE_SELECTED_CHAT, payload: chat });
+};
+
+export const getChatById = (chatId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: GET_CHAT_INFO_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get(`/api/chats/${chatId}`, config);
+
+		dispatch({ type: GET_CHAT_INFO_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: GET_CHAT_INFO_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
 
 export const listChats = () => async (dispatch, getState) => {
 	try {
@@ -17,6 +53,48 @@ export const listChats = () => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: LIST_USER_CHATS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const listMessages = (chatId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: LIST_CHAT_MESSAGES_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get(`/api/messages/${chatId}`, config);
+
+		dispatch({ type: LIST_CHAT_MESSAGES_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: LIST_CHAT_MESSAGES_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const sendMessage = (chatId, content) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: LIST_CHAT_MESSAGES_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.post(`/api/messages/${chatId}`, content, config);
+
+		dispatch({ type: LIST_CHAT_MESSAGES_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: LIST_CHAT_MESSAGES_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

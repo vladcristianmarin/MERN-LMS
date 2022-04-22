@@ -22,7 +22,7 @@ const CoursesList = ({ courses }) => {
 
 	const navigateToChat = (chatId) => {
 		console.log(chatId);
-		navigate(`/student/courses/chat/${chatId}`, { replace: true });
+		navigate(`/chat/${chatId}`, { replace: true });
 	};
 
 	return (

@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { listChats } from '../actions/chatActions';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { Box } from '@mui/material';
 import ChatsList from '../components/chat/ChatsList';
 import ChatBox from '../components/chat/ChatBox';
 
 const ChatScreen = () => {
-	const dispatch = useDispatch();
-	const location = useLocation();
 	const navigate = useNavigate();
-	const [selectedChat, setSelectedChat] = useState('');
-	const [selectedChatInfo, setSelectedChatInfo] = useState({});
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
@@ -23,28 +18,12 @@ const ChatScreen = () => {
 		}
 	}, [userInfo, navigate]);
 
-	const chatList = useSelector((state) => state.chatList);
-	const { error: chatListError, loading: chatListLoading, chats } = chatList;
-
-	useEffect(() => {
-		dispatch(listChats());
-	}, [dispatch]);
-
-	useEffect(() => {
-		const chatIdFromURL = location.pathname.replace('/student/courses/chat/', '');
-		setSelectedChat(chatIdFromURL);
-	}, [location]);
-
-	useEffect(() => {
-		const chat = chats?.filter((c) => c._id === selectedChat).shift();
-		setSelectedChatInfo(chat);
-	}, [chats, selectedChat]);
-
 	return (
 		<div style={{ width: '100%' }}>
 			<Box
 				sx={{
-					display: 'flex',
+					display: 'grid',
+					gridTemplateColumns: '0.4fr 1fr',
 					justifyContent: 'space-between',
 					width: '100%',
 					height: '84vh',
@@ -52,7 +31,7 @@ const ChatScreen = () => {
 					gap: 2,
 				}}>
 				<ChatsList />
-				<ChatBox selectedChat={selectedChatInfo} />
+				<ChatBox />
 			</Box>
 		</div>
 	);

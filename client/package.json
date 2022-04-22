@@ -32,6 +32,7 @@
 		"redux-thunk": "^2.4.1",
 		"simplebar": "^5.3.6",
 		"simplebar-react": "^2.3.6",
+		"socket.io-client": "^4.4.1",
 		"yup": "^0.32.11"
 	},
 	"scripts": {

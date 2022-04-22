@@ -26,7 +26,7 @@ const Router = () => {
 				{ path: '/admin/groups', element: <AdminGroupListScreen /> },
 				{ path: '/admin/courses', element: <AdminCourseListScreen /> },
 				{ path: '/student/courses', element: <StudentCoursesScreen /> },
-				{ path: '/student/courses/chat/:courseId', element: <ChatScreen /> },
+				{ path: 'chat/:chatId', element: <ChatScreen /> },
 			],
 		},
 		{ path: '/login', element: <LoginScreen /> },

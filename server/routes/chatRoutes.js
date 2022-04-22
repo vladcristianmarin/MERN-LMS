@@ -3,6 +3,7 @@ const router = express.Router();
 import {
 	addToGroupChat,
 	createGroupChat,
+	fetchChatById,
 	fetchChats,
 	removeFromGroupChat,
 	renameGroupChat,
@@ -10,6 +11,7 @@ import {
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 router.route('/').get(protect, fetchChats);
+router.route('/:chatId').get(protect, fetchChatById);
 router
 	.route('/group')
 	.post(protect, admin, createGroupChat)

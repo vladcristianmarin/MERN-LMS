@@ -3,6 +3,23 @@ import asyncHandler from 'express-async-handler';
 import Chat from '../models/chatModel.js';
 import User from '../models/userModel.js';
 
+//* @description    Fetch chat by ID for a user
+//* @route          GET /api/chats/:chatId
+//* @access         Protected
+const fetchChatById = asyncHandler(async (req, res) => {
+	const { chatId } = req.params;
+	let chat = await Chat.findOne({ _id: chatId, users: { $elemMatch: { $eq: req.user._id } } })
+		.populate('users')
+		.populate('admin')
+		.populate('latestMessage');
+	if (!chat) {
+		res.status(404);
+		throw new Error('Chat not found!');
+	}
+	chat = await User.populate(chat, { path: 'latestMessage.sender', select: 'name avatar email' });
+	res.send(chat);
+});
+
 //* @description    Fetch all chats for a user
 //* @route          GET /api/chats
 //* @access         Protected
@@ -92,4 +109,4 @@ const renameGroupChat = asyncHandler(async (req, res) => {
 	res.send(updatedChat);
 });
 
-export { fetchChats, createGroupChat, removeFromGroupChat, addToGroupChat, renameGroupChat };
+export { fetchChatById, fetchChats, createGroupChat, removeFromGroupChat, addToGroupChat, renameGroupChat };
