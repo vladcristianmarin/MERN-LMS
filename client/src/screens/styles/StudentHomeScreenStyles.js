@@ -3,15 +3,15 @@ import { Avatar, Card, Container } from '@mui/material';
 
 export const StyledContainer = styled(Container)(({ theme }) => ({
 	display: 'grid',
-	gridTemplateColumns: '0.6fr 1fr',
-
+	gridTemplateColumns: '0.7fr 1fr',
+	gridTemplateRows: 'repeat(2, auto)',
 	gap: theme.spacing(1),
 }));
 
 export const StyledRightCard = styled(Card)(({ theme }) => ({
 	display: 'grid',
-	gridTemplateColumns: '0.7fr 1fr',
-	gridTemplateRows: 'repeat(2, auto)',
+	gridTemplateColumns: '0.8fr 1fr',
+	gridTemplateRows: '1fr 0.8fr',
 	gap: theme.spacing(2),
 	padding: theme.spacing(2),
 	background: theme.palette.background.neutral,
