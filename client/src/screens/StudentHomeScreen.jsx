@@ -2,18 +2,19 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@emotion/react';
 import AdapterDateFns from '@date-io/date-fns';
-import { Box, Card, CircularProgress, FormControl, Typography } from '@mui/material';
+import { Box, Card, CircularProgress, Typography } from '@mui/material';
 import {
 	StyledAvatar,
 	StyledContainer,
 	StyledRightCard,
 	StyledRightChildrenCard,
-} from './styles/StudentHomeScreenStyles';
+} from '../components/app/styles/StudentHomeScreenStyles.js';
 
-import ProfileInfoBox from './components/ProfileInfoBox';
+import AppProfileBox from '../components/app/AppProfileBox';
 import CoursesList from '../components/CoursesList';
 import AppTasks from '../components/forms/AppTasks';
 import { LocalizationProvider, StaticDatePicker } from '@mui/lab';
+import AppCourseActivity from '../components/app/AppCourseActivity.jsx';
 
 const StudentHomeScreen = () => {
 	const theme = useTheme();
@@ -149,14 +150,16 @@ const StudentHomeScreen = () => {
 							{userInfo?.name[0].toUpperCase()}
 						</StyledAvatar>
 					</Box>
-					<ProfileInfoBox />
+					<AppProfileBox />
 				</StyledRightChildrenCard>
 				<StyledRightChildrenCard sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
 						<StaticDatePicker openTo='day' />
 					</LocalizationProvider>
 				</StyledRightChildrenCard>
-				<StyledRightChildrenCard sx={{ gridColumn: '1 / -1' }}></StyledRightChildrenCard>
+				<StyledRightChildrenCard sx={{ gridColumn: '1 / -1' }}>
+					<AppCourseActivity />
+				</StyledRightChildrenCard>
 			</StyledRightCard>
 		</StyledContainer>
 	);

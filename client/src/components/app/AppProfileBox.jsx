@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, ButtonBase, Card, Typography } from '@mui/material';
-import Iconify from '../../components/Iconify';
+import Iconify from '../Iconify';
 import axios from 'axios';
 import styled from '@emotion/styled';
 import { getMyCourses, getMyGroup } from '../../actions/studentActions';

@@ -3,7 +3,7 @@ import { Typography, Link as MUILink, Container, Stack, Divider } from '@mui/mat
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from '../components/forms/LoginForm';
-import { ContentStyle, HeaderStyle, RootStyle, SectionStyle } from './styles/GeneralStyles';
+import { ContentStyle, HeaderStyle, RootStyle, SectionStyle } from '../components/app/styles/GeneralStyles';
 
 const LoginScreen = () => {
 	return (
