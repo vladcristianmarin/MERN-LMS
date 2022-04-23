@@ -8,10 +8,9 @@ import { useLottie } from 'lottie-react';
 import animationData from './animations/typing.json';
 import ScrollableChat from './ScrollableChat';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { listMessages } from '../../actions/chatActions';
+import { listMessages, sendMessage } from '../../actions/chatActions';
+import { ENDPOINT } from '../../constants/endpoint';
 
-const ENDPOINT = 'http://127.0.0.1:3030';
 let socket;
 
 const TypingAnimation = () => {
@@ -29,43 +28,69 @@ const TypingAnimation = () => {
 
 const Chat = () => {
 	const theme = useTheme();
-	const location = useLocation();
 	const dispatch = useDispatch();
+
+	const [messages, setMessages] = useState([]);
 	const [message, setMessage] = useState('');
 	const [socketConnected, setSocketConnected] = useState(false);
-	const [isTyping, setIsTyping] = useState(false);
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
 	const chatMessages = useSelector((state) => state.chatMessages);
-	const { loading: messagesLoading, error: messagesError, messages } = chatMessages;
+	const { loading: messagesLoading, error: messagesError, messages: oldMessages } = chatMessages;
+
+	const sendMessageState = useSelector((state) => state.sendMessage);
+	const { loading: sendMessageLoading, error: sendMessageError, message: newMessage } = sendMessageState;
 
 	const { selectedChat } = useSelector((state) => state.selectedChat);
 
 	useEffect(() => {
-		if (selectedChat) {
-			dispatch(listMessages(selectedChat._id));
-		}
-	}, [dispatch, selectedChat]);
-
-	useEffect(() => {
 		socket = io(ENDPOINT);
 		socket.emit('setup', userInfo);
-		socket.on('connection', () => setSocketConnected(true));
+		socket.on('connected', () => setSocketConnected(true));
+		socket.on('typing', () => {
+			console.log('typing');
+		});
+		socket.on('stop typing', () => console.log('stopped typing'));
+		socket.on('message received', (message) => {
+			if (selectedChat && selectedChat._id === message.chat._id) {
+				setMessages((prev) => [...prev, message]);
+			}
+		});
 		// eslint-disable-next-line
 	}, []);
 
+	useEffect(() => {
+		if (selectedChat) {
+			dispatch(listMessages(selectedChat._id));
+			selectedChatCompare = selectedChat;
+			socket.emit('join chat', selectedChat._id);
+		}
+		// eslint-disable-next-line
+	}, [selectedChat]);
+
+	useEffect(() => {
+		if (oldMessages && !messagesError && !messagesLoading) {
+			setMessages(oldMessages);
+		}
+	}, [oldMessages, messagesError, messagesLoading]);
+
+	useEffect(() => {
+		if (newMessage && !sendMessageLoading && !sendMessageError) {
+			setMessages((prev) => [...prev, newMessage]);
+		}
+	}, [newMessage, sendMessageError, sendMessageLoading]);
+
 	const typeHandler = (e) => {
-		setIsTyping(true);
 		setMessage(e.target.value);
+		socket.emit('typing', selectedChat._id);
 	};
 
-	const sendMessage = async (e) => {
+	const sendMessageHandler = (e) => {
 		if ((e.type === 'click' || e.key === 'Enter') && message) {
-			console.log('Sent!');
+			dispatch(sendMessage(selectedChat._id, message));
 			setMessage('');
-			setIsTyping(false);
 		}
 	};
 
@@ -91,17 +116,17 @@ const Chat = () => {
 							Something went wrong! Try reloading the page!
 						</Typography>
 					) : (
-						<ScrollableChat />
+						<ScrollableChat messages={messages} />
 					)}
 				</Box>
 			)}
 			{!messagesLoading && !messagesError && (
-				<FormControl fullWidth onKeyDown={sendMessage}>
-					{isTyping && (
-						<div style={{ width: '70px', marginBottom: '15px' }}>
+				<FormControl fullWidth onKeyDown={sendMessageHandler}>
+					{/* {istyping && (
+						<div style={{ width: '70px' }}>
 							<TypingAnimation />
 						</div>
-					)}
+					)} */}
 					<TextField
 						placeholder='Type...'
 						value={message}
@@ -113,7 +138,7 @@ const Chat = () => {
 										color='primary'
 										edge='end'
 										sx={{ transform: 'rotate(45deg)', mr: 1, pr: 1 }}
-										onClick={sendMessage}>
+										onClick={sendMessageHandler}>
 										<Iconify icon='eva:paper-plane-outline' />
 									</IconButton>
 								</InputAdornment>

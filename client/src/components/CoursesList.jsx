@@ -21,7 +21,6 @@ const CoursesList = ({ courses }) => {
 	const theme = useTheme();
 
 	const navigateToChat = (chatId) => {
-		console.log(chatId);
 		navigate(`/chat/${chatId}`, { replace: true });
 	};
 

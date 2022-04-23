@@ -26,7 +26,13 @@ import {
 	studentMyCoursesReducer,
 	studentMyGroupReducer,
 } from './reducers/studentReducers';
-import { chatInfoReducer, chatListReducer, messagesListReduces, selectedChatReducer } from './reducers/chatReducers';
+import {
+	chatInfoReducer,
+	chatListReducer,
+	messagesListReduces,
+	selectedChatReducer,
+	sendMessageReducer,
+} from './reducers/chatReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -53,6 +59,7 @@ const reducer = combineReducers({
 	studentChangeGroup: studentChangeGroupReducer,
 	chatList: chatListReducer,
 	chatMessages: messagesListReduces,
+	sendMessage: sendMessageReducer,
 	selectedChat: selectedChatReducer,
 	chatInfo: chatInfoReducer,
 });

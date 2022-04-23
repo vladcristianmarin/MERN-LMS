@@ -7,7 +7,7 @@ import Chat from '../models/chatModel.js';
 //* @route          GET /api/messages/:chatId
 //* @access         Protected
 const getMessages = asyncHandler(async (req, res) => {
-	const messages = await Message.find({ chat: req.params.chat })
+	const messages = await Message.find({ chat: req.params.chatId })
 		.populate('sender', 'name avatar email')
 		.populate('chat');
 	res.send(messages);
@@ -37,7 +37,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 		select: 'name pic email',
 	});
 
-	await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: msg });
+	await Chat.findByIdAndUpdate(chatId, { latestMessage: msg });
 
 	res.status(201).send(msg);
 });

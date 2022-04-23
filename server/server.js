@@ -61,14 +61,37 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-	console.log('connected to server');
+	console.log('User connected!');
 	socket.on('setup', (user) => {
 		socket.join(user._id);
 		socket.emit('connected');
 	});
 
 	socket.on('join chat', (room) => {
+		console.log('User joined room: ' + room);
 		socket.join(room);
-		console.log('User Joined Room: ' + room);
+	});
+
+	socket.on('typing', (room) => {
+		console.log(room, socket.rooms);
+		socket.in(room).emit('typing');
+	});
+	socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
+
+	socket.on('send message', (message) => {
+		const chat = message.chat;
+		if (!chat.users) {
+			return console.log('chat.users not defined');
+		}
+		chat.users.forEach((user) => {
+			if (user._id !== message.sender._id) {
+				socket.in(user._id).emit('message received', message);
+			}
+		});
+	});
+
+	socket.off('setup', (user) => {
+		console.log('USER DISCONNECTED');
+		socket.leave(user._id);
 	});
 });

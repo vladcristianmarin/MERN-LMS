@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { Card, CircularProgress, List, ListItem, Typography } from '@mui/material';
+import { Card, CircularProgress, List, ListItem, Stack, Typography } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeSelectedChat, listChats } from '../../actions/chatActions';
 import { useNavigate } from 'react-router-dom';
+import { formatDate } from './utils/dateformatting';
 
 const ChatsList = () => {
 	const theme = useTheme();
@@ -46,11 +47,20 @@ const ChatsList = () => {
 					borderRadius: '16px',
 				}}>
 				{chats && (
-					<List sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(1.5), overflowY: 'scroll' }}>
+					<List
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							gap: theme.spacing(1.5),
+							overflowY: 'scroll',
+						}}>
 						{chats.map((chat) => (
 							<ListItem
 								key={chat._id}
 								sx={{
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between',
 									cursor: 'pointer',
 									bgcolor:
 										selectedChat?._id === chat._id ? theme.palette.primary.lighter : theme.palette.background.paper,
@@ -61,14 +71,21 @@ const ChatsList = () => {
 									boxShadow: selectedChat?._id === chat._id ? theme.customShadows.primary : theme.customShadows.z1,
 								}}
 								onClick={changeChatHandler.bind(this, chat)}>
-								<Typography variant='subtitle1'>{chat.chatName}</Typography>
-								{chat.latestMessage && (
-									<Typography variant='body1'>
-										<b>{chat.latestMessage.sender.name} : </b>
-										{chat.latestMessage.content.length > 50
-											? chat.latestMessage.content.substring(0, 51) + '...'
-											: chat.latestMessage.content}
+								<Stack>
+									<Typography variant='subtitle1' sx={{ fontSize: theme.typography.h5.fontSize }}>
+										{chat.chatName}
 									</Typography>
+									{chat.latestMessage && (
+										<Typography variant='body1'>
+											{chat.latestMessage.sender.name}:{' '}
+											{chat.latestMessage.content.length > 50
+												? chat.latestMessage.content.substring(0, 51) + '...'
+												: chat.latestMessage.content}
+										</Typography>
+									)}
+								</Stack>
+								{chat.latestMessage && (
+									<Typography variant='body1'>{formatDate(chat.latestMessage.createdAt)}</Typography>
 								)}
 							</ListItem>
 						))}
