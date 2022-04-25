@@ -61,27 +61,26 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-	console.log('User connected!');
+	console.log('user connected to the server'.bgGreen);
 	socket.on('setup', (user) => {
 		socket.join(user._id);
 		socket.emit('connected');
 	});
 
 	socket.on('join chat', (room) => {
-		console.log('User joined room: ' + room);
+		console.log(`User joined room: ${room}`.bgYellow);
 		socket.join(room);
 	});
 
-	socket.on('typing', (room) => {
-		console.log(room, socket.rooms);
-		socket.in(room).emit('typing');
+	socket.on('typing', (room, user) => {
+		socket.in(room).emit('typing', user);
 	});
 	socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
 
 	socket.on('send message', (message) => {
 		const chat = message.chat;
 		if (!chat.users) {
-			return console.log('chat.users not defined');
+			return console.log('chat.users not defined'.bgRed.bold);
 		}
 		chat.users.forEach((user) => {
 			if (user._id !== message.sender._id) {
@@ -91,7 +90,10 @@ io.on('connection', (socket) => {
 	});
 
 	socket.off('setup', (user) => {
-		console.log('USER DISCONNECTED');
 		socket.leave(user._id);
+	});
+
+	socket.on('connect_error', (err) => {
+		console.log(`connect_error due to ${err.message}`);
 	});
 });

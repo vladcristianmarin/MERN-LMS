@@ -1,35 +1,87 @@
-import { Avatar, Tooltip } from '@mui/material';
+import { Avatar, Card, List, ListItem, Tooltip, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import ScrollableFeed from 'react-scrollable-feed';
-import { isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from './config/ChatLogic';
+import { isLastMessage, isMyLastMessage, isMySameSender, isSameSender, isSameSenderMargin } from './config/ChatLogic';
+import TypingAnimation from './animations/TypingAnimation';
+import { useTheme } from '@emotion/react';
+import { Box } from '@mui/system';
 
-const ScrollableChat = ({ messages }) => {
+const ScrollableChat = ({ messages, isTyping, typingClient }) => {
+	const theme = useTheme();
+
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
 	return (
 		<ScrollableFeed>
-			{messages &&
-				messages.map((m, i) => (
-					<div style={{ display: 'flex' }} key={m._id}>
+			<List>
+				{messages?.map((m, i) => (
+					<ListItem
+						key={i}
+						sx={{ display: 'flex', gap: theme.spacing(1), p: theme.spacing(0.3, 0.5), overflow: 'hidden' }}>
 						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
 							<Tooltip title={m.sender.name}>
-								<Avatar src={m.sender.pic}>{m.sender.name[0]}</Avatar>
+								<Avatar sx={{ bgcolor: theme.palette.primary.main }} src={m.sender.pic}>
+									{m.sender.name[0]}
+								</Avatar>
 							</Tooltip>
 						)}
-						<span
-							style={{
-								backgroundColor: `${m.sender._id === userInfo._id ? '#BEE3F8' : '#B9F5D0'}`,
-								marginLeft: isSameSenderMargin(messages, m, i, userInfo._id),
-								marginTop: isSameUser(messages, m, i, userInfo._id) ? 3 : 10,
-								borderRadius: '20px',
-								padding: '5px 15px',
+						<Card
+							sx={{
+								color: theme.palette.text.primary,
+								bgcolor: m.sender._id === userInfo._id ? theme.palette.secondary.light : theme.palette.primary.light,
+								boxShadow: m.sender._id === userInfo._id ? theme.customShadows.secondary : theme.customShadows.primary,
+								ml: isSameSenderMargin(messages, m, i, userInfo._id),
+								p: theme.spacing(0.3, 1),
 								maxWidth: '75%',
+								position: 'relative',
+								zIndex: 2,
 							}}>
 							{m.content}
-						</span>
-					</div>
+						</Card>
+						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
+							<div
+								style={{
+									width: 0,
+									height: 0,
+									borderLeft: '5px solid transparent',
+									borderRight: '5px solid transparent',
+									borderTop: `20px solid ${theme.palette.primary.light}`,
+									position: 'absolute',
+									top: '20px',
+									left: '48px',
+									transform: 'rotate(70deg)',
+									zIndex: 1,
+								}}></div>
+						)}
+						{(isMySameSender(messages, m, i, userInfo._id) || isMyLastMessage(messages, i, userInfo._id)) && (
+							<div
+								style={{
+									width: 0,
+									height: 0,
+									borderLeft: '5px solid transparent',
+									borderRight: '5px solid transparent',
+									borderTop: `20px solid ${theme.palette.secondary.light}`,
+									position: 'absolute',
+									top: '15px',
+									right: '2px',
+									transform: 'rotate(-70deg)',
+									zIndex: 1,
+								}}></div>
+						)}
+					</ListItem>
 				))}
+			</List>
+			{isTyping && (
+				<Box sx={{ display: 'flex', alignItems: 'center', height: theme.spacing(7), gap: theme.spacing(1) }}>
+					<Typography color='text.secondary' variant='body2'>
+						{typingClient?.name} is typing
+					</Typography>
+					<div style={{ width: theme.spacing(3), marginTop: '5px' }}>
+						<TypingAnimation />
+					</div>
+				</Box>
+			)}
 		</ScrollableFeed>
 	);
 };

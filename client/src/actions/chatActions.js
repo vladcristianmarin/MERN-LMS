@@ -76,8 +76,7 @@ export const listMessages = (chatId) => async (dispatch, getState) => {
 		const config = { headers: { Authorization: `Bearer ${authToken}` } };
 
 		const { data } = await axios.get(`/api/messages/${chatId}`, config);
-		dispatch({ type: LIST_CHAT_MESSAGES_SUCCESS, payload: data });
-		// socket.emit('join chat', chatId);
+		dispatch({ type: LIST_CHAT_MESSAGES_SUCCESS, payload: data.messages });
 	} catch (error) {
 		dispatch({
 			type: LIST_CHAT_MESSAGES_FAIL,

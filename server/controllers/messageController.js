@@ -7,10 +7,9 @@ import Chat from '../models/chatModel.js';
 //* @route          GET /api/messages/:chatId
 //* @access         Protected
 const getMessages = asyncHandler(async (req, res) => {
-	const messages = await Message.find({ chat: req.params.chatId })
-		.populate('sender', 'name avatar email')
-		.populate('chat');
-	res.send(messages);
+	const chat = await Chat.findById(req.params.chatId);
+	const messages = await Message.find({ chat: chat._id }).populate('sender', 'name avatar email');
+	res.send({ messages, chat });
 });
 
 //* @description    Creates a new message
