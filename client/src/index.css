@@ -28,15 +28,18 @@
 /* TIME PICKER */
 
 ::-webkit-scrollbar {
-	width: 6px; /* for vertical scrollbars */
-	height: 6px; /* for horizontal scrollbars */
+	width: 7px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-	background: rgba(0, 0, 0, 0);
+	background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, 0.1);
+	background-color: rgba(0, 0, 0, 0.15);
 	border-radius: 12px;
+}
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
+	background-color: rgba(0, 0, 0, 0.15);
 }

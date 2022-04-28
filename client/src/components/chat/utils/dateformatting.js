@@ -1,19 +1,7 @@
-const months = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December',
-];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const fullDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const isToday = (someDate) => {
 	const today = new Date();
@@ -24,17 +12,48 @@ const isToday = (someDate) => {
 	);
 };
 
-export const formatDate = (someDate) => {
-	const dateToFormat = new Date(someDate);
-	if (isToday(dateToFormat)) {
-		const hour = dateToFormat.getHours();
-		const minutes = dateToFormat.getMinutes();
+function isDateInThisWeek(dt) {
+	const todayObj = new Date();
+	const todayDate = todayObj.getDate();
+	const todayDay = todayObj.getDay();
+
+	const firstDayOfWeek = new Date(todayObj.setDate(todayDate - todayDay));
+
+	const lastDayOfWeek = new Date(firstDayOfWeek);
+	lastDayOfWeek.setDate(lastDayOfWeek.getDate() + 6);
+
+	return dt >= firstDayOfWeek && dt <= lastDayOfWeek;
+}
+
+export const formatDate = (someDateTimeStamp) => {
+	const dt = new Date(someDateTimeStamp);
+	const date = dt.getDate();
+	const month = months[dt.getMonth()];
+	const dayName = days[dt.getDay()];
+	const fullDayName = fullDays[dt.getDay()];
+	const diffDays = new Date().getDate() - date;
+	const diffMonths = new Date().getMonth() - dt.getMonth();
+	const diffYears = new Date().getFullYear() - dt.getFullYear();
+
+	if (isToday(dt)) {
+		const hour = dt.getHours();
+		const minutes = dt.getMinutes();
 		return `${hour}:${minutes}`;
 	}
-	const date = dateToFormat.getDate();
-	const year = dateToFormat.getFullYear();
-	const monthName = months[dateToFormat.getMonth()];
-	const dayName = days[dateToFormat.getDay()];
 
-	return `${dayName}, ${date} ${monthName} ${year}`;
+	if (isDateInThisWeek(dt)) {
+		return fullDayName;
+	}
+
+	if (diffYears === 0 && diffDays === 0 && diffMonths === 0) {
+		return 'Today';
+	} else if (diffYears === 0 && diffDays === 1) {
+		return 'Yesterday';
+	} else if (diffYears === 0 && diffDays < -1 && diffDays > -7) {
+		return fullDays[dt.getDay()];
+	} else if (diffYears >= 1) {
+		return `${date} ${month} ${dt.getFullYear()}`;
+	} else {
+		return `${dayName}, ${date} ${month}`;
+	}
 };

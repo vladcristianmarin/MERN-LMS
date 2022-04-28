@@ -27,6 +27,8 @@ const ChatBox = () => {
 		<Card
 			sx={{
 				display: 'flex',
+				height: '100%',
+				flex: 1,
 				alignItems: 'center',
 				flexDirection: 'column',
 				padding: theme.spacing(0, 2, 2, 2),

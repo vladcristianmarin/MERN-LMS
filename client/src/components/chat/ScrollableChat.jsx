@@ -5,6 +5,7 @@ import { isLastMessage, isMyLastMessage, isMySameSender, isSameSender, isSameSen
 import TypingAnimation from './animations/TypingAnimation';
 import { useTheme } from '@emotion/react';
 import { Box } from '@mui/system';
+import { formatDate } from './utils/dateformatting';
 
 const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 	const theme = useTheme();
@@ -18,16 +19,26 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 				{messages?.map((m, i) => (
 					<ListItem
 						key={i}
-						sx={{ display: 'flex', gap: theme.spacing(1), p: theme.spacing(0.3, 0.5), overflow: 'hidden' }}>
+						sx={{
+							display: 'flex',
+							gap: theme.spacing(1),
+							p: theme.spacing(0.3, 0.5),
+							overflow: 'hidden',
+						}}>
 						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
 							<Tooltip title={m.sender.name}>
 								<Avatar sx={{ bgcolor: theme.palette.primary.main }} src={m.sender.pic}>
-									{m.sender.name[0]}
+									{m.sender.name[0]} {m.sender.isAdmin}
 								</Avatar>
 							</Tooltip>
 						)}
 						<Card
 							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								justifyContent: 'space-between',
+								gap: theme.spacing(0.3),
+								marginRight: '7px',
 								color: theme.palette.text.primary,
 								bgcolor: m.sender._id === userInfo._id ? theme.palette.secondary.light : theme.palette.primary.light,
 								boxShadow: m.sender._id === userInfo._id ? theme.customShadows.secondary : theme.customShadows.primary,
@@ -37,7 +48,12 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 								position: 'relative',
 								zIndex: 2,
 							}}>
-							{m.content}
+							<Typography>{m.content}</Typography>
+							<Typography
+								variant='caption'
+								sx={{ color: theme.palette.grey[200], fontWeight: 700, alignSelf: 'end', ml: theme.spacing(1) }}>
+								{formatDate(m.createdAt)}
+							</Typography>
 						</Card>
 						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
 							<div
@@ -57,6 +73,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 						{(isMySameSender(messages, m, i, userInfo._id) || isMyLastMessage(messages, i, userInfo._id)) && (
 							<div
 								style={{
+									marginRight: '5px',
 									width: 0,
 									height: 0,
 									borderLeft: '5px solid transparent',
@@ -72,6 +89,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 					</ListItem>
 				))}
 			</List>
+
 			{isTyping && (
 				<Box sx={{ display: 'flex', alignItems: 'center', height: theme.spacing(7), gap: theme.spacing(1) }}>
 					<Typography color='text.secondary' variant='body2'>

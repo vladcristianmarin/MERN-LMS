@@ -9,6 +9,9 @@ import Iconify from '../components/Iconify';
 import { StyledDrawer, StyledDrawerAccount, StyledDrawerHeader } from './styles/DrawerStyles';
 import { Box } from '@mui/system';
 
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
+
 import {
 	studentSidebarConfig,
 	teacherSidebarConfig,
@@ -27,64 +30,69 @@ const DrawerMenu = () => {
 	};
 
 	return (
-		<Box>
+		<Box sx={{ height: '100%' }}>
 			<StyledDrawer variant='persistent' anchor='left' open={isOpen}>
-				<StyledDrawerHeader>
-					<MUILink underline='none' to='/' component={Link}>
-						<Typography sx={{ ml: 2 }} variant='h3' color='primary'>
-							WeKlass
-						</Typography>
-					</MUILink>
-					<IconButton onClick={handleDrawerClose}>
-						<Iconify icon='eva:arrowhead-left-outline' />
-					</IconButton>
-				</StyledDrawerHeader>
-				<Divider />
-				<Box sx={{ mb: 5, mx: 2.5 }}>
-					<MUILink underline='none' component={Link} to='#'>
-						<StyledDrawerAccount>
-							<Avatar src={userInfo?.avatar} alt={`${userInfo?.name} profile picture`} sx={{ bgcolor: 'primary.dark' }}>
-								{userInfo?.name[0].toUpperCase()}
-							</Avatar>
-							<Box sx={{ ml: 2 }}>
-								<Typography variant='subtitle1' color='text.primary'>
-									{userInfo?.name}
-								</Typography>
-								<Typography variant='body2' color='text.secondary'>
-									{userInfo?.isAdmin ? 'Admin' : userInfo?.role}
-								</Typography>
-							</Box>
-						</StyledDrawerAccount>
-					</MUILink>
-				</Box>
-				<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
-					GENERAL
-				</Typography>
-				<Navigation navConfig={generalSidebarConfig()} />
-				{userInfo?.role === 'Teacher' && (
-					<>
-						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
-							TEACHER
-						</Typography>
-						<Navigation navConfig={teacherSidebarConfig(userInfo)} />
-					</>
-				)}
-				{userInfo?.role === 'Student' && (
-					<>
-						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
-							STUDENT
-						</Typography>
-						<Navigation navConfig={studentSidebarConfig(userInfo)} />
-					</>
-				)}
-				{userInfo?.isAdmin && (
-					<>
-						<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
-							ADMIN
-						</Typography>
-						<Navigation navConfig={adminSidebarConfig()} />
-					</>
-				)}
+				<SimpleBar style={{ maxHeight: 'calc(100%)' }}>
+					<StyledDrawerHeader>
+						<MUILink underline='none' to='/' component={Link}>
+							<Typography sx={{ ml: 2 }} variant='h3' color='primary'>
+								WeKlass
+							</Typography>
+						</MUILink>
+						<IconButton onClick={handleDrawerClose}>
+							<Iconify icon='eva:arrowhead-left-outline' />
+						</IconButton>
+					</StyledDrawerHeader>
+					<Divider />
+					<Box sx={{ mb: 5, mx: 2.5 }}>
+						<MUILink underline='none' component={Link} to='#'>
+							<StyledDrawerAccount>
+								<Avatar
+									src={userInfo?.avatar}
+									alt={`${userInfo?.name} profile picture`}
+									sx={{ bgcolor: 'primary.dark' }}>
+									{userInfo?.name[0].toUpperCase()}
+								</Avatar>
+								<Box sx={{ ml: 2 }}>
+									<Typography variant='subtitle1' color='text.primary'>
+										{userInfo?.name}
+									</Typography>
+									<Typography variant='body2' color='text.secondary'>
+										{userInfo?.isAdmin ? 'Admin' : userInfo?.role}
+									</Typography>
+								</Box>
+							</StyledDrawerAccount>
+						</MUILink>
+					</Box>
+					<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
+						GENERAL
+					</Typography>
+					<Navigation navConfig={generalSidebarConfig()} />
+					{userInfo?.role === 'Teacher' && (
+						<>
+							<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
+								TEACHER
+							</Typography>
+							<Navigation navConfig={teacherSidebarConfig(userInfo)} />
+						</>
+					)}
+					{userInfo?.role === 'Student' && (
+						<>
+							<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
+								STUDENT
+							</Typography>
+							<Navigation navConfig={studentSidebarConfig(userInfo)} />
+						</>
+					)}
+					{userInfo?.isAdmin && (
+						<>
+							<Typography sx={{ pl: 5 }} variant='subtitle2' color='grey[800]'>
+								ADMIN
+							</Typography>
+							<Navigation navConfig={adminSidebarConfig()} />
+						</>
+					)}
+				</SimpleBar>
 			</StyledDrawer>
 		</Box>
 	);
