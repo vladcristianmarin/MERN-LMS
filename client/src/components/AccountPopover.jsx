@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Iconify from './Iconify';
 import MenuPopover from './MenuPopover';
 import { logout } from '../actions/userActions';
+import { CURRENT_URL } from '../constants/extra';
 
 const AccountPopover = () => {
 	const dispatch = useDispatch();
@@ -14,6 +15,8 @@ const AccountPopover = () => {
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
+
+	console.log(userInfo);
 
 	const MENU_OPTIONS = [
 		{
@@ -73,7 +76,10 @@ const AccountPopover = () => {
 					}),
 				}}
 				onClick={() => setIsOpen((prev) => !prev.isOpen)}>
-				<Avatar alt={`${userInfo?.name} profile picture`} sx={{ bgcolor: 'primary.dark' }}>
+				<Avatar
+					alt={`${userInfo?.name} profile picture`}
+					src={`${CURRENT_URL}/${userInfo?.avatar}`}
+					sx={{ bgcolor: 'primary.dark' }}>
 					{userInfo?.name[0].toUpperCase()}
 				</Avatar>
 			</IconButton>

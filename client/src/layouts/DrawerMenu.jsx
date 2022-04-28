@@ -19,6 +19,7 @@ import {
 	generalSidebarConfig,
 } from './utils/SidebarNavConfig';
 import { hideSidebar } from '../actions/sidebarActions';
+import { CURRENT_URL } from '../constants/extra';
 
 const DrawerMenu = () => {
 	const dispatch = useDispatch();
@@ -48,7 +49,7 @@ const DrawerMenu = () => {
 						<MUILink underline='none' component={Link} to='#'>
 							<StyledDrawerAccount>
 								<Avatar
-									src={userInfo?.avatar}
+									src={`${CURRENT_URL}/${userInfo?.avatar}`}
 									alt={`${userInfo?.name} profile picture`}
 									sx={{ bgcolor: 'primary.dark' }}>
 									{userInfo?.name[0].toUpperCase()}

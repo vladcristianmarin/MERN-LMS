@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema(
 			},
 		},
 		avatar: {
-			type: Buffer,
+			type: String,
 		},
 		phoneNumber: {
 			trim: true,

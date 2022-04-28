@@ -5,6 +5,9 @@ import {
 	LIST_TEACHER_COURSES_FAIL,
 	LIST_TEACHER_COURSES_REQUEST,
 	LIST_TEACHER_COURSES_SUCCESS,
+	TEACHER_MY_COURSES_FAIL,
+	TEACHER_MY_COURSES_REQUEST,
+	TEACHER_MY_COURSES_SUCCESS,
 } from '../constants/teacherConstants';
 
 export const teacherListReducer = (state = { teachers: [] }, action) => {
@@ -27,6 +30,19 @@ export const teacherListCoursesReducer = (state = { courses: [] }, action) => {
 		case LIST_TEACHER_COURSES_SUCCESS:
 			return { loading: false, courses: action.payload, success: true };
 		case LIST_TEACHER_COURSES_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		default:
+			return state;
+	}
+};
+
+export const teacherMyCoursesReducer = (state = {}, action) => {
+	switch (action.type) {
+		case TEACHER_MY_COURSES_REQUEST:
+			return { loading: true };
+		case TEACHER_MY_COURSES_SUCCESS:
+			return { loading: false, courses: action.payload, success: true };
+		case TEACHER_MY_COURSES_FAIL:
 			return { loading: false, error: action.payload, success: false };
 		default:
 			return state;

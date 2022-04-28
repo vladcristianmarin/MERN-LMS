@@ -12,6 +12,7 @@ import AdminGroupListScreen from './screens/AdminGroupListScreen';
 import AdminCourseListScreen from './screens/AdminCourseListScreen';
 import StudentCoursesScreen from './screens/StudentCoursesScreen';
 import ChatScreen from './screens/ChatScreen';
+import TeacherCoursesScreen from './screens/TeacherCoursesScreen';
 
 const Router = () => {
 	return useRoutes([
@@ -26,6 +27,7 @@ const Router = () => {
 				{ path: '/admin/groups', element: <AdminGroupListScreen /> },
 				{ path: '/admin/courses', element: <AdminCourseListScreen /> },
 				{ path: '/student/courses', element: <StudentCoursesScreen /> },
+				{ path: '/teacher/courses', element: <TeacherCoursesScreen /> },
 				{ path: 'chat/:chatId', element: <ChatScreen /> },
 			],
 		},

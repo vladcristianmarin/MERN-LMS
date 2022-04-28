@@ -8,7 +8,7 @@ import ScrollableChat from './ScrollableChat';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { listMessages, sendMessage } from '../../actions/chatActions';
-import { ENDPOINT } from '../../constants/endpoint';
+import { ENDPOINT } from '../../constants/extra';
 
 const Chat = () => {
 	const theme = useTheme();

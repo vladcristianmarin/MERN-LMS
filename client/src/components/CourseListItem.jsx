@@ -1,23 +1,39 @@
 import { useTheme } from '@emotion/react';
-import { alpha, Card, ListItem, Stack, Link as MUILink, Typography, Avatar, Tooltip, Button } from '@mui/material';
+import {
+	alpha,
+	Card,
+	ListItem,
+	Stack,
+	Link as MUILink,
+	Typography,
+	Avatar,
+	Tooltip,
+	Button,
+	AvatarGroup,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { CURRENT_URL } from '../constants/extra';
 import Iconify from './Iconify';
 
 const CourseListItem = ({ course }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const { userInfo } = useSelector((state) => state.userLogin);
 
 	const navigateToChat = (chatId) => {
 		navigate(`/chat/${chatId}`, { replace: true });
 	};
 
 	return (
-		<ListItem key={course._id} sx={{ width: '100%' }}>
+		<ListItem
+			key={course._id}
+			sx={{ margin: 0, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 			<Card
 				sx={{
-					width: '100%',
+					width: '95%',
 					background: alpha(theme.palette.primary.lighter, 0.92),
 					padding: theme.spacing(1, 2),
 					display: 'flex',
@@ -48,18 +64,42 @@ const CourseListItem = ({ course }) => {
 				</Typography>
 				<Stack direction='row' justifyContent='space-between' alignItems='center'>
 					<Stack direction='row' alignItems='center' gap={0.5}>
-						<Avatar
-							sx={{ bgcolor: theme.palette.primary.main }}
-							// src={course.teacher.avatar}
-							alt={course.teacher.name}>
-							{course.teacher.name[0]}
-						</Avatar>
-						<Stack>
-							<Typography sx={{ lineHeight: 0.5 }} color='text.secondary' variant='body2'>
-								{course.teacher.title}
-							</Typography>
-							<Typography variant='subtitle1'>{course.teacher.name}</Typography>
-						</Stack>
+						{userInfo.role === 'Student' && (
+							<>
+								<Avatar
+									sx={{ bgcolor: theme.palette.primary.main }}
+									src={`${CURRENT_URL}/${course.teacher?.avatar}`}
+									alt={course.teacher.name}>
+									{course.teacher.name[0]}
+								</Avatar>
+								<Stack>
+									<Typography sx={{ lineHeight: 0.5 }} color='text.secondary' variant='body2'>
+										{course.teacher.title}
+									</Typography>
+									<Typography variant='subtitle1'>{course.teacher.name}</Typography>
+								</Stack>
+							</>
+						)}
+						{userInfo.role === 'Teacher' && (
+							<div style={{ display: 'flex', flexDirection: 'column' }}>
+								<Typography variant='subtitle1'>Students</Typography>
+								<AvatarGroup max={5}>
+									{course.groups.map((group) =>
+										group.students.map((stud) => {
+											return (
+												<Avatar
+													sx={{ bgcolor: theme.palette.primary.main }}
+													key={stud._id}
+													src={`${CURRENT_URL}/${stud?.avatar}`}
+													alt={stud.name}>
+													{stud.name[0]}
+												</Avatar>
+											);
+										})
+									)}
+								</AvatarGroup>
+							</div>
+						)}
 					</Stack>
 					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
 						{course.inCall && (

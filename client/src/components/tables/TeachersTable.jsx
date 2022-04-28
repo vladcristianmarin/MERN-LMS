@@ -41,6 +41,7 @@ import { USER_MAKE_ADMIN_RESET } from '../../constants/userConstants';
 
 //* EXTRAS
 import axios from 'axios';
+import { CURRENT_URL } from '../../constants/extra';
 
 const TeachersTable = () => {
 	const dispatch = useDispatch();
@@ -128,7 +129,7 @@ const TeachersTable = () => {
 			width: 64,
 			renderCell: (params) => {
 				return (
-					<Avatar src={params.row?.avatar} alt={params.row.name + ' profile picture'}>
+					<Avatar src={`${CURRENT_URL}/${params.row?.avatar}`} alt={params.row.name + ' profile picture'}>
 						{params.row.name[0].toUpperCase()}
 					</Avatar>
 				);

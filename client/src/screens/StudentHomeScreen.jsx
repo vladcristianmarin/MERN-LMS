@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@emotion/react';
 import AdapterDateFns from '@date-io/date-fns';
-import { Box, Card, CircularProgress, Typography } from '@mui/material';
+import { Box, Card, CircularProgress, List, Typography } from '@mui/material';
 import {
 	StyledAvatar,
 	StyledContainer,
@@ -15,6 +15,7 @@ import CoursesList from '../components/CoursesList';
 import AppTasks from '../components/forms/AppTasks';
 import { LocalizationProvider, StaticDatePicker } from '@mui/lab';
 import AppCourseActivity from '../components/app/AppCourseActivity.jsx';
+import CourseListItem from '../components/CourseListItem.jsx';
 
 const StudentHomeScreen = () => {
 	const theme = useTheme();
@@ -118,7 +119,12 @@ const StudentHomeScreen = () => {
 									</Card>
 								</Card>
 							)}
-							<CoursesList courses={todayCourses} />
+
+							<List sx={{ width: '100%' }}>
+								{todayCourses?.map((course, i) => (
+									<CourseListItem key={i} course={course} />
+								))}
+							</List>
 						</Box>
 					</Box>
 				</div>

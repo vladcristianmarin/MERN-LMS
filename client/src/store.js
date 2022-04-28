@@ -9,7 +9,7 @@ import {
 	courseListReducer,
 	courseUpdateReducer,
 } from './reducers/courseReducers';
-import { teacherListCoursesReducer, teacherListReducer } from './reducers/teacherReducers';
+import { teacherListCoursesReducer, teacherListReducer, teacherMyCoursesReducer } from './reducers/teacherReducers';
 import {
 	groupAddStudentsReducer,
 	groupCreateReducer,
@@ -53,6 +53,7 @@ const reducer = combineReducers({
 	groupRemoveCourse: groupRemoveCourseReducer,
 	teacherList: teacherListReducer,
 	teacherListCourses: teacherListCoursesReducer,
+	teacherMyCourses: teacherMyCoursesReducer,
 	studentList: studentListReducer,
 	studentMyGroup: studentMyGroupReducer,
 	studentMyCourses: studentMyCoursesReducer,

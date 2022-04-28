@@ -6,6 +6,7 @@ import TypingAnimation from './animations/TypingAnimation';
 import { useTheme } from '@emotion/react';
 import { Box } from '@mui/system';
 import { formatDate } from './utils/dateformatting';
+import { CURRENT_URL } from '../../constants/extra';
 
 const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 	const theme = useTheme();
@@ -27,7 +28,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 						}}>
 						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
 							<Tooltip title={m.sender.name}>
-								<Avatar sx={{ bgcolor: theme.palette.primary.main }} src={m.sender.pic}>
+								<Avatar sx={{ bgcolor: theme.palette.primary.main }} src={`${CURRENT_URL}/${m.sender?.avatar}`}>
 									{m.sender.name[0]} {m.sender.isAdmin}
 								</Avatar>
 							</Tooltip>

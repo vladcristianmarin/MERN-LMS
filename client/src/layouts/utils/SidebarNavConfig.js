@@ -47,7 +47,7 @@ const teacherSidebarConfig = (userInfo) => {
 	return [
 		{
 			title: 'Courses',
-			path: `/teacher/courses/${userInfo._id}`,
+			path: `/teacher/courses`,
 			icon: getIcon('eva:book-outline'),
 		},
 		{

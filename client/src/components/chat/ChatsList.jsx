@@ -10,7 +10,7 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { Box } from '@mui/system';
 import Iconify from '../Iconify';
-import { ENDPOINT } from '../../constants/endpoint';
+import { ENDPOINT } from '../../constants/extra';
 import { io } from 'socket.io-client';
 
 const ChatsList = React.forwardRef((props, ref) => {

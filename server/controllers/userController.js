@@ -113,4 +113,18 @@ const makeAdmin = asyncHandler(async (req, res) => {
 	res.status(201).send();
 });
 
-export { authUser, registerUser, logoutUser, verifyToken, makeAdmin };
+//* @description    Uploade avatar picture
+//* @route          POST /api/users/me/avatar
+//* @access         Protected
+
+const uploadAvatar = asyncHandler(async (req, res) => {
+	console.log(req.file.path);
+	const user = await User.findByIdAndUpdate(req.user._id, { avatar: req.file.path }, { new: true });
+	if (!user) {
+		res.status(404);
+		throw new Error('User not found!');
+	}
+	res.send(user);
+});
+
+export { authUser, registerUser, logoutUser, verifyToken, makeAdmin, uploadAvatar };

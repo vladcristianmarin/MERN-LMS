@@ -15,7 +15,7 @@ import {
 	SEND_CHAT_MESSAGE_REQUEST,
 	SEND_CHAT_MESSAGE_SUCCESS,
 } from '../constants/chatConstants';
-import { ENDPOINT } from '../constants/endpoint';
+import { ENDPOINT } from '../constants/extra';
 
 const socket = io(ENDPOINT);
 

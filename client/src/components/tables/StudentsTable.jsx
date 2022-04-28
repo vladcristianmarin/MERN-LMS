@@ -18,6 +18,7 @@ import { changeGroup, listStudents } from '../../actions/studentActions';
 //* EXTRAS
 import axios from 'axios';
 import { STUDENT_CHANGE_GROUP_RESET } from '../../constants/studentConstants';
+import { CURRENT_URL } from '../../constants/extra';
 
 const GroupEditCell = ({ id, field, row }) => {
 	const apiRef = useGridApiContext();
@@ -99,7 +100,7 @@ const StudentsTable = () => {
 			width: 64,
 			renderCell: (params) => {
 				return (
-					<Avatar src={params.row?.avatar} alt={params.row.name + ' profile picture'}>
+					<Avatar src={`${CURRENT_URL}/${params.row?.avatar}`} alt={params.row.name + ' profile picture'}>
 						{params.row.name[0].toUpperCase()}
 					</Avatar>
 				);

@@ -1,5 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Teacher from '../models/teacherModel.js';
+import Course from '../models/courseModel.js';
+import Group from '../models/groupModel.js';
 
 //* @description    Gets all teachers
 //* @route          GET /api/teachers
@@ -23,4 +25,20 @@ const getTeacherCourses = asyncHandler(async (req, res) => {
 	res.send(teacher.courses);
 });
 
-export { getTeachers, getTeacherCourses };
+//* @description    Populate my courses as teacher
+//* @route          GET /api/teachers/mycourses
+//* @access         Protected
+
+const getMyCourses = asyncHandler(async (req, res) => {
+	const courses = await Course.find({ teacher: req.user._id }).populate({
+		path: 'teacher',
+		select: 'name avatar email',
+	});
+	let groups = await Group.find({ courses: { $in: courses } })
+		.select('students code courses')
+		.populate({ path: 'students', select: 'name email avatar', options: { sort: { avatar: -1 } } });
+
+	res.send({ courses, groups });
+});
+
+export { getTeachers, getTeacherCourses, getMyCourses };
