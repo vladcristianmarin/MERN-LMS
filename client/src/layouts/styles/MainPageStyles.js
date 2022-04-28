@@ -4,6 +4,8 @@ const drawerWidth = 280;
 
 export const StyledMain = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
 	minHeight: 'calc(100vh - 164px)',
+	minWidth: 1200,
+	overflow: 'auto',
 	flexGrow: 1,
 	padding: theme.spacing(3),
 	transition: theme.transitions.create('margin', {

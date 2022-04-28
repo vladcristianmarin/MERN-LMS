@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CircularProgress, IconButton, List, ListItem, Stack, Typography } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,21 +10,34 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { Box } from '@mui/system';
 import Iconify from '../Iconify';
+import { ENDPOINT } from '../../constants/endpoint';
+import { io } from 'socket.io-client';
 
 const ChatsList = React.forwardRef((props, ref) => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
+	const [socket, setSocket] = useState(null);
+
 	const { selectedChat } = useSelector((state) => state.selectedChat);
 	const chatList = useSelector((state) => state.chatList);
 	const { error: chatListError, loading: chatListLoading, chats } = chatList;
+
+	useEffect(() => {
+		const newSocket = io(ENDPOINT);
+		setSocket(newSocket);
+		return () => {
+			newSocket.close();
+		};
+	}, []);
 
 	useEffect(() => {
 		dispatch(listChats());
 	}, [dispatch]);
 
 	const changeChatHandler = (chat) => {
+		socket.emit('leave chat', selectedChat);
 		dispatch(changeSelectedChat(chat));
 		navigate(`/chat/${chat._id}`, { replace: true });
 	};

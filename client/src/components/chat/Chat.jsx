@@ -37,7 +37,10 @@ const Chat = () => {
 		const newSocket = io(ENDPOINT);
 		newSocket.emit('setup', userInfo);
 		setSocket(newSocket);
-		return () => newSocket.close();
+		return () => {
+			newSocket.off('setup', userInfo);
+			newSocket.close();
+		};
 	}, [userInfo]);
 
 	useEffect(() => {
@@ -52,7 +55,9 @@ const Chat = () => {
 	useEffect(() => {
 		if (socket) {
 			const messageListener = (message) => {
-				setMessages((prevMessages) => [...prevMessages, message]);
+				if (message.sender._id !== userInfo?._id) {
+					setMessages((prevMessages) => [...prevMessages, message]);
+				}
 			};
 			const typingListener = (user) => {
 				setIsTyping(true);
@@ -72,6 +77,7 @@ const Chat = () => {
 				socket.off('stop typing', stopTypingListener);
 			};
 		}
+		// eslint-disable-next-line
 	}, [socket]);
 
 	useEffect(() => {

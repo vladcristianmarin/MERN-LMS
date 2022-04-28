@@ -82,15 +82,21 @@ io.on('connection', (socket) => {
 		if (!chat.users) {
 			return console.log('chat.users not defined'.bgRed.bold);
 		}
-		chat.users.forEach((user) => {
-			if (user._id !== message.sender._id) {
-				socket.in(user._id).emit('message received', message);
-			}
-		});
+
+		// chat.users.forEach((user) => {
+		// 	if (user._id !== message.sender._id) {
+		// 		socket.in(user._id).emit('message received', message);
+		// 	}
+		// });
+
+		socket.in(message.chat._id).emit('message received', message);
 	});
+
+	socket.on('leave chat', (chat) => socket.leave(chat._id));
 
 	socket.off('setup', (user) => {
 		socket.leave(user._id);
+		console.log('socket.off').bgRed;
 	});
 
 	socket.on('connect_error', (err) => {

@@ -1,101 +1,88 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {
-	Avatar,
-	Box,
-	Button,
-	Stack,
-	Typography,
-	Link as MUILink,
-	ListItem,
-} from '@mui/material';
-import randomColor from '../utils/randomColor';
-import Iconify from '../components/Iconify';
 import { useTheme } from '@emotion/react';
-import { Link } from 'react-router-dom';
+import { alpha, Card, ListItem, Stack, Link as MUILink, Typography, Avatar, Tooltip, Button } from '@mui/material';
+import { Box } from '@mui/system';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Iconify from './Iconify';
 
-const CourseListItem = ({
-	avatarText,
-	title,
-	prof,
-	when,
-	inCall = false,
-	id,
-}) => {
+const CourseListItem = ({ course }) => {
 	const theme = useTheme();
+	const navigate = useNavigate();
+
+	const navigateToChat = (chatId) => {
+		navigate(`/chat/${chatId}`, { replace: true });
+	};
 
 	return (
-		<ListItem
-			sx={{
-				borderRadius: '16px',
-				display: 'grid',
-				gridTemplateColumns: '0.2fr 3fr  1fr 2fr',
-				alignContent: 'top',
-				gap: 2,
-				boxShadow: theme.shadows[3],
-				my: 2,
-			}}>
-			<Avatar
+		<ListItem key={course._id} sx={{ width: '100%' }}>
+			<Card
 				sx={{
-					bgcolor: randomColor(),
-					height: 64,
-					width: 64,
+					width: '100%',
+					background: alpha(theme.palette.primary.lighter, 0.92),
+					padding: theme.spacing(1, 2),
+					display: 'flex',
+					flexDirection: 'column',
+					gap: 1,
 				}}>
-				<Typography variant='subtitle1'>{avatarText}</Typography>
-			</Avatar>
+				<Stack direction='row' alignItems='center' gap={1} justifyContent='space-between'>
+					<MUILink component={Link} variant='h5' to='#' underline='hover' color='text.primary'>
+						{course.name}
+					</MUILink>
 
-			<Box sx={{ ml: 2 }}>
-				<MUILink
-					component={Link}
-					variant='h4'
-					color='text.primary'
-					to={`/courses/${id}`}
-					underline='hover'>
-					{title}
-				</MUILink>
+					<Stack alignItems='flex-end'>
+						<Typography variant='subtitle1'>
+							{course.weekday.replace(/\w/, (firstLetter) => firstLetter.toUpperCase())}
+						</Typography>
+						<Typography variant='subtitle2' color='text.secondary'>
+							{new Date(course.hour).toLocaleString('en-US', {
+								hour: 'numeric',
+								minute: 'numeric',
+								hour12: false,
+							})}
+						</Typography>
+					</Stack>
+				</Stack>
 
 				<Typography variant='body2' color='text.secondary'>
-					{prof}
+					{course.description}
 				</Typography>
-			</Box>
-
-			<Typography variant='body1'>{when}</Typography>
-
-			<Stack direction='row' spacing={1.5} sx={{ ml: 'auto' }}>
-				{inCall && (
-					<Button color='secondary' variant='contained' size='large'>
-						<Iconify
-							sx={{ width: 24, height: 24, mr: 0.5 }}
-							icon='eva:headphones-outline'
-						/>
-						Join Call
-					</Button>
-				)}
-				<Button color='primary' variant='contained' size='large'>
-					<Iconify
-						sx={{ width: 24, height: 24, mr: 0.5 }}
-						icon='eva:eye-outline'
-					/>
-					<MUILink
-						component={Link}
-						sx={{ color: 'inherit' }}
-						to={`/courses/${id}`}
-						underline='none'>
-						View
-					</MUILink>
-				</Button>
-			</Stack>
+				<Stack direction='row' justifyContent='space-between' alignItems='center'>
+					<Stack direction='row' alignItems='center' gap={0.5}>
+						<Avatar
+							sx={{ bgcolor: theme.palette.primary.main }}
+							// src={course.teacher.avatar}
+							alt={course.teacher.name}>
+							{course.teacher.name[0]}
+						</Avatar>
+						<Stack>
+							<Typography sx={{ lineHeight: 0.5 }} color='text.secondary' variant='body2'>
+								{course.teacher.title}
+							</Typography>
+							<Typography variant='subtitle1'>{course.teacher.name}</Typography>
+						</Stack>
+					</Stack>
+					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
+						{course.inCall && (
+							<Tooltip title='Join Call'>
+								<Button variant='contained' color='secondary' startIcon={<Iconify icon='eva:phone-outline' />}>
+									JOIN
+								</Button>
+							</Tooltip>
+						)}
+						<Tooltip title='Course Chat'>
+							<Button
+								variant='contained'
+								color='primary'
+								startIcon={<Iconify icon='eva:message-circle-outline' />}
+								onClick={navigateToChat.bind(this, course.chat)}>
+								CHAT
+							</Button>
+						</Tooltip>
+					</Box>
+				</Stack>
+			</Card>
 		</ListItem>
 	);
-};
-
-CourseListItem.propTypes = {
-	id: PropTypes.any.isRequired,
-	avatarText: PropTypes.string.isRequired,
-	title: PropTypes.string.isRequired,
-	prof: PropTypes.string.isRequired,
-	when: PropTypes.string.isRequired,
-	inCall: PropTypes.bool,
 };
 
 export default CourseListItem;
