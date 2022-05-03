@@ -17,6 +17,7 @@ const ChatBox = () => {
 	useEffect(() => {
 		const chatId = location.pathname.replace('/chat/', '');
 		dispatch(getChatById(chatId));
+		dispatch(changeSelectedChat(chatId));
 	}, [location, dispatch]);
 
 	useEffect(() => {

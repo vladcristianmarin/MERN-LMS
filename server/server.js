@@ -90,6 +90,8 @@ io.on('connection', (socket) => {
 		// 	}
 		// });
 
+		console.log(socket.rooms);
+
 		socket.in(message.chat._id).emit('message received', message);
 	});
 

@@ -38,8 +38,8 @@ const ChatsList = React.forwardRef((props, ref) => {
 
 	const changeChatHandler = (chat) => {
 		socket.emit('leave chat', selectedChat);
-		dispatch(changeSelectedChat(chat));
 		navigate(`/chat/${chat._id}`, { replace: true });
+		dispatch(changeSelectedChat(chat));
 	};
 
 	const refreshChatListHandler = () => {

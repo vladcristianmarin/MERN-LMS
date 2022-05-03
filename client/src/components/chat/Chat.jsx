@@ -55,7 +55,8 @@ const Chat = () => {
 	useEffect(() => {
 		if (socket) {
 			const messageListener = (message) => {
-				if (message.sender._id !== userInfo?._id) {
+				console.log(message.chat._id, selectedChat?._id, message.chat._id === selectedChat?._id);
+				if (message.sender._id !== userInfo?._id && message.chat._id === selectedChat?._id) {
 					setMessages((prevMessages) => [...prevMessages, message]);
 				}
 			};
