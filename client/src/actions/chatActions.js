@@ -1,5 +1,5 @@
 import axios from 'axios';
-import io from 'socket.io-client';
+
 import {
 	CHANGE_SELECTED_CHAT,
 	GET_CHAT_INFO_FAIL,
@@ -15,9 +15,6 @@ import {
 	SEND_CHAT_MESSAGE_REQUEST,
 	SEND_CHAT_MESSAGE_SUCCESS,
 } from '../constants/chatConstants';
-import { ENDPOINT } from '../constants/extra';
-
-const socket = io(ENDPOINT);
 
 export const changeSelectedChat = (chat) => (dispatch) => {
 	dispatch({ type: CHANGE_SELECTED_CHAT, payload: chat });
@@ -97,7 +94,6 @@ export const sendMessage = (chatId, content) => async (dispatch, getState) => {
 		const { data } = await axios.post(`/api/messages/${chatId}`, { content }, config);
 
 		dispatch({ type: SEND_CHAT_MESSAGE_SUCCESS, payload: data });
-		socket.emit('send message', data);
 	} catch (error) {
 		dispatch({
 			type: SEND_CHAT_MESSAGE_FAIL,

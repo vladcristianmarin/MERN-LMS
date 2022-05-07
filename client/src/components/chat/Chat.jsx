@@ -35,28 +35,26 @@ const Chat = () => {
 
 	useEffect(() => {
 		const newSocket = io(ENDPOINT);
-		newSocket.emit('setup', userInfo);
+		if (userInfo && selectedChat) {
+			dispatch(listMessages(selectedChat._id));
+
+			newSocket.emit('join', { user: userInfo, room: selectedChat._id }, (error) => {
+				if (error) {
+					alert(error);
+				}
+			});
+		}
 		setSocket(newSocket);
 		return () => {
 			newSocket.off('setup', userInfo);
 			newSocket.close();
 		};
-	}, [userInfo]);
-
-	useEffect(() => {
-		if (socket && selectedChat) {
-			dispatch(listMessages(selectedChat._id));
-			socket.emit('join chat', selectedChat._id);
-
-			return () => socket.off('join chat', selectedChat._id);
-		}
-	}, [dispatch, selectedChat, socket]);
+	}, [dispatch, userInfo, selectedChat]);
 
 	useEffect(() => {
 		if (socket) {
 			const messageListener = (message) => {
-				console.log(message.chat._id, selectedChat?._id, message.chat._id === selectedChat?._id);
-				if (message.sender._id !== userInfo?._id && message.chat._id === selectedChat?._id) {
+				if (message && message.sender._id !== userInfo?._id && message.chat._id === selectedChat?._id) {
 					setMessages((prevMessages) => [...prevMessages, message]);
 				}
 			};
@@ -69,13 +67,13 @@ const Chat = () => {
 				setTypingClient({});
 			};
 
-			socket.on('message received', messageListener);
+			socket.on('receiveMessage', messageListener);
 			socket.on('typing', typingListener);
-			socket.on('stop typing', stopTypingListener);
+			socket.on('stopTyping', stopTypingListener);
 			return () => {
-				socket.off('message received', messageListener);
+				socket.off('receiveMessage', messageListener);
 				socket.off('typing', typingListener);
-				socket.off('stop typing', stopTypingListener);
+				socket.off('stopTyping', stopTypingListener);
 			};
 		}
 		// eslint-disable-next-line
@@ -89,21 +87,23 @@ const Chat = () => {
 
 	useEffect(() => {
 		if (newMessage && !sendMessageError && !sendMessageLoading) {
+			console.log(newMessage);
+			socket.emit('sendMessage', newMessage);
 			setMessages((prevMessages) => [...prevMessages, newMessage]);
 		}
-	}, [sendMessageError, sendMessageLoading, newMessage]);
+	}, [sendMessageError, sendMessageLoading, newMessage, socket]);
 
 	useEffect(() => {
-		if (socket && selectedChat && !typing) {
-			socket.emit('stop typing', selectedChat._id);
-			return () => socket.off('stop typing', selectedChat._id);
+		if (socket && !typing) {
+			socket.emit('stopTyping');
+			return () => socket.off('stopTyping');
 		}
-	}, [typing, socket, selectedChat]);
+	}, [typing, socket]);
 
 	useEffect(() => {
-		if (message.length > 0 && socket && selectedChat && userInfo) {
+		if (message.length > 0 && socket) {
 			setTyping(true);
-			socket.emit('typing', selectedChat._id, userInfo);
+			socket.emit('typing');
 		}
 
 		const timerLength = message.length === 0 ? 600 : 3000;
@@ -114,8 +114,7 @@ const Chat = () => {
 		return () => {
 			clearTimeout(timer);
 		};
-		// eslint-disable-next-line
-	}, [message]);
+	}, [message, socket]);
 
 	const typeHandler = (e) => {
 		setMessage(e.target.value);
@@ -125,6 +124,7 @@ const Chat = () => {
 		if ((e.type === 'click' || e.key === 'Enter') && message) {
 			setMessage('');
 			dispatch(sendMessage(selectedChat._id, message));
+			socket.emit('sendMessage');
 		}
 	};
 

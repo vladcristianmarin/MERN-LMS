@@ -12,7 +12,7 @@ import styled from '@emotion/styled';
 const ChatScreen = () => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const [chatListVisible, setChatListVisible] = useState(false);
+	const [chatListVisible, setChatListVisible] = useState(true);
 
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
