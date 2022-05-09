@@ -11,11 +11,27 @@ import {
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_RESET,
 	COURSE_UPDATE_SUCCESS,
+	FETCH_COURSE_FAIL,
+	FETCH_COURSE_REQUEST,
+	FETCH_COURSE_SUCCESS,
 	LIST_COURSES_CLIENT_UPDATE,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
 } from '../constants/courseConstants';
+
+export const courseFetchReducer = (state = {}, action) => {
+	switch (action.type) {
+		case FETCH_COURSE_REQUEST:
+			return { loading: true };
+		case FETCH_COURSE_SUCCESS:
+			return { loading: false, course: action.payload, success: true };
+		case FETCH_COURSE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		default:
+			return state;
+	}
+};
 
 export const courseCreateReducer = (state = {}, action) => {
 	switch (action.type) {

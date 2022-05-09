@@ -9,11 +9,35 @@ import {
 	COURSE_UPDATE_FAIL,
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_SUCCESS,
+	FETCH_COURSE_FAIL,
+	FETCH_COURSE_REQUEST,
+	FETCH_COURSE_SUCCESS,
 	LIST_COURSES_CLIENT_UPDATE,
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
 } from '../constants/courseConstants';
+
+export const fetchCourse = (courseId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: FETCH_COURSE_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get(`/api/courses/${courseId}`, config);
+
+		dispatch({ type: FETCH_COURSE_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: FETCH_COURSE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
 
 export const listCourses = () => async (dispatch, getState) => {
 	try {

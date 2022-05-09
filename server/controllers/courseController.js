@@ -44,6 +44,20 @@ const createCourse = asyncHandler(async (req, res) => {
 	res.status(201).send(createdCourse);
 });
 
+//* @description    Gets  courses by id
+//* @route          GET /api/courses/:id
+//* @access         Protected
+
+const getCourse = asyncHandler(async (req, res) => {
+	const courseId = req.params.id;
+	const course = await Course.findById(courseId).populate('teacher resources');
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+	res.send(course);
+});
+
 //* @description    Gets all courses
 //* @route          GET /api/courses
 //* @access         Protected / Admin
@@ -110,4 +124,4 @@ const updateCourse = asyncHandler(async (req, res) => {
 	res.status(201).send(course);
 });
 
-export { createCourse, getCourses, deleteCourse, updateCourse };
+export { createCourse, getCourses, getCourse, deleteCourse, updateCourse };

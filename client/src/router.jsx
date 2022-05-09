@@ -13,6 +13,7 @@ import AdminCourseListScreen from './screens/AdminCourseListScreen';
 import StudentCoursesScreen from './screens/StudentCoursesScreen';
 import ChatScreen from './screens/ChatScreen';
 import TeacherCoursesScreen from './screens/TeacherCoursesScreen';
+import CourseResourcesScreen from './screens/CourseResourcesScreen';
 
 const Router = () => {
 	return useRoutes([
@@ -29,6 +30,7 @@ const Router = () => {
 				{ path: '/student/courses', element: <StudentCoursesScreen /> },
 				{ path: '/teacher/courses', element: <TeacherCoursesScreen /> },
 				{ path: 'chat/:chatId', element: <ChatScreen /> },
+				{ path: '/courses/:courseId', element: <CourseResourcesScreen /> },
 			],
 		},
 		{ path: '/login', element: <LoginScreen /> },

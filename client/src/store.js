@@ -6,6 +6,7 @@ import { userLoginReducer, userMakeAdminReducer, userRegisterReducer } from './r
 import {
 	courseCreateReducer,
 	courseDeleteReducer,
+	courseFetchReducer,
 	courseListReducer,
 	courseUpdateReducer,
 } from './reducers/courseReducers';
@@ -39,6 +40,7 @@ const reducer = combineReducers({
 	userLogin: userLoginReducer,
 	userRegister: userRegisterReducer,
 	userMakeAdmin: userMakeAdminReducer,
+	courseFetch: courseFetchReducer,
 	courseCreate: courseCreateReducer,
 	courseDelete: courseDeleteReducer,
 	courseUpdate: courseUpdateReducer,

@@ -41,7 +41,7 @@ const CourseListItem = ({ course }) => {
 					gap: 1,
 				}}>
 				<Stack direction='row' alignItems='center' gap={1} justifyContent='space-between'>
-					<MUILink component={Link} variant='h5' to='#' underline='hover' color='text.primary'>
+					<MUILink component={Link} variant='h5' to={`/courses/${course._id}`} underline='hover' color='text.primary'>
 						{course.name}
 					</MUILink>
 
@@ -64,7 +64,7 @@ const CourseListItem = ({ course }) => {
 				</Typography>
 				<Stack direction='row' justifyContent='space-between' alignItems='center'>
 					<Stack direction='row' alignItems='center' gap={0.5}>
-						{userInfo.role === 'Student' && (
+						{userInfo?.role === 'Student' && (
 							<>
 								<Avatar
 									sx={{ bgcolor: theme.palette.primary.main }}
@@ -80,7 +80,7 @@ const CourseListItem = ({ course }) => {
 								</Stack>
 							</>
 						)}
-						{userInfo.role === 'Teacher' && (
+						{userInfo?.role === 'Teacher' && (
 							<div style={{ display: 'flex', flexDirection: 'column' }}>
 								<Typography variant='subtitle1'>Students</Typography>
 								<AvatarGroup max={5}>
