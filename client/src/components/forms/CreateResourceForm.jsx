@@ -1,34 +1,21 @@
-import styled from '@emotion/styled';
-import * as Yup from 'yup';
-import FileUpload from 'react-material-file-upload';
-import {
-	Card,
-	Stack,
-	TextField,
-	Typography,
-	Button,
-	Autocomplete,
-	Select,
-	MenuItem,
-	FormControl,
-	InputLabel,
-	FormHelperText,
-	Input,
-	Fab,
-	IconButton,
-	Tooltip,
-} from '@mui/material';
-import AdapterDateFns from '@date-io/date-fns';
-import { LoadingButton, LocalizationProvider, TimePicker } from '@mui/lab';
 import React, { useEffect, useState } from 'react';
-import { Form, FormikProvider, useFormik } from 'formik';
+
 import { useDispatch, useSelector } from 'react-redux';
-import { COURSE_CREATE_RESET } from '../../constants/courseConstants';
-import Toast from '../Toast';
-import { createCourse } from '../../actions/courseActions';
-import { Box } from '@mui/system';
+
+import * as Yup from 'yup';
+import { Form, FormikProvider, useFormik } from 'formik';
+
+import styled from '@emotion/styled';
 import { useTheme } from '@emotion/react';
+import { Card, Stack, TextField, Typography, Button, FormControl, Fab, IconButton, Tooltip } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import FileUpload from 'react-material-file-upload';
+
+import Toast from '../Toast';
 import Iconify from '../Iconify';
+
+import { uploadResource } from '../../actions/courseActions';
+import { COURSE_UPLOAD_RESOURCE_RESET } from '../../constants/courseConstants';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	maxWidth: '40%',
@@ -38,7 +25,7 @@ const RootStyle = styled(Card)(({ theme }) => ({
 	backgroundColor: theme.palette.primary.lighter,
 }));
 
-const CreateResourceForm = () => {
+const CreateResourceForm = ({ courseId }) => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 
@@ -51,11 +38,12 @@ const CreateResourceForm = () => {
 		file: Yup.mixed()
 			.required('File is required!')
 			.test('fileSize', 'The file is too large', (value) => {
-				console.log(value);
 				if (!value || !value.length) return true;
 				return value[0].size <= 2000000;
 			}),
 	});
+
+	const { loading, success, error } = useSelector((state) => state.courseUploadResource);
 
 	const formik = useFormik({
 		initialValues: {
@@ -66,21 +54,12 @@ const CreateResourceForm = () => {
 		validationSchema: CreateResourceSchema,
 		onSubmit(values) {
 			const { title, description, file } = values;
-			console.log(title, description, file);
+			dispatch(uploadResource(courseId, title, description, file));
 		},
 	});
 
-	const {
-		errors,
-		touched,
-		setFieldValue,
-		isSubmitting,
-		setSubmitting,
-		handleSubmit,
-		handleReset,
-		getFieldProps,
-		values,
-	} = formik;
+	const { errors, touched, setFieldValue, isSubmitting, setSubmitting, handleSubmit, handleReset, getFieldProps } =
+		formik;
 
 	useEffect(() => {
 		if (files.length > 0) {
@@ -88,18 +67,35 @@ const CreateResourceForm = () => {
 		}
 	}, [setFieldValue, files]);
 
+	useEffect(() => {
+		if (!loading) {
+			setSubmitting(false);
+		}
+		if (success) {
+			setFiles([]);
+			handleReset();
+		}
+		// eslint-disable-next-line
+	}, [loading, success]);
+
 	const resetCreateState = () => {
-		dispatch({ type: COURSE_CREATE_RESET });
+		dispatch({ type: COURSE_UPLOAD_RESOURCE_RESET });
 	};
 
 	const cancelFormHandler = () => {
 		handleReset();
 	};
 
-	console.log(errors.file, touched.file);
-
 	return (
 		<>
+			<Toast show={error && !loading} timeout={3000} severity='error' message={error} onClose={resetCreateState} />
+			<Toast
+				show={success && !loading}
+				timeout={2000}
+				severity='success'
+				message='Resource uploaded!'
+				onClose={resetCreateState}
+			/>
 			{!showForm ? (
 				<Fab variant='extended' color='primary' aria-label='add' onClick={() => setShowForm(true)}>
 					<Iconify icon='eva:plus-outline' sx={{ width: 24, height: 24, mr: theme.spacing(1) }} />
@@ -107,15 +103,6 @@ const CreateResourceForm = () => {
 				</Fab>
 			) : (
 				<RootStyle>
-					{/* <Toast show={error && !loading} timeout={3000} severity='error' message={error} onClose={resetCreateState} />
-			<Toast
-				show={success && !loading}
-				timeout={2000}
-				severity='success'
-				message='Course created!'
-				onClose={resetCreateState}
-			/> */}
-
 					<Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ px: theme.spacing(1) }}>
 						<Typography variant='h5' sx={{ textAlign: 'start', ml: theme.spacing(1) }}>
 							Add Resource
@@ -154,7 +141,7 @@ const CreateResourceForm = () => {
 									error={Boolean(touched.description && errors.description)}
 									helperText={touched.description && errors.description}
 								/>
-								<FormControl {...getFieldProps('file')}>
+								<FormControl type='file' label='File' name='file' id='file'>
 									<FileUpload
 										value={files}
 										onChange={(file) => {

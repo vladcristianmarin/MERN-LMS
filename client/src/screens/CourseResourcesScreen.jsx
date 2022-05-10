@@ -65,7 +65,7 @@ const CourseResourcesScreen = () => {
 
 					<Divider sx={{ my: theme.spacing(2.5) }} />
 
-					{userInfo?.role === 'Teacher' && <CreateResourceForm />}
+					{userInfo?.role === 'Teacher' && <CreateResourceForm courseId={course?._id} />}
 				</Box>
 			)}
 		</Box>
