@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Chat from '../models/chatModel.js';
 import Course from '../models/courseModel.js';
+import Group from '../models/groupModel.js';
 import { Resource } from '../models/courseModel.js';
 import Teacher from '../models/teacherModel.js';
 
@@ -130,7 +131,6 @@ const updateCourse = asyncHandler(async (req, res) => {
 //* @access         Protected
 
 const uploadResource = asyncHandler(async (req, res) => {
-	console.log(req.headers);
 	const resource = await Resource.create({
 		title: req.body.title,
 		description: req.body.description,
@@ -143,4 +143,35 @@ const uploadResource = asyncHandler(async (req, res) => {
 	res.status(201).send();
 });
 
-export { createCourse, getCourses, getCourse, deleteCourse, updateCourse, uploadResource };
+//* @description    List all course resources
+//* @route          GET /api/courses/:id/resources
+//* @access         Protected
+
+const getResources = asyncHandler(async (req, res) => {
+	const course = await Course.findById(req.params.id).populate('teacher resources');
+
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+
+	switch (req.user.role) {
+		case 'Teacher': {
+			if (!course.teacher._id.equals(req.user._id)) {
+				throw new Error('Access denied! This is not your course!');
+			}
+			break;
+		}
+		case 'Student': {
+			const group = await Group.findById(req.user.group);
+			if (!group.courses.includes(course._id)) {
+				throw new Error('Access denied! You are not enrolled in this course!');
+			}
+			break;
+		}
+	}
+
+	res.send(course.resources);
+});
+
+export { createCourse, getCourses, getCourse, deleteCourse, updateCourse, uploadResource, getResources };

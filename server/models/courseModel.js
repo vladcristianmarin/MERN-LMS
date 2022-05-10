@@ -14,7 +14,7 @@ const resourceSchema = mongoose.Schema({
 		required: true,
 	},
 	file: {
-		type: Buffer,
+		type: String,
 		required: true,
 	},
 });

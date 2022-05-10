@@ -5,6 +5,7 @@ import {
 	deleteCourse,
 	getCourse,
 	getCourses,
+	getResources,
 	updateCourse,
 	uploadResource,
 } from '../controllers/courseController.js';
@@ -13,6 +14,9 @@ import { upload, access } from '../middleware/resourceUploadMiddleware.js';
 
 router.route('/').post(protect, admin, createCourse).get(protect, admin, getCourses);
 router.route('/:id').delete(protect, admin, deleteCourse).patch(protect, admin, updateCourse).get(protect, getCourse);
-router.route('/:id/resources').post(protect, access, upload.single('resource'), uploadResource);
+router
+	.route('/:id/resources')
+	.post(protect, access, upload.single('resource'), uploadResource)
+	.get(protect, getResources);
 
 export default router;
