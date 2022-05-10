@@ -9,6 +9,9 @@ import {
 	COURSE_UPDATE_FAIL,
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_SUCCESS,
+	COURSE_UPLOAD_RESOURCE_FAIL,
+	COURSE_UPLOAD_RESOURCE_REQUEST,
+	COURSE_UPLOAD_RESOURCE_SUCCESS,
 	FETCH_COURSE_FAIL,
 	FETCH_COURSE_REQUEST,
 	FETCH_COURSE_SUCCESS,
@@ -137,6 +140,38 @@ export const updateCourse = (courseId, updates) => async (dispatch, getState) =>
 	} catch (error) {
 		dispatch({
 			type: COURSE_UPDATE_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const uploadResource = (courseId, title, description, file) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: COURSE_UPLOAD_RESOURCE_REQUEST,
+		});
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+				Authorization: `Bearer ${authToken}`,
+			},
+		};
+
+		const formData = new FormData();
+		formData.append('title', title);
+		formData.append('description', description);
+		formData.append('resource', file);
+
+		await axios.post(`/api/courses/${courseId}/resources`, formData, config);
+		dispatch({ type: COURSE_UPLOAD_RESOURCE_SUCCESS });
+	} catch (error) {
+		dispatch({
+			type: COURSE_UPLOAD_RESOURCE_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}

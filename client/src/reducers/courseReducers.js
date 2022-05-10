@@ -11,6 +11,10 @@ import {
 	COURSE_UPDATE_REQUEST,
 	COURSE_UPDATE_RESET,
 	COURSE_UPDATE_SUCCESS,
+	COURSE_UPLOAD_RESOURCE_FAIL,
+	COURSE_UPLOAD_RESOURCE_REQUEST,
+	COURSE_UPLOAD_RESOURCE_RESET,
+	COURSE_UPLOAD_RESOURCE_SUCCESS,
 	FETCH_COURSE_FAIL,
 	FETCH_COURSE_REQUEST,
 	FETCH_COURSE_SUCCESS,
@@ -88,6 +92,22 @@ export const courseUpdateReducer = (state = {}, action) => {
 		case COURSE_UPDATE_FAIL:
 			return { loading: false, error: action.payload, success: false };
 		case COURSE_UPDATE_RESET: {
+			return {};
+		}
+		default:
+			return state;
+	}
+};
+
+export const courseUploadResourceReducer = (state = {}, action) => {
+	switch (action.type) {
+		case COURSE_UPLOAD_RESOURCE_REQUEST:
+			return { loading: true };
+		case COURSE_UPLOAD_RESOURCE_SUCCESS:
+			return { loading: false, success: true };
+		case COURSE_UPLOAD_RESOURCE_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case COURSE_UPLOAD_RESOURCE_RESET: {
 			return {};
 		}
 		default:

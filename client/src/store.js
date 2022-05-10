@@ -9,6 +9,7 @@ import {
 	courseFetchReducer,
 	courseListReducer,
 	courseUpdateReducer,
+	courseUploadResourceReducer,
 } from './reducers/courseReducers';
 import { teacherListCoursesReducer, teacherListReducer, teacherMyCoursesReducer } from './reducers/teacherReducers';
 import {
@@ -45,6 +46,7 @@ const reducer = combineReducers({
 	courseDelete: courseDeleteReducer,
 	courseUpdate: courseUpdateReducer,
 	courseList: courseListReducer,
+	courseUploadResource: courseUploadResourceReducer,
 	groupCreate: groupCreateReducer,
 	groupAddStudents: groupAddStudentsReducer,
 	groupRemoveStudent: groupRemoveStudentReducer,

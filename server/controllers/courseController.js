@@ -130,20 +130,7 @@ const updateCourse = asyncHandler(async (req, res) => {
 //* @access         Protected
 
 const uploadResource = asyncHandler(async (req, res) => {
-	if (req.user.role !== 'Teacher') {
-		res.status(401);
-		throw new Error('Access denied! Only teachers can upload files!');
-	}
-	const course = await Course.findById(req.params.id).populate('teacher');
-	if (!course.teacher._id.equals(req.user._id)) {
-		res.status(401);
-		throw new Error('Access denied! This is not your course!');
-	}
-	if (!course) {
-		res.status(404);
-		throw new Error('Course not found!');
-	}
-
+	console.log(req.headers);
 	const resource = await Resource.create({
 		title: req.body.title,
 		description: req.body.description,
