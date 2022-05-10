@@ -8,6 +8,7 @@ import {
 	courseDeleteReducer,
 	courseFetchReducer,
 	courseListReducer,
+	courseListResourcesReducer,
 	courseUpdateReducer,
 	courseUploadResourceReducer,
 } from './reducers/courseReducers';
@@ -46,6 +47,7 @@ const reducer = combineReducers({
 	courseDelete: courseDeleteReducer,
 	courseUpdate: courseUpdateReducer,
 	courseList: courseListReducer,
+	courseListResources: courseListResourcesReducer,
 	courseUploadResource: courseUploadResourceReducer,
 	groupCreate: groupCreateReducer,
 	groupAddStudents: groupAddStudentsReducer,

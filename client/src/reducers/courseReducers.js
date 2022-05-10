@@ -22,6 +22,10 @@ import {
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
+	LIST_COURSE_RESOURCES_CLIENT_UPDATE,
+	LIST_COURSE_RESOURCES_FAIL,
+	LIST_COURSE_RESOURCES_REQUEST,
+	LIST_COURSE_RESOURCES_SUCCESS,
 } from '../constants/courseConstants';
 
 export const courseFetchReducer = (state = {}, action) => {
@@ -62,6 +66,20 @@ export const courseListReducer = (state = { courses: [] }, action) => {
 			return { loading: false, error: action.payload, success: false };
 		case LIST_COURSES_CLIENT_UPDATE:
 			return { courses: action.payload };
+		default:
+			return state;
+	}
+};
+export const courseListResourcesReducer = (state = { resources: [] }, action) => {
+	switch (action.type) {
+		case LIST_COURSE_RESOURCES_REQUEST:
+			return { loading: true };
+		case LIST_COURSE_RESOURCES_SUCCESS:
+			return { loading: false, resources: action.payload, success: true };
+		case LIST_COURSE_RESOURCES_FAIL:
+			return { loading: false, error: action.payload, success: false };
+		case LIST_COURSE_RESOURCES_CLIENT_UPDATE:
+			return { resources: action.payload };
 		default:
 			return state;
 	}

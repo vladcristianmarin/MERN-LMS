@@ -140,7 +140,7 @@ const uploadResource = asyncHandler(async (req, res) => {
 
 	await Course.updateOne({ _id: req.params.id }, { $push: { resources: resource } });
 
-	res.status(201).send();
+	res.status(201).send(resource);
 });
 
 //* @description    List all course resources

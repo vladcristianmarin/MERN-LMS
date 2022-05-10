@@ -19,6 +19,10 @@ import {
 	LIST_COURSES_FAIL,
 	LIST_COURSES_REQUEST,
 	LIST_COURSES_SUCCESS,
+	LIST_COURSE_RESOURCES_CLIENT_UPDATE,
+	LIST_COURSE_RESOURCES_FAIL,
+	LIST_COURSE_RESOURCES_REQUEST,
+	LIST_COURSE_RESOURCES_SUCCESS,
 } from '../constants/courseConstants';
 
 export const fetchCourse = (courseId) => async (dispatch, getState) => {
@@ -58,6 +62,27 @@ export const listCourses = () => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: LIST_COURSES_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
+export const listCourseResources = (courseId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: LIST_COURSE_RESOURCES_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get(`/api/courses/${courseId}/resources`, config);
+
+		dispatch({ type: LIST_COURSE_RESOURCES_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: LIST_COURSE_RESOURCES_FAIL,
 			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
 		});
 	}
@@ -167,8 +192,12 @@ export const uploadResource = (courseId, title, description, file) => async (dis
 		formData.append('description', description);
 		formData.append('resource', file);
 
-		await axios.post(`/api/courses/${courseId}/resources`, formData, config);
+		const { data } = await axios.post(`/api/courses/${courseId}/resources`, formData, config);
 		dispatch({ type: COURSE_UPLOAD_RESOURCE_SUCCESS });
+
+		const resources = getState().courseResourcesList.resources || [];
+		resources.push(data);
+		dispatch({ type: LIST_COURSE_RESOURCES_CLIENT_UPDATE, payload: resources });
 	} catch (error) {
 		dispatch({
 			type: COURSE_UPLOAD_RESOURCE_FAIL,
