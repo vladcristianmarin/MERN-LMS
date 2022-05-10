@@ -118,8 +118,8 @@ const makeAdmin = asyncHandler(async (req, res) => {
 //* @access         Protected
 
 const uploadAvatar = asyncHandler(async (req, res) => {
-	console.log(req.file.path);
 	const user = await User.findByIdAndUpdate(req.user._id, { avatar: req.file.path }, { new: true });
+
 	if (!user) {
 		res.status(404);
 		throw new Error('User not found!');

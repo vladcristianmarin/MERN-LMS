@@ -121,7 +121,12 @@ const CreateResourceForm = () => {
 							Add Resource
 						</Typography>
 						<Tooltip title='Hide'>
-							<IconButton color='default' onClick={() => setShowForm(false)}>
+							<IconButton
+								color='default'
+								onClick={() => {
+									setShowForm(false);
+									cancelFormHandler();
+								}}>
 								<Iconify icon='eva:minus-circle-outline' />
 							</IconButton>
 						</Tooltip>

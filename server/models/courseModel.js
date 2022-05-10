@@ -9,6 +9,10 @@ const resourceSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	originalname: {
+		type: String,
+		required: true,
+	},
 	file: {
 		type: Buffer,
 		required: true,
@@ -51,5 +55,7 @@ const courseSchema = mongoose.Schema({
 });
 
 const Course = mongoose.model('Course', courseSchema);
+const Resource = mongoose.model('Resource', resourceSchema);
 
 export default Course;
+export { Resource };

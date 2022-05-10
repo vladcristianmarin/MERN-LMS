@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Chat from '../models/chatModel.js';
 import Course from '../models/courseModel.js';
+import { Resource } from '../models/courseModel.js';
 import Teacher from '../models/teacherModel.js';
 
 //* @description    Creates new course
@@ -124,4 +125,35 @@ const updateCourse = asyncHandler(async (req, res) => {
 	res.status(201).send(course);
 });
 
-export { createCourse, getCourses, getCourse, deleteCourse, updateCourse };
+//* @description    Upload course resource
+//* @route          POST /api/courses/:id/resources
+//* @access         Protected
+
+const uploadResource = asyncHandler(async (req, res) => {
+	if (req.user.role !== 'Teacher') {
+		res.status(401);
+		throw new Error('Access denied! Only teachers can upload files!');
+	}
+	const course = await Course.findById(req.params.id).populate('teacher');
+	if (!course.teacher._id.equals(req.user._id)) {
+		res.status(401);
+		throw new Error('Access denied! This is not your course!');
+	}
+	if (!course) {
+		res.status(404);
+		throw new Error('Course not found!');
+	}
+
+	const resource = await Resource.create({
+		title: req.body.title,
+		description: req.body.description,
+		originalname: req.file.originalname,
+		file: req.file.path,
+	});
+
+	await Course.updateOne({ _id: req.params.id }, { $push: { resources: resource } });
+
+	res.status(201).send();
+});
+
+export { createCourse, getCourses, getCourse, deleteCourse, updateCourse, uploadResource };
