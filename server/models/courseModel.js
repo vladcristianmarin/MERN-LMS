@@ -1,23 +1,26 @@
 import mongoose from 'mongoose';
 
-const resourceSchema = mongoose.Schema({
-	title: {
-		type: String,
-		required: true,
+const resourceSchema = mongoose.Schema(
+	{
+		title: {
+			type: String,
+			required: true,
+		},
+		description: {
+			type: String,
+			required: true,
+		},
+		originalname: {
+			type: String,
+			required: true,
+		},
+		file: {
+			type: String,
+			required: true,
+		},
 	},
-	description: {
-		type: String,
-		required: true,
-	},
-	originalname: {
-		type: String,
-		required: true,
-	},
-	file: {
-		type: String,
-		required: true,
-	},
-});
+	{ timestamps: true }
+);
 
 const courseSchema = mongoose.Schema({
 	name: {

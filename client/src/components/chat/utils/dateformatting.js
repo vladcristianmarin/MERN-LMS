@@ -1,4 +1,18 @@
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+const fullMoths = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
+];
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const fullDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -56,4 +70,13 @@ export const formatDate = (someDateTimeStamp) => {
 	} else {
 		return `${dayName}, ${date} ${month}`;
 	}
+};
+
+export const simpleDateFormat = (dateTimestamp) => {
+	const dt = new Date(dateTimestamp);
+	const date = dt.getDate();
+	const month = fullMoths[dt.getMonth()];
+	const year = dt.getFullYear();
+
+	return `${date} ${month}, ${year}`;
 };

@@ -81,6 +81,7 @@ const initialState = {
 	studentList: { students: [] },
 	groupList: { groups: [] },
 	courseList: { courses: [] },
+	courseListResources: { resources: [] },
 	teacherListCourses: { courses: [] },
 };
 

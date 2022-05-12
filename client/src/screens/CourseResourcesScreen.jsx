@@ -7,6 +7,7 @@ import CreateResourceForm from '../components/forms/CreateResourceForm';
 import { Avatar, Box, Card, CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { CURRENT_URL } from '../constants/extra';
+import CourseResourcesList from '../components/CourseResourcesList';
 
 const CourseResourcesScreen = () => {
 	const navigate = useNavigate();
@@ -26,8 +27,6 @@ const CourseResourcesScreen = () => {
 		const courseId = location.pathname.replace('/courses/', '');
 		dispatch(fetchCourse(courseId));
 	}, [dispatch, location]);
-
-	console.log(course);
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -66,6 +65,7 @@ const CourseResourcesScreen = () => {
 					<Divider sx={{ my: theme.spacing(2.5) }} />
 
 					{userInfo?.role === 'Teacher' && <CreateResourceForm courseId={course?._id} />}
+					<CourseResourcesList courseId={course?._id} />
 				</Box>
 			)}
 		</Box>

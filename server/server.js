@@ -39,7 +39,6 @@ app.use('/api/chats', chatRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
-console.log(path.join(__dirname, '/uploads'));
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.join(__dirname, '/client/build')));

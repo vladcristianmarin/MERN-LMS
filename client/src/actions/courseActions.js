@@ -77,7 +77,9 @@ export const listCourseResources = (courseId) => async (dispatch, getState) => {
 
 		const config = { headers: { Authorization: `Bearer ${authToken}` } };
 
-		const { data } = await axios.get(`/api/courses/${courseId}/resources`, config);
+		console.log(courseId);
+
+		const { data } = await axios.get(`/api/courses/resources/${courseId}/`, config);
 
 		dispatch({ type: LIST_COURSE_RESOURCES_SUCCESS, payload: data });
 	} catch (error) {
@@ -192,11 +194,12 @@ export const uploadResource = (courseId, title, description, file) => async (dis
 		formData.append('description', description);
 		formData.append('resource', file);
 
-		const { data } = await axios.post(`/api/courses/${courseId}/resources`, formData, config);
+		const { data } = await axios.post(`/api/courses/resources/${courseId}`, formData, config);
 		dispatch({ type: COURSE_UPLOAD_RESOURCE_SUCCESS });
 
-		const resources = getState().courseResourcesList.resources || [];
+		const resources = getState().courseListResources.resources || [];
 		resources.push(data);
+		console.log(resources);
 		dispatch({ type: LIST_COURSE_RESOURCES_CLIENT_UPDATE, payload: resources });
 	} catch (error) {
 		dispatch({
