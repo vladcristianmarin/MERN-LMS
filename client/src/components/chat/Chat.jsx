@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
 import { Box, CircularProgress, FormControl, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import { useTheme } from '@emotion/react';
 
@@ -8,17 +7,16 @@ import ScrollableChat from './ScrollableChat';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { listMessages, sendMessage } from '../../actions/chatActions';
-import { ENDPOINT } from '../../constants/extra';
+
+import { ws } from '../../ws';
 
 const Chat = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 
-	const [socket, setSocket] = useState(null);
 	const [message, setMessage] = useState('');
 	const [messages, setMessages] = useState([]);
 
-	const [typing, setTyping] = useState(false);
 	const [isTyping, setIsTyping] = useState(false);
 	const [typingClient, setTypingClient] = useState({});
 
@@ -34,25 +32,23 @@ const Chat = () => {
 	const { loading: sendMessageLoading, error: sendMessageError, message: newMessage } = sendMessageState;
 
 	useEffect(() => {
-		const newSocket = io(ENDPOINT);
 		if (userInfo && selectedChat) {
 			dispatch(listMessages(selectedChat._id));
-
-			newSocket.emit('join', { user: userInfo, room: selectedChat._id }, (error) => {
+			ws.emit('join', { user: userInfo, room: selectedChat._id }, (error) => {
 				if (error) {
 					alert(error);
 				}
 			});
 		}
-		setSocket(newSocket);
+
 		return () => {
-			newSocket.off('setup', userInfo);
-			newSocket.close();
+			ws.off('setup', userInfo);
+			ws.close();
 		};
 	}, [dispatch, userInfo, selectedChat]);
 
 	useEffect(() => {
-		if (socket) {
+		if (ws) {
 			const messageListener = (message) => {
 				if (message && message.sender._id !== userInfo?._id && message.chat._id === selectedChat?._id) {
 					setMessages((prevMessages) => [...prevMessages, message]);
@@ -67,17 +63,17 @@ const Chat = () => {
 				setTypingClient({});
 			};
 
-			socket.on('receiveMessage', messageListener);
-			socket.on('typing', typingListener);
-			socket.on('stopTyping', stopTypingListener);
+			ws.on('receiveMessage', messageListener);
+			ws.on('typing', typingListener);
+			ws.on('stopTyping', stopTypingListener);
 			return () => {
-				socket.off('receiveMessage', messageListener);
-				socket.off('typing', typingListener);
-				socket.off('stopTyping', stopTypingListener);
+				ws.off('receiveMessage', messageListener);
+				ws.off('typing', typingListener);
+				ws.off('stopTyping', stopTypingListener);
 			};
 		}
 		// eslint-disable-next-line
-	}, [socket]);
+	}, [ws]);
 
 	useEffect(() => {
 		if (oldMessages && !messagesError && !messagesLoading) {
@@ -88,33 +84,26 @@ const Chat = () => {
 	useEffect(() => {
 		if (newMessage && !sendMessageError && !sendMessageLoading) {
 			console.log(newMessage);
-			socket.emit('sendMessage', newMessage);
+			ws.emit('sendMessage', newMessage);
 			setMessages((prevMessages) => [...prevMessages, newMessage]);
 		}
-	}, [sendMessageError, sendMessageLoading, newMessage, socket]);
+	}, [sendMessageError, sendMessageLoading, newMessage]);
 
 	useEffect(() => {
-		if (socket && !typing) {
-			socket.emit('stopTyping');
-			return () => socket.off('stopTyping');
-		}
-	}, [typing, socket]);
-
-	useEffect(() => {
-		if (message.length > 0 && socket) {
-			setTyping(true);
-			socket.emit('typing');
+		if (message.length > 0 && ws) {
+			ws.emit('typing');
 		}
 
 		const timerLength = message.length === 0 ? 600 : 3000;
 		const timer = setTimeout(() => {
-			setTyping(false);
+			ws.emit('stopTyping');
 		}, timerLength);
 
 		return () => {
 			clearTimeout(timer);
+			return () => ws.off('stopTyping');
 		};
-	}, [message, socket]);
+	}, [message]);
 
 	const typeHandler = (e) => {
 		setMessage(e.target.value);
@@ -124,7 +113,7 @@ const Chat = () => {
 		if ((e.type === 'click' || e.key === 'Enter') && message) {
 			setMessage('');
 			dispatch(sendMessage(selectedChat._id, message));
-			socket.emit('sendMessage');
+			ws.emit('sendMessage');
 		}
 	};
 

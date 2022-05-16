@@ -77,8 +77,6 @@ export const listCourseResources = (courseId) => async (dispatch, getState) => {
 
 		const config = { headers: { Authorization: `Bearer ${authToken}` } };
 
-		console.log(courseId);
-
 		const { data } = await axios.get(`/api/courses/resources/${courseId}/`, config);
 
 		dispatch({ type: LIST_COURSE_RESOURCES_SUCCESS, payload: data });
@@ -199,7 +197,7 @@ export const uploadResource = (courseId, title, description, file) => async (dis
 
 		const resources = getState().courseListResources.resources || [];
 		resources.push(data);
-		console.log(resources);
+
 		dispatch({ type: LIST_COURSE_RESOURCES_CLIENT_UPDATE, payload: resources });
 	} catch (error) {
 		dispatch({

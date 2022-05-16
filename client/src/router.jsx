@@ -14,6 +14,7 @@ import StudentCoursesScreen from './screens/StudentCoursesScreen';
 import ChatScreen from './screens/ChatScreen';
 import TeacherCoursesScreen from './screens/TeacherCoursesScreen';
 import CourseResourcesScreen from './screens/CourseResourcesScreen';
+import MeetingScreen from './screens/MeetingScreen';
 
 const Router = () => {
 	return useRoutes([
@@ -31,6 +32,7 @@ const Router = () => {
 				{ path: '/teacher/courses', element: <TeacherCoursesScreen /> },
 				{ path: 'chat/:chatId', element: <ChatScreen /> },
 				{ path: '/courses/:courseId', element: <CourseResourcesScreen /> },
+				{ path: '/meeting/:meetingId', element: <MeetingScreen /> },
 			],
 		},
 		{ path: '/login', element: <LoginScreen /> },

@@ -5,7 +5,6 @@ import Course from '../models/courseModel.js';
 
 const storage = multer.diskStorage({
 	destination: function (req, _file, cb) {
-		console.log(req.body);
 		if (!(req.body.title && req.body.description)) {
 			cb(new Error('Title and description must be provided'), null);
 		}

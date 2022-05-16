@@ -16,6 +16,7 @@ import studentRoutes from './routes/studentRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import { videoCallHandler } from './videocall/index.js';
 
 dotenv.config();
 
@@ -57,7 +58,7 @@ const server = app.listen(
 
 const io = new Server(server, {
 	pingTimeout: 60000,
-	cors: { origin: 'http://localhost:3000' },
+	cors: { origin: 'http://localhost:3000', methods: ['GET', 'POST'] },
 });
 
 io.on('connection', (socket) => {
@@ -65,69 +66,22 @@ io.on('connection', (socket) => {
 	socket.on('join', ({ user, room }, cb) => {
 		socket.join(room);
 		console.log(`${user.name} joined room ${room}`);
-
 		cb(null);
 
 		socket.on('sendMessage', (message) => {
-			console.log('message emitted');
 			io.to(room).emit('receiveMessage', message);
 		});
 
 		socket.on('typing', () => {
-			console.log('typing');
 			socket.in(room).emit('typing', user);
 		});
 
 		socket.on('stopTyping', () => socket.in(room).emit('stopTyping'));
 	});
 
+	videoCallHandler(socket);
+
 	socket.on('disconnect', () => {
-		console.log('User disconnected'.bgRed);
+		console.log('user disconnected');
 	});
 });
-
-// io.on('connection', (socket) => {
-// 	console.log('user connected to the server'.bgGreen);
-// 	socket.on('setup', (user) => {
-// 		socket.join(user._id);
-// 		socket.emit('connected');
-// 	});
-
-// 	socket.on('join chat', (room) => {
-// 		console.log(`User joined room: ${room}`.bgYellow);
-// 		socket.join(room);
-// 	});
-
-// 	socket.on('typing', (room, user) => {
-// 		socket.in(room).emit('typing', user);
-// 	});
-// 	socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
-
-// 	socket.on('send message', (message) => {
-// 		const chat = message.chat;
-// 		if (!chat.users) {
-// 			return console.log('chat.users not defined'.bgRed.bold);
-// 		}
-
-// 		// chat.users.forEach((user) => {
-// 		// 	if (user._id !== message.sender._id) {
-// 		// 		socket.in(user._id).emit('message received', message);
-// 		// 	}
-// 		// });
-
-// 		console.log(socket.rooms);
-
-// 		socket.in(message.chat._id).emit('message received', message);
-// 	});
-
-// 	socket.on('leave chat', (chat) => socket.leave(chat._id));
-
-// 	socket.off('setup', (user) => {
-// 		socket.leave(user._id);
-// 		console.log('socket.off').bgRed;
-// 	});
-
-// 	socket.on('connect_error', (err) => {
-// 		console.log(`connect_error due to ${err.message}`);
-// 	});
-// });

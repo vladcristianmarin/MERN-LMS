@@ -160,7 +160,6 @@ const removeCourse = asyncHandler(async (req, res) => {
 	const course = await Course.findOne({ _id: courseId });
 
 	const studentsIds = group.students.map((stud) => stud._id);
-	console.log(studentsIds);
 	await Chat.findOneAndUpdate({ course: course._id }, { $pull: { users: { $in: [...studentsIds] } } }, { multi: true });
 
 	if (!group) {

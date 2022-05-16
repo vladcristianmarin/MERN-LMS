@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { useTheme } from '@emotion/react';
 import {
 	alpha,
@@ -12,19 +13,26 @@ import {
 	AvatarGroup,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { CURRENT_URL } from '../constants/extra';
 import Iconify from './Iconify';
 
+import { ws } from '../ws';
+
 const CourseListItem = ({ course }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
+	const [meetingStarted, setMeetingStarted] = useState(false);
 	const { userInfo } = useSelector((state) => state.userLogin);
 
 	const navigateToChat = (chatId) => {
 		navigate(`/chat/${chatId}`, { replace: true });
+	};
+
+	const startMeetingHandler = () => {
+		setMeetingStarted(true);
+		ws.emit('startMeeting');
 	};
 
 	return (
@@ -102,20 +110,43 @@ const CourseListItem = ({ course }) => {
 						)}
 					</Stack>
 					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
-						{course.inCall && (
+						{meetingStarted && (
 							<Tooltip title='Join Call'>
-								<Button variant='contained' color='secondary' startIcon={<Iconify icon='eva:phone-outline' />}>
-									JOIN
+								<Button variant='contained' color='secondary' startIcon={<Iconify icon='eva:video-outline' />}>
+									Join Meeting
 								</Button>
 							</Tooltip>
 						)}
+						{userInfo.role === 'Teacher' &&
+							(meetingStarted ? (
+								<Tooltip title='Close call'>
+									<Button
+										variant='contained'
+										color='error'
+										startIcon={<Iconify icon='eva:phone-off-outline' />}
+										onClick={() => {}}>
+										End Meeting
+									</Button>
+								</Tooltip>
+							) : (
+								<Tooltip title='Call students'>
+									<Button
+										variant='contained'
+										color='secondary'
+										startIcon={<Iconify icon='eva:phone-call-outline' />}
+										onClick={startMeetingHandler}>
+										Start Meeting
+									</Button>
+								</Tooltip>
+							))}
+
 						<Tooltip title='Course Chat'>
 							<Button
 								variant='contained'
 								color='primary'
 								startIcon={<Iconify icon='eva:message-circle-outline' />}
 								onClick={navigateToChat.bind(this, course.chat)}>
-								CHAT
+								Join Chat
 							</Button>
 						</Tooltip>
 					</Box>

@@ -16,8 +16,6 @@ const AccountPopover = () => {
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
-	console.log(userInfo);
-
 	const MENU_OPTIONS = [
 		{
 			label: 'Home',

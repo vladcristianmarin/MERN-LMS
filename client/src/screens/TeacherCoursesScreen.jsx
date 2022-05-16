@@ -12,8 +12,6 @@ const TeacherCoursesScreen = () => {
 		dispatch(getMyCourses());
 	}, [dispatch]);
 
-	console.log(courses);
-
 	return loading ? (
 		<Box
 			sx={{
