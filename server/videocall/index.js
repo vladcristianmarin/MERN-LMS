@@ -1,41 +1,35 @@
-import { v4 as uuidV4 } from 'uuid';
+const users = {};
+const socketToRoom = {};
 
-const meetings = {};
+export const videoCallHandler = (socket, io) => {
+	socket.on('join room', ({ meetingId, user }) => {
+		if (users[meetingId]) {
+			users[meetingId].push(user);
+		} else {
+			users[meetingId] = [user];
+		}
+		socketToRoom[socket.id] = { userId: user.userId, meetingId };
+		const usersInThisRoom = users[meetingId].filter((_user) => user.userId !== _user.userId);
 
-export const videoCallHandler = (socket) => {
-	const startMeeting = () => {
-		console.log('Meeting has started!');
-		const meetingId = uuidV4();
-		console.log(meetingId);
-		meetings[meetingId] = {};
-		socket.emit('meetingCreated', { meetingId });
-	};
-	const joinMeeting = ({ meetingId, peerId, userName }) => {
-		meetings[meetingId][peerId] = { peerId, userName };
-		socket.join(meetingId);
-		socket.to(meetingId).emit('userJoined', { peerId, userName });
-		socket.emit('getUsers', {
-			meetingId,
-			participants: meetings[meetingId],
-		});
+		socket.emit('all users', usersInThisRoom);
+	});
 
-		socket.on('disconnect', () => {
-			leaveMeeting({ meetingId, peerId });
-		});
-	};
-	const leaveMeeting = ({ meetingId, peerId }) => {
-		socket.to(meetingId).emit('userDisconnected', peerId);
-	};
-	const startSharing = ({ meetingId, peerId }) => {
-		socket.to(meetingId).emit('userStartedSharing', peerId);
-	};
-	const stopSharing = ({ meetingId }) => {
-		socket.to(meetingId).emit('userStoppedSharing');
-	};
+	socket.on('sending signal', ({ userToSignal, caller, signal }) => {
+		io.to(userToSignal.socketId).emit('user joined', { signal, caller });
+	});
 
-	socket.on('startMeeting', startMeeting);
-	socket.on('joinMeeting', joinMeeting);
-	socket.on('leaveMeeting', leaveMeeting);
-	socket.on('startSharing', startSharing);
-	socket.on('stopSharing', stopSharing);
+	socket.on('returning signal', ({ signal, caller }) => {
+		io.to(caller.socketId).emit('receiving returned signal', { signal, userId: caller.userId });
+	});
+
+	socket.on('disconnect', () => {
+		//TODO: IMPLEMENT DISCONNECTING
+		if (socketToRoom[socket.id]) {
+			const { meetingId, userId } = socketToRoom[socket.id];
+			const newUsers = users[meetingId].filter((user) => user.userId !== userId);
+			users[meetingId] = newUsers;
+			const userToSend = users[meetingId].map((user) => user.socketId);
+			io.to(userToSend).emit('refresh users', newUsers);
+		}
+	});
 };

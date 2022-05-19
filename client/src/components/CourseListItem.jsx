@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTheme } from '@emotion/react';
 import {
 	alpha,
@@ -18,21 +18,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CURRENT_URL } from '../constants/extra';
 import Iconify from './Iconify';
 
-import { ws } from '../ws';
-
 const CourseListItem = ({ course }) => {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const [meetingStarted, setMeetingStarted] = useState(false);
 	const { userInfo } = useSelector((state) => state.userLogin);
 
 	const navigateToChat = (chatId) => {
 		navigate(`/chat/${chatId}`, { replace: true });
 	};
 
-	const startMeetingHandler = () => {
-		setMeetingStarted(true);
-		ws.emit('startMeeting');
+	const startMeeting = () => {
+		navigate(`/meeting/${course?._id}`);
 	};
 
 	return (
@@ -110,15 +106,15 @@ const CourseListItem = ({ course }) => {
 						)}
 					</Stack>
 					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
-						{meetingStarted && (
+						{course?.inCall && (
 							<Tooltip title='Join Call'>
 								<Button variant='contained' color='secondary' startIcon={<Iconify icon='eva:video-outline' />}>
 									Join Meeting
 								</Button>
 							</Tooltip>
 						)}
-						{userInfo.role === 'Teacher' &&
-							(meetingStarted ? (
+						{userInfo?.role === 'Teacher' &&
+							(course?.inCall ? (
 								<Tooltip title='Close call'>
 									<Button
 										variant='contained'
@@ -134,7 +130,7 @@ const CourseListItem = ({ course }) => {
 										variant='contained'
 										color='secondary'
 										startIcon={<Iconify icon='eva:phone-call-outline' />}
-										onClick={startMeetingHandler}>
+										onClick={startMeeting}>
 										Start Meeting
 									</Button>
 								</Tooltip>

@@ -24,9 +24,9 @@ connectDB();
 
 const app = express();
 
-if (process.env.NODE_ENV === 'development') {
-	app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+// 	app.use(morgan('dev'));
+// }
 
 app.use(express.json());
 app.use('/api/users', userRoutes);
@@ -79,9 +79,8 @@ io.on('connection', (socket) => {
 		socket.on('stopTyping', () => socket.in(room).emit('stopTyping'));
 	});
 
-	videoCallHandler(socket);
-
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 	});
+	videoCallHandler(socket, io);
 });
