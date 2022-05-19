@@ -1,35 +1,42 @@
-const users = {};
-const socketToRoom = {};
-
 export const videoCallHandler = (socket, io) => {
-	socket.on('join room', ({ meetingId, user }) => {
-		if (users[meetingId]) {
-			users[meetingId].push(user);
-		} else {
-			users[meetingId] = [user];
+	socket.on('user joined room', (roomId) => {
+		const room = io.sockets.adapter.rooms.get(roomId);
+
+		const otherUsers = [];
+
+		if (room) {
+			room.forEach((id) => {
+				otherUsers.push(id);
+			});
 		}
-		socketToRoom[socket.id] = { userId: user.userId, meetingId };
-		const usersInThisRoom = users[meetingId].filter((_user) => user.userId !== _user.userId);
 
-		socket.emit('all users', usersInThisRoom);
+		socket.join(roomId);
+		socket.emit('all other users', otherUsers);
 	});
 
-	socket.on('sending signal', ({ userToSignal, caller, signal }) => {
-		io.to(userToSignal.socketId).emit('user joined', { signal, caller });
+	socket.on('peer connection request', ({ userIdToCall, sdp }) => {
+		io.to(userIdToCall).emit('connection offer', { sdp, callerId: socket.id });
 	});
 
-	socket.on('returning signal', ({ signal, caller }) => {
-		io.to(caller.socketId).emit('receiving returned signal', { signal, userId: caller.userId });
+	socket.on('connection answer', ({ userToAnswerTo, sdp }) => {
+		io.to(userToAnswerTo).emit('connection answer', { sdp, answererId: socket.id });
 	});
 
-	socket.on('disconnect', () => {
-		//TODO: IMPLEMENT DISCONNECTING
-		if (socketToRoom[socket.id]) {
-			const { meetingId, userId } = socketToRoom[socket.id];
-			const newUsers = users[meetingId].filter((user) => user.userId !== userId);
-			users[meetingId] = newUsers;
-			const userToSend = users[meetingId].map((user) => user.socketId);
-			io.to(userToSend).emit('refresh users', newUsers);
-		}
+	socket.on('ice-candidate', ({ target, candidate }) => {
+		io.to(target).emit('ice-candidate', { candidate, from: socket.id });
+	});
+
+	socket.on('disconnecting', () => {
+		socket.rooms.forEach((room) => {
+			socket.to(room).emit('user disconnected', socket.id);
+		});
+	});
+
+	socket.on('toggle remote cam', (targetId) => {
+		io.to(targetId).emit('toggle cam');
+	});
+
+	socket.on('toggle remote mic', (targetId) => {
+		io.to(targetId).emit('toggle mic');
 	});
 };
