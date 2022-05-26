@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@emotion/react';
 import {
 	alpha,
@@ -17,11 +17,18 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { CURRENT_URL } from '../constants/extra';
 import Iconify from './Iconify';
+import { ws } from '../ws';
 
 const CourseListItem = ({ course }) => {
+	const [inCall, setInCall] = useState(false);
+
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const { userInfo } = useSelector((state) => state.userLogin);
+
+	useEffect(() => {
+		setInCall(course?.inCall);
+	}, [course?.inCall]);
 
 	const navigateToChat = (chatId) => {
 		navigate(`/chat/${chatId}`, { replace: true });
@@ -29,6 +36,15 @@ const CourseListItem = ({ course }) => {
 
 	const startMeeting = () => {
 		navigate(`/meeting/${course?._id}`);
+	};
+
+	const joinMeeting = () => {
+		navigate(`/meeting/${course?._id}`);
+	};
+
+	const endMeeting = () => {
+		ws.emit('endMeeting', userInfo);
+		setInCall(false);
 	};
 
 	return (
@@ -106,21 +122,25 @@ const CourseListItem = ({ course }) => {
 						)}
 					</Stack>
 					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
-						{course?.inCall && (
+						{inCall && (
 							<Tooltip title='Join Call'>
-								<Button variant='contained' color='secondary' startIcon={<Iconify icon='eva:video-outline' />}>
+								<Button
+									variant='contained'
+									color='secondary'
+									startIcon={<Iconify icon='eva:video-outline' />}
+									onClick={joinMeeting}>
 									Join Meeting
 								</Button>
 							</Tooltip>
 						)}
 						{userInfo?.role === 'Teacher' &&
-							(course?.inCall ? (
+							(inCall ? (
 								<Tooltip title='Close call'>
 									<Button
 										variant='contained'
 										color='error'
 										startIcon={<Iconify icon='eva:phone-off-outline' />}
-										onClick={() => {}}>
+										onClick={endMeeting}>
 										End Meeting
 									</Button>
 								</Tooltip>

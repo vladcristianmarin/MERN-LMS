@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import express from 'express';
+import http from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
 import colors from 'colors';
@@ -15,14 +16,16 @@ import teacherRoutes from './routes/teacherRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
-import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { videoCallHandler } from './videocall/index.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import { PeerServer } from 'peer';
 
 dotenv.config();
 
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
 
 // if (process.env.NODE_ENV === 'development') {
 // 	app.use(morgan('dev'));
@@ -51,15 +54,13 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3030;
 
-const server = app.listen(
-	PORT,
-	console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold)
-);
-
 const io = new Server(server, {
 	pingTimeout: 60000,
 	cors: { origin: 'http://localhost:3000', methods: ['GET', 'POST'] },
 });
+
+const peer = new PeerServer({ port: 9001, key: 'peerjs', path: '/peerjs', proxied: true });
+app.use(peer);
 
 io.on('connection', (socket) => {
 	console.log('User connected to the server'.bgGreen);
@@ -82,5 +83,8 @@ io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
 	});
+
 	videoCallHandler(socket, io);
 });
+
+server.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold));
