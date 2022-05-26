@@ -138,6 +138,7 @@ const MeetingScreen = () => {
 				ws.off('userDisconnected');
 
 				ws.emit('userLeftMeeting');
+				ws.off('meetingEnded');
 
 				const tracks = myVideoStream.getTracks();
 				tracks.forEach((track) => track.stop());
