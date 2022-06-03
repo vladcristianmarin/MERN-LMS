@@ -15,6 +15,7 @@ import courseRoutes from './routes/courseRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import examRoutes from './routes/examRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { videoCallHandler } from './videocall/index.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -40,6 +41,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/chats', chatRoutes);
+app.use('/api/exams', examRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

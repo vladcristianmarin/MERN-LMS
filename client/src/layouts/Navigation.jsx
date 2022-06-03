@@ -6,7 +6,9 @@ import NavItem from '../components/NavItem';
 
 const Navigation = ({ navConfig, ...other }) => {
 	const { pathname } = useLocation();
-	const match = (path) => (path ? !!matchPath({ path, end: true }, pathname) : false);
+	const match = (path) => {
+		return path ? !!matchPath({ path, strict: false }, pathname) : false;
+	};
 	return (
 		<Box {...other}>
 			<List>

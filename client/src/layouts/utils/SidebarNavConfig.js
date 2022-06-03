@@ -57,7 +57,7 @@ const teacherSidebarConfig = (userInfo) => {
 		},
 		{
 			title: 'Exams',
-			path: `/exams/${userInfo.groupId}`,
+			path: `/exams/create`,
 			icon: getIcon('eva:file-text-outline'),
 		},
 	];

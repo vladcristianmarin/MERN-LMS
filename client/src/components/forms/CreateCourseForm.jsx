@@ -25,9 +25,9 @@ import { Box } from '@mui/system';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
-	boxShadow: theme.customShadows.secondary,
-	color: theme.palette.secondary.darker,
-	backgroundColor: theme.palette.secondary.lighter,
+	boxShadow: theme.customShadows.primary,
+	color: theme.palette.primary.darker,
+	backgroundColor: theme.palette.primary.lighter,
 }));
 
 const CreateCourseForm = () => {
@@ -118,7 +118,7 @@ const CreateCourseForm = () => {
 						<Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 1 }}>
 							<TextField
 								fullWidth
-								color='secondary'
+								color='primary'
 								type='text'
 								label='Name'
 								{...getFieldProps('name')}
@@ -127,7 +127,7 @@ const CreateCourseForm = () => {
 							/>
 							<TextField
 								fullWidth
-								color='secondary'
+								color='primary'
 								type='text'
 								label='Acronym'
 								{...getFieldProps('acronym')}
@@ -138,7 +138,7 @@ const CreateCourseForm = () => {
 						<TextField
 							fullWidth
 							multiline
-							color='secondary'
+							color='primary'
 							type='text'
 							label='Description'
 							{...getFieldProps('description')}
@@ -158,7 +158,7 @@ const CreateCourseForm = () => {
 							renderInput={(params) => (
 								<TextField
 									{...params}
-									color='secondary'
+									color='primary'
 									label='Teacher'
 									{...getFieldProps('teacher')}
 									error={Boolean(touched.teacher && errors.teacher)}
@@ -169,7 +169,7 @@ const CreateCourseForm = () => {
 						<Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 1 }}>
 							<Box>
 								<FormControl fullWidth {...getFieldProps('weekday')} error={Boolean(touched.weekday && errors.weekday)}>
-									<InputLabel id='weekday-select-label' color='secondary'>
+									<InputLabel id='weekday-select-label' color='primary'>
 										Weekday
 									</InputLabel>
 									<Select
@@ -177,7 +177,7 @@ const CreateCourseForm = () => {
 										labelId='weekday-select-label'
 										value={values.weekday}
 										label='Weekday'
-										color='secondary'
+										color='primary'
 										onChange={(e) => {
 											setFieldValue('weekday', e.target.value);
 										}}>
@@ -202,13 +202,13 @@ const CreateCourseForm = () => {
 									}}
 									renderInput={(params) => (
 										<TextField
-											color='secondary'
+											color='primary'
 											{...params}
 											{...getFieldProps('hour')}
 											error={Boolean(touched.hour && errors.hour)}
 											helperText={touched.hour && errors.hour}
 											onChange={(e) => {
-												setFieldValue(e.target.valueAsDate);
+												setFieldValue('hour', e.target.valueAsDate);
 											}}
 										/>
 									)}
@@ -217,7 +217,7 @@ const CreateCourseForm = () => {
 						</Box>
 						<Stack spacing={3} direction='row' sx={{ pt: 2 }}>
 							<LoadingButton
-								color='secondary'
+								color='primary'
 								fullWidth
 								size='large'
 								type='submit'

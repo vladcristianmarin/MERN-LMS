@@ -37,6 +37,7 @@ import {
 	selectedChatReducer,
 	sendMessageReducer,
 } from './reducers/chatReducers';
+import { examCreateReducer } from './reducers/examReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -71,6 +72,7 @@ const reducer = combineReducers({
 	sendMessage: sendMessageReducer,
 	selectedChat: selectedChatReducer,
 	chatInfo: chatInfoReducer,
+	examCreate: examCreateReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;

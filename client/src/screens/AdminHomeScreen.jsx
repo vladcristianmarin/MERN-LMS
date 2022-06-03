@@ -54,10 +54,10 @@ const AdminHomeScreen = () => {
 
 			<Grid spacing={6} container alignItems='center' justifyContent='center'>
 				<Grid item sm={12} md={6}>
-					<CreateGroupForm />
+					<CreateCourseForm />
 				</Grid>
 				<Grid item sm={12} md={6}>
-					<CreateCourseForm />
+					<CreateGroupForm />
 				</Grid>
 			</Grid>
 

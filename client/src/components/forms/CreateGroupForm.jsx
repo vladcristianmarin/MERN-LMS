@@ -11,9 +11,9 @@ import { createGroup } from '../../actions/groupActions';
 
 const RootStyle = styled(Card)(({ theme }) => ({
 	padding: theme.spacing(3, 0),
-	boxShadow: theme.customShadows.primary,
-	color: theme.palette.primary.darker,
-	backgroundColor: theme.palette.primary.lighter,
+	boxShadow: theme.customShadows.secondary,
+	color: theme.palette.secondary.darker,
+	backgroundColor: theme.palette.secondary.lighter,
 }));
 
 const CreateGroupForm = () => {
@@ -97,6 +97,7 @@ const CreateGroupForm = () => {
 						<TextField
 							fullWidth
 							type='text'
+							color='secondary'
 							label='Group Code (unique)'
 							{...getFieldProps('code')}
 							error={Boolean(touched.code && errors.code)}
@@ -105,6 +106,7 @@ const CreateGroupForm = () => {
 						<TextField
 							fullWidth
 							type='text'
+							color='secondary'
 							label='School name'
 							{...getFieldProps('school')}
 							error={Boolean(touched.school && errors.school)}
@@ -114,6 +116,7 @@ const CreateGroupForm = () => {
 							fullWidth
 							type='text'
 							label='Year of study'
+							color='secondary'
 							{...getFieldProps('yearOfStudy')}
 							error={Boolean(touched.yearOfStudy && errors.yearOfStudy)}
 							helperText={touched.yearOfStudy && errors.yearOfStudy}
@@ -123,16 +126,18 @@ const CreateGroupForm = () => {
 							key={loading}
 							multiple
 							id='tags-filled'
+							color='secondary'
 							value={values.students}
 							freeSolo
 							options={studentsEmails}
 							onChange={(_e, val) => setFieldValue('students', val)}
 							renderTags={(value, getTagProps) =>
-								value.map((option, index) => <Chip color='primary' label={option} {...getTagProps({ index })} />)
+								value.map((option, index) => <Chip color='secondary' label={option} {...getTagProps({ index })} />)
 							}
 							renderInput={(params) => (
 								<TextField
 									{...params}
+									color='secondary'
 									label='Students'
 									type='text'
 									placeholder="Student's email"
@@ -142,7 +147,13 @@ const CreateGroupForm = () => {
 							)}
 						/>
 						<Stack spacing={3} direction='row' sx={{ pt: 2 }}>
-							<LoadingButton fullWidth size='large' type='submit' variant='contained' loading={isSubmitting}>
+							<LoadingButton
+								fullWidth
+								size='large'
+								type='submit'
+								color='secondary'
+								variant='contained'
+								loading={isSubmitting}>
 								Create
 							</LoadingButton>
 							<Button fullWidth size='large' color='error' variant='contained' onClick={handleReset}>
