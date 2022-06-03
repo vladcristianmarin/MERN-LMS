@@ -31,6 +31,9 @@ import {
 	LIST_GROUPS_FAIL,
 	LIST_GROUPS_REQUEST,
 	LIST_GROUPS_SUCCESS,
+	LIST_GROUP_STUDENTS_FAIL,
+	LIST_GROUP_STUDENTS_REQUEST,
+	LIST_GROUP_STUDENTS_SUCCESS,
 } from '../constants/groupConstants';
 
 export const groupCreateReducer = (state = {}, action) => {
@@ -58,6 +61,19 @@ export const groupListReducer = (state = { groups: [] }, action) => {
 			return { loading: false, error: action.payload, success: false };
 		case LIST_GROUPS_CLIENT_UPDATE:
 			return { groups: action.payload };
+		default:
+			return state;
+	}
+};
+
+export const groupListStudentsReducer = (state = { students: [] }, action) => {
+	switch (action.type) {
+		case LIST_GROUP_STUDENTS_REQUEST:
+			return { loading: true };
+		case LIST_GROUP_STUDENTS_SUCCESS:
+			return { loading: false, students: action.payload, success: true };
+		case LIST_GROUP_STUDENTS_FAIL:
+			return { loading: false, error: action.payload, success: false };
 		default:
 			return state;
 	}

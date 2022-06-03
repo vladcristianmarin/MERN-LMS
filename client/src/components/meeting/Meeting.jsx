@@ -1,14 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '@emotion/react';
-import { Button, Grid, Pagination, PaginationItem, Stack, Tooltip } from '@mui/material';
+import {
+	Alert,
+	Button,
+	Grid,
+	IconButton,
+	Pagination,
+	PaginationItem,
+	Stack,
+	ToggleButton,
+	ToggleButtonGroup,
+	Tooltip,
+} from '@mui/material';
 import ParticipantsCam from './ParticipantsCam';
 import Iconify from '../Iconify';
 import MainCam from './MainCam';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ws } from '../../ws';
+import MeetingChat from './MeetingChat';
+import MeetingParticipants from './MeetingParticipants';
+import { Box } from '@mui/system';
 
-const DATA_LIMIT = 4;
+const DATA_LIMIT = 5;
 
 const Meeting = ({ myVideoStream, participants, participantVideoStream, startShareScreen, stopShareScreen }) => {
 	const [count, setCount] = useState(10);
@@ -20,6 +34,8 @@ const Meeting = ({ myVideoStream, participants, participantVideoStream, startSha
 	const [isSharing, setIsSharing] = useState(false);
 
 	const [meetingEnded, setMeetingEnded] = useState(false);
+
+	const [selectedSide, setSelectedSide] = useState('chat');
 
 	const theme = useTheme();
 	const navigate = useNavigate();
@@ -80,6 +96,10 @@ const Meeting = ({ myVideoStream, participants, participantVideoStream, startSha
 		setCameraHidden((prev) => !prev);
 	};
 
+	const selectedSideHandler = (e, side) => {
+		setSelectedSide(side);
+	};
+
 	const previous = () => <Iconify sx={{ width: '20px', height: '20px' }} icon='eva:arrow-left-outline' />;
 
 	const next = () => <Iconify sx={{ width: '20px', height: '20px' }} icon='eva:arrow-right-outline' />;
@@ -91,7 +111,7 @@ const Meeting = ({ myVideoStream, participants, participantVideoStream, startSha
 				color='inherit'
 				onClick={() => {
 					toggleMic();
-					ws.emit('toggledOwnMic', userInfo?._id);
+					ws.emit('toggleOwnMic', userInfo?._id);
 				}}
 				startIcon={micMuted ? <Iconify icon='eva:mic-off-outline' /> : <Iconify icon='eva:mic-outline' />}>
 				<Iconify
@@ -109,7 +129,7 @@ const Meeting = ({ myVideoStream, participants, participantVideoStream, startSha
 				color='inherit'
 				onClick={() => {
 					toggleCam();
-					ws.emit('toggledOwnCam', userInfo?._id);
+					ws.emit('toggleOwnCam', userInfo?._id);
 				}}
 				startIcon={cameraHidden ? <Iconify icon='eva:video-off-outline' /> : <Iconify icon='eva:video-outline' />}>
 				<Iconify
@@ -159,67 +179,121 @@ const Meeting = ({ myVideoStream, participants, participantVideoStream, startSha
 	);
 
 	return (
-		<Grid maxWidth='xl' container spacing={1.5} sx={{ px: theme.spacing(3) }}>
-			<Grid
-				item
-				xs={7}
+		<>
+			<Tooltip title='If something is off, press this'>
+				<IconButton
+					sx={{ marginLeft: theme.spacing(1.5), marginBottom: theme.spacing(0.5) }}
+					color='primary'
+					size='medium'
+					onClick={() => {
+						//eslint-disable-next-line
+						location.reload();
+					}}>
+					<Iconify icon='eva:refresh-outline' />
+				</IconButton>
+			</Tooltip>
+			<Box
 				sx={{
-					bgcolor: theme.palette.background.neutral,
-					p: theme.spacing(0.5, 1),
-					borderRadius: '7px',
-					boxShadow: theme.customShadows.z1,
+					px: theme.spacing(3),
+					margin: '0 auto',
+					display: 'grid',
+					minHeight: '70vh',
+					gridTemplateColumns: '0.6fr 0.35fr',
+					gridAutoRows: 'minmax(min-content, max-content)',
 				}}>
-				<Grid item xs={12}>
-					<MainCam myVideoStream={myVideoStream} user={userInfo} />
-				</Grid>
-				<Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-					{getPaginatedData().map((stream, index) => (
-						<ParticipantsCam key={index} stream={stream} participant={participants[index]} />
-					))}
-				</Grid>
-				<Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-					<Pagination
-						shape='rounded'
-						size='large'
-						count={count}
-						page={currentPage}
-						onChange={handlePageChange}
-						sx={{ mt: theme.spacing(1) }}
-						renderItem={(item) => (
-							<PaginationItem
-								components={{
-									previous,
-									next,
-								}}
-								{...item}
-							/>
-						)}
-					/>
-				</Grid>
-				<Grid
-					item
-					xs={12}
+				<Box
 					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-						bgcolor: theme.palette.background.paper,
-						mx: theme.spacing(8),
-						p: theme.spacing(1),
+						bgcolor: theme.palette.background.neutral,
+						p: theme.spacing(0.5, 1),
+						mr: theme.spacing(1.5),
+						minHeight: '65vh',
 						borderRadius: '7px',
 						boxShadow: theme.customShadows.z1,
-						mt: theme.spacing(1),
+						display: 'flex !important',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
 					}}>
-					<Stack gap={2} direction='row'>
-						{micButton}
-						{cameraButton}
-						{shareButton}
-					</Stack>
-					{meetingEnded ? goHomeButton : endLeaveButton}
-				</Grid>
-			</Grid>
-			<Grid item xs={5}></Grid>
-		</Grid>
+					{isSharing && (
+						<Alert
+							severity='info'
+							variant='filled'
+							sx={{ width: theme.spacing(45), boxShadow: theme.customShadows.z1, mb: theme.spacing(0.5) }}
+							iconMapping={{ info: <Iconify icon='eva:cast-outline' /> }}>
+							You are <strong>sharing</strong> your screen right now!
+						</Alert>
+					)}
+					<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: theme.spacing(0.5) }}>
+						<MainCam myVideoStream={myVideoStream} />
+						{getPaginatedData().map((stream, index) => (
+							<ParticipantsCam key={index} stream={stream} participant={participants[index * currentPage]} />
+						))}
+					</Box>
+
+					<Box>
+						<Grid item xs={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+							<Pagination
+								shape='rounded'
+								size='large'
+								count={count}
+								page={currentPage}
+								onChange={handlePageChange}
+								sx={{ mt: theme.spacing(1) }}
+								renderItem={(item) => (
+									<PaginationItem
+										components={{
+											previous,
+											next,
+										}}
+										{...item}
+									/>
+								)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							sx={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								bgcolor: theme.palette.background.paper,
+								mx: theme.spacing(8),
+								p: theme.spacing(1),
+								borderRadius: '7px',
+								boxShadow: theme.customShadows.z1,
+								mt: theme.spacing(1),
+							}}>
+							<Stack gap={2} direction='row'>
+								{micButton}
+								{cameraButton}
+								{shareButton}
+							</Stack>
+							{meetingEnded ? goHomeButton : endLeaveButton}
+						</Grid>
+					</Box>
+				</Box>
+				<Box item xs={5}>
+					<ToggleButtonGroup
+						exclusive
+						value={selectedSide}
+						onChange={selectedSideHandler}
+						sx={{
+							display: 'flex',
+							flexWrap: 'wrap',
+							bgcolor: theme.palette.background.paper,
+						}}>
+						<ToggleButton sx={{ flex: '1', borderBottomLeftRadius: 0 }} color='primary' value='chat'>
+							Chat
+						</ToggleButton>
+						<ToggleButton sx={{ flex: '1', borderBottomRightRadius: 0 }} color='primary' value='participants'>
+							Participants
+						</ToggleButton>
+					</ToggleButtonGroup>
+					{selectedSide === 'chat' && <MeetingChat />}
+					{selectedSide === 'participants' && <MeetingParticipants participants={participants} />}
+				</Box>
+			</Box>
+		</>
 	);
 };
 

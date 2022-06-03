@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { useTheme } from '@emotion/react';
-import { Button, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Button, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import Iconify from '../Iconify';
 import { ws } from '../../ws';
 
 const Video = styled('video')(() => ({
 	maxWidth: '100%',
-	height: '20vh',
+	maxHeight: '100%',
 	transform: 'rotateY(180deg)',
 	borderRadius: '3px',
 	objectFit: 'fill',
@@ -19,8 +19,8 @@ const ParticipantsCam = ({ stream, participant }) => {
 	const theme = useTheme();
 	const { userInfo } = useSelector((state) => state.userLogin);
 
-	const [userMuted, setUserMuted] = useState(false);
-	const [userHidden, setUserHidden] = useState(false);
+	const [userMuted, setUserMuted] = useState(participant?.isMuted || false);
+	const [userHidden, setUserHidden] = useState(participant?.isHidden || false);
 
 	useEffect(() => {
 		if (stream) {
@@ -29,11 +29,11 @@ const ParticipantsCam = ({ stream, participant }) => {
 	}, [stream]);
 
 	useEffect(() => {
-		ws.on('toggledOwnMic', (id) => {
+		ws.on('toggleOwnMic', (id) => {
 			console.log(id);
 			if (participant?._id === id) setUserMuted((prev) => !prev);
 		});
-		ws.on('toggledOwnCam', (id) => {
+		ws.on('toggleOwnCam', (id) => {
 			console.log(id);
 			if (participant?._id === id) setUserHidden((prev) => !prev);
 		});
@@ -52,6 +52,11 @@ const ParticipantsCam = ({ stream, participant }) => {
 	const toggleCamParticipant = () => {
 		const socketId = participant.socketId;
 		ws.emit('toggleCam', socketId);
+	};
+
+	const kickUser = () => {
+		const socketId = participant.socketId;
+		ws.emit('userKicked', socketId);
 	};
 
 	const micButton = (
@@ -92,12 +97,31 @@ const ParticipantsCam = ({ stream, participant }) => {
 
 	return (
 		<Paper sx={{ bgcolor: theme.palette.background.neutral, position: 'relative' }}>
-			<Video playsInline autoPlay ref={ref} muted />
+			<Video
+				playsInline
+				autoPlay
+				ref={ref}
+				onDoubleClick={(e) => {
+					e.currentTarget.requestFullscreen();
+				}}
+			/>
+
 			<Typography
 				sx={{ position: 'absolute', top: '5px', left: '5px', color: theme.palette.primary.contrastText }}
 				variant='subtitle2'>
 				{participant?.name}
 			</Typography>
+			{userInfo?.role === 'Teacher' && (
+				<Tooltip title='Kick'>
+					<IconButton
+						sx={{ position: 'absolute', top: '5px', right: '5px' }}
+						color='error'
+						size='small'
+						onClick={kickUser}>
+						<Iconify icon='eva:close-outline' />
+					</IconButton>
+				</Tooltip>
+			)}
 			{userInfo?.role === 'Teacher' && (
 				<Stack direction='row' sx={{ position: 'absolute', bottom: '5px', left: 0 }}>
 					{micButton}
@@ -113,6 +137,19 @@ const ParticipantsCam = ({ stream, participant }) => {
 					{userHidden ? <Iconify icon='eva:video-off-outline' /> : <Iconify icon='eva:video-outline' />}
 				</Stack>
 			)}
+			<Tooltip title='Maximize'>
+				<IconButton
+					sx={{
+						color: '#fff',
+						fontSize: '1.2rem',
+						position: 'absolute',
+						bottom: '5px',
+						right: 0,
+					}}
+					onClick={() => ref.current.requestFullscreen()}>
+					<Iconify icon='eva:expand-outline' />
+				</IconButton>
+			</Tooltip>
 		</Paper>
 	);
 };

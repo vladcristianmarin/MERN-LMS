@@ -6,6 +6,7 @@ import {
 	createGroup,
 	deleteGroup,
 	getGroups,
+	getGroupStudents,
 	removeCourse,
 	removeStudent,
 	updateGroup,
@@ -15,6 +16,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 router.route('/').post(protect, admin, createGroup).get(protect, admin, getGroups);
 
 router.route('/:id/courses').post(protect, admin, addCourseToGroup);
+router.route('/:id/students').get(protect, getGroupStudents);
 router.route('/:groupId/courses/:courseId').delete(protect, admin, removeCourse);
 router
 	.route('/:id')

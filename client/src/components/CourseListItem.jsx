@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTheme } from '@emotion/react';
 import {
 	alpha,
@@ -20,31 +20,24 @@ import Iconify from './Iconify';
 import { ws } from '../ws';
 
 const CourseListItem = ({ course }) => {
-	const [inCall, setInCall] = useState(false);
-
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const { userInfo } = useSelector((state) => state.userLogin);
-
-	useEffect(() => {
-		setInCall(course?.inCall);
-	}, [course?.inCall]);
 
 	const navigateToChat = (chatId) => {
 		navigate(`/chat/${chatId}`, { replace: true });
 	};
 
 	const startMeeting = () => {
-		navigate(`/meeting/${course?._id}`);
+		navigate(`/meeting/${course?._id}`, { replace: true });
 	};
 
 	const joinMeeting = () => {
-		navigate(`/meeting/${course?._id}`);
+		navigate(`/meeting/${course?._id}`, { replace: true });
 	};
 
 	const endMeeting = () => {
 		ws.emit('endMeeting', userInfo);
-		setInCall(false);
 	};
 
 	return (
@@ -122,7 +115,7 @@ const CourseListItem = ({ course }) => {
 						)}
 					</Stack>
 					<Box id='actions' sx={{ display: 'flex', gap: 0.5 }}>
-						{inCall && (
+						{course?.inCall && (
 							<Tooltip title='Join Call'>
 								<Button
 									variant='contained'
@@ -134,7 +127,7 @@ const CourseListItem = ({ course }) => {
 							</Tooltip>
 						)}
 						{userInfo?.role === 'Teacher' &&
-							(inCall ? (
+							(course?.inCall ? (
 								<Tooltip title='Close call'>
 									<Button
 										variant='contained'

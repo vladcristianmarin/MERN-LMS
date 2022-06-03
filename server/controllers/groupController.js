@@ -211,6 +211,21 @@ const updateGroup = asyncHandler(async (req, res) => {
 	res.status(201).send(group);
 });
 
+//* @description    Get group students
+//* @route          GET /api/groups/:id/students
+//* @access         Private
+
+const getGroupStudents = asyncHandler(async (req, res) => {
+	const group = await Group.findOne({
+		_id: req.params.id,
+	}).populate('students');
+	if (!group) {
+		res.status(404);
+		throw new Error('Group not found!');
+	}
+	res.send(group.students);
+});
+
 export {
 	createGroup,
 	addStudents,
@@ -220,4 +235,5 @@ export {
 	updateGroup,
 	addCourse as addCourseToGroup,
 	removeCourse,
+	getGroupStudents,
 };

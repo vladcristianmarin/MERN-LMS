@@ -72,6 +72,27 @@ export const listGroups = () => async (dispatch, getState) => {
 	}
 };
 
+export const listGroupStudents = (groupId) => async (dispatch, getState) => {
+	try {
+		dispatch({ type: LIST_GROUPS_REQUEST });
+
+		const {
+			userLogin: { authToken },
+		} = getState();
+
+		const config = { headers: { Authorization: `Bearer ${authToken}` } };
+
+		const { data } = await axios.get(`/api/groups/${groupId}/students`, config);
+
+		dispatch({ type: LIST_GROUPS_SUCCESS, payload: data });
+	} catch (error) {
+		dispatch({
+			type: LIST_GROUPS_FAIL,
+			payload: error.response && error.response.data.message ? error.response.data.message : error.message,
+		});
+	}
+};
+
 export const deleteGroup = (groupId) => async (dispatch, getState) => {
 	try {
 		dispatch({ type: GROUP_DELETE_REQUEST });

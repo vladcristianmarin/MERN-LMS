@@ -3,15 +3,17 @@ import styled from '@emotion/styled';
 import { Paper, Typography } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 
-const Video = styled('video')(() => ({
+const Video = styled('video')(({ theme }) => ({
 	width: '100%',
-	maxHeight: '55vh',
+	maxHeight: '100%',
 	transform: 'rotateY(180deg)',
 	borderRadius: '3px',
 	objectFit: 'cover',
+	border: `solid 2px ${theme.palette.error.main}`,
+	boxShadow: theme.customShadows.error,
 }));
 
-const MainCam = ({ myVideoStream, user }) => {
+const MainCam = ({ myVideoStream }) => {
 	const videoRef = useRef(null);
 	const theme = useTheme();
 
@@ -34,7 +36,7 @@ const MainCam = ({ myVideoStream, user }) => {
 					top: '5px',
 					left: '5px',
 				}}>
-				{user.name}
+				You
 			</Typography>
 		</Paper>
 	);

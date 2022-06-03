@@ -52,7 +52,7 @@ export const formatDate = (someDateTimeStamp) => {
 	if (isToday(dt)) {
 		const hour = dt.getHours();
 		const minutes = dt.getMinutes();
-		return `${hour}:${minutes}`;
+		return `${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}`;
 	}
 
 	if (isDateInThisWeek(dt)) {

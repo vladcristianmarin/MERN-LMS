@@ -26,7 +26,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 							p: theme.spacing(0.3, 0.5),
 							overflow: 'hidden',
 						}}>
-						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
+						{(isSameSender(messages, m, i, userInfo?._id) || isLastMessage(messages, i, userInfo?._id)) && (
 							<Tooltip title={m.sender.name}>
 								<Avatar sx={{ bgcolor: theme.palette.primary.main }} src={`${CURRENT_URL}/${m.sender?.avatar}`}>
 									{m.sender.name[0]} {m.sender.isAdmin}
@@ -41,9 +41,9 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 								gap: theme.spacing(0.3),
 								marginRight: '7px',
 								color: theme.palette.text.primary,
-								bgcolor: m.sender._id === userInfo._id ? theme.palette.secondary.light : theme.palette.primary.light,
-								boxShadow: m.sender._id === userInfo._id ? theme.customShadows.secondary : theme.customShadows.primary,
-								ml: isSameSenderMargin(messages, m, i, userInfo._id),
+								bgcolor: m.sender._id === userInfo?._id ? theme.palette.secondary.light : theme.palette.primary.light,
+								boxShadow: m.sender._id === userInfo?._id ? theme.customShadows.secondary : theme.customShadows.primary,
+								ml: isSameSenderMargin(messages, m, i, userInfo?._id),
 								p: theme.spacing(0.3, 1),
 								maxWidth: '75%',
 								position: 'relative',
@@ -56,7 +56,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 								{formatDate(m.createdAt)}
 							</Typography>
 						</Card>
-						{(isSameSender(messages, m, i, userInfo._id) || isLastMessage(messages, i, userInfo._id)) && (
+						{(isSameSender(messages, m, i, userInfo?._id) || isLastMessage(messages, i, userInfo?._id)) && (
 							<div
 								style={{
 									width: 0,
@@ -71,7 +71,7 @@ const ScrollableChat = ({ messages, isTyping, typingClient }) => {
 									zIndex: 1,
 								}}></div>
 						)}
-						{(isMySameSender(messages, m, i, userInfo._id) || isMyLastMessage(messages, i, userInfo._id)) && (
+						{(isMySameSender(messages, m, i, userInfo?._id) || isMyLastMessage(messages, i, userInfo?._id)) && (
 							<div
 								style={{
 									marginRight: '5px',

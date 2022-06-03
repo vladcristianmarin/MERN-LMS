@@ -34,7 +34,6 @@ const MeetingScreen = () => {
 	});
 
 	const navigate = useNavigate();
-
 	const { meetingId } = useParams();
 	const { userInfo } = useSelector((state) => state.userLogin);
 
@@ -49,6 +48,7 @@ const MeetingScreen = () => {
 				console.error(e);
 			}
 		};
+
 		getPermissions();
 	}, []);
 
@@ -91,15 +91,17 @@ const MeetingScreen = () => {
 			ws.on('userConnected', (user) => {
 				setToast({ show: true, severity: 'success', message: `${user?.name} has joined the meeting` });
 				const call = peer.call(user._id, myVideoStream);
-				setParticipantsPeers((prev) => [...prev, call]);
-				call.on('stream', (participantVideoStream) => {
-					setParticipantsStreams((prevStreams) => {
-						if (prevStreams.find((stream) => stream.id === participantVideoStream.id)) {
-							return prevStreams;
-						}
-						return [...prevStreams, participantVideoStream];
+				if (call) {
+					setParticipantsPeers((prev) => [...prev, call]);
+					call.on('stream', (participantVideoStream) => {
+						setParticipantsStreams((prevStreams) => {
+							if (prevStreams.find((stream) => stream.id === participantVideoStream.id)) {
+								return prevStreams;
+							}
+							return [...prevStreams, participantVideoStream];
+						});
 					});
-				});
+				}
 			});
 
 			let localParticipants = [];
@@ -125,6 +127,11 @@ const MeetingScreen = () => {
 					newParticipantsStreams.splice(participantIndex, 1);
 					return newParticipantsStreams;
 				});
+				setParticipantsPeers((prevParticipantsPeers) => {
+					const newParticipantsPeers = Array.from(prevParticipantsPeers);
+					newParticipantsPeers.splice(participantIndex, 1);
+					return newParticipantsPeers;
+				});
 			});
 
 			ws.on('meetingEnded', () => {
@@ -132,7 +139,7 @@ const MeetingScreen = () => {
 			});
 
 			return () => {
-				peer.off('open');
+				// peer.off('open');
 
 				ws.off('userConnected');
 				ws.off('userDisconnected');
@@ -145,7 +152,7 @@ const MeetingScreen = () => {
 			};
 		}
 		//eslint-disable-next-line
-	}, [myVideoStream]);
+	}, [myVideoStream, meetingId]);
 
 	function startShareScreen(isSharing) {
 		if (isSharing) {
@@ -207,7 +214,7 @@ const MeetingScreen = () => {
 					</Container>
 				</ErrorStyles>
 			) : (
-				<>
+				<Box sx={{ position: 'relative' }}>
 					{myVideoStream && (
 						<Meeting
 							myVideoStream={myVideoStream}
@@ -226,7 +233,7 @@ const MeetingScreen = () => {
 						message={toast?.message}
 						onClose={() => setToast(null)}
 					/>
-				</>
+				</Box>
 			)}
 		</>
 	);
