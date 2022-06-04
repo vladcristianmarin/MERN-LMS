@@ -18,3 +18,48 @@
 .css-1viyaj4-MuiAvatarGroup-root .MuiAvatar-root {
 	border: 2px solid rgba(200, 250, 205, 0.92) !important;
 }
+
+.mainApp-enter {
+	opacity: 0.01;
+}
+
+.mainApp-enter.mainApp-enter-active {
+	opacity: 1;
+	transition: opacity 500ms ease-in;
+}
+
+.mainApp-leave {
+	opacity: 1;
+}
+
+.mainApp-leave.mainApp-leave-active {
+	opacity: 0.01;
+	transition: opacity 300ms ease-in;
+}
+
+.mainApp-appear {
+	opacity: 0.01;
+}
+
+.mainApp-appear.mainApp-appear-active {
+	opacity: 1;
+	transition: opacity 0.5s ease-in;
+}
+
+.anim_mobile_selectors-enter {
+	opacity: 0.01;
+}
+.anim_mobile_selectors-enter-active {
+	opacity: 0.01;
+}
+.anim_mobile_selectors-enter-done {
+	opacity: 1;
+	transition: opacity 500ms linear;
+}
+.anim_mobile_selectors-exit {
+	opacity: 1;
+}
+.anim_mobile_selectors-exit-active {
+	opacity: 0.01;
+	transition: opacity 500ms linear;
+}

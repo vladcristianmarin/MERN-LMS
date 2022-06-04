@@ -10,6 +10,7 @@ import {
 	CardHeader,
 	Container,
 	List,
+	Stack,
 	TextField,
 	Typography,
 } from '@mui/material';
@@ -58,14 +59,15 @@ const CreateExamForm = () => {
 		description: Yup.string().required('Description is required'),
 		course: Yup.string().required('Course is required').nullable(),
 		date: Yup.string().required('Date and Hour is required').nullable(),
+		timer: Yup.number().required('timer is required').min(5).max(500),
 	});
 
 	const formik = useFormik({
-		initialValues: { title: '', description: '', date: '', course: '' },
+		initialValues: { title: '', description: '', date: '', course: '', timer: '' },
 		validationSchema: CreateExamSchema,
 		onSubmit(values) {
-			const { title, description, date, course } = values;
-			dispatch(createExam(title, description, course, date, savedQuestions));
+			const { title, description, date, course, timer } = values;
+			dispatch(createExam(title, description, course, date, timer, savedQuestions));
 		},
 	});
 
@@ -194,25 +196,35 @@ const CreateExamForm = () => {
 										/>
 									)}
 								/>
-								<LocalizationProvider dateAdapter={AdapterDateFns}>
-									<DateTimePicker
-										label='Date and Hour'
-										ampm={false}
-										value={values.date}
-										onChange={(value) => {
-											setFieldValue('date', value);
-										}}
-										renderInput={(params) => (
-											<TextField
-												type='time'
-												{...params}
-												{...getFieldProps('date')}
-												error={Boolean(touched.date && errors.date)}
-												helperText={touched.date && errors.date}
-											/>
-										)}
+								<Stack direction='row' gap={theme.spacing(1)}>
+									<LocalizationProvider dateAdapter={AdapterDateFns}>
+										<DateTimePicker
+											label='Date and Hour'
+											ampm={false}
+											value={values.date}
+											onChange={(value) => {
+												setFieldValue('date', value);
+											}}
+											renderInput={(params) => (
+												<TextField
+													type='time'
+													{...params}
+													{...getFieldProps('date')}
+													error={Boolean(touched.date && errors.date)}
+													helperText={touched.date && errors.date}
+												/>
+											)}
+										/>
+									</LocalizationProvider>
+									<TextField
+										color='primary'
+										type='number'
+										label="Timer (min')"
+										{...getFieldProps('timer')}
+										error={Boolean(touched.timer && errors.timer)}
+										helperText={touched.timer && errors.timer}
 									/>
-								</LocalizationProvider>
+								</Stack>
 							</Box>
 							<Button
 								variant='contained'

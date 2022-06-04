@@ -17,6 +17,12 @@ const examSchema = mongoose.Schema(
 			trim: true,
 			required: true,
 		},
+		timer: {
+			type: Number,
+			required: true,
+			min: 5,
+			max: 500,
+		},
 		course: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Course',

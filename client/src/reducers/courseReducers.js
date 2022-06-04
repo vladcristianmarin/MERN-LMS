@@ -70,6 +70,7 @@ export const courseListReducer = (state = { courses: [] }, action) => {
 			return state;
 	}
 };
+
 export const courseListResourcesReducer = (state = { resources: [] }, action) => {
 	switch (action.type) {
 		case LIST_COURSE_RESOURCES_REQUEST:

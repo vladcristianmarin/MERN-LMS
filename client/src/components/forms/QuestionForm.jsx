@@ -185,7 +185,7 @@ const QuestionForm = ({ id, removeQuestion, addQuestion, saveQuestion }) => {
 							variant='contained'
 							color='warning'
 							sx={{ ml: 'auto', bgcolor: '#fab005', color: '#fff' }}>
-							Save answer
+							Save question
 						</Button>
 					</Form>
 				</FormikProvider>

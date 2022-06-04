@@ -17,6 +17,7 @@ import CourseResourcesScreen from './screens/CourseResourcesScreen';
 import MeetingScreen from './screens/MeetingScreen';
 import StudentExamsScreen from './screens/StudentExamsScreen';
 import TeacherExamsScreen from './screens/TeacherExamsScreen';
+import ExamScreen from './screens/ExamScreen';
 
 const Router = () => {
 	return useRoutes([
@@ -36,7 +37,8 @@ const Router = () => {
 				{ path: '/courses/:courseId', element: <CourseResourcesScreen /> },
 				{ path: '/meeting/:meetingId', element: <MeetingScreen /> },
 				{ path: '/exams/create', element: <TeacherExamsScreen /> },
-				{ path: '/exams/:groupId', element: <StudentExamsScreen /> },
+				{ path: '/exams/', element: <StudentExamsScreen /> },
+				{ path: '/exams/:examId', element: <ExamScreen /> },
 			],
 		},
 		{ path: '/login', element: <LoginScreen /> },

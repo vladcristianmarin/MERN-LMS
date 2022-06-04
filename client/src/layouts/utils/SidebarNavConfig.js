@@ -37,7 +37,7 @@ const studentSidebarConfig = (userInfo) => {
 		},
 		{
 			title: 'Exams',
-			path: `/exams/${userInfo.groupId}`,
+			path: `/exams/`,
 			icon: getIcon('eva:file-text-outline'),
 		},
 	];

@@ -37,7 +37,7 @@ import {
 	selectedChatReducer,
 	sendMessageReducer,
 } from './reducers/chatReducers';
-import { examCreateReducer } from './reducers/examReducers';
+import { examCreateReducer, examListStudentReducer } from './reducers/examReducers';
 
 const reducer = combineReducers({
 	sidebar: sidebarReducer,
@@ -73,6 +73,7 @@ const reducer = combineReducers({
 	selectedChat: selectedChatReducer,
 	chatInfo: chatInfoReducer,
 	examCreate: examCreateReducer,
+	examListStudent: examListStudentReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
@@ -87,6 +88,7 @@ const initialState = {
 	courseList: { courses: [] },
 	courseListResources: { resources: [] },
 	teacherListCourses: { courses: [] },
+	examListStudent: { exams: [] },
 };
 
 const middleware = [thunk];
