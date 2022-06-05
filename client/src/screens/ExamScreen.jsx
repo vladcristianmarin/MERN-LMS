@@ -1,7 +1,9 @@
+import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
-import { Box, Button, Checkbox, CircularProgress, FormControlLabel, Paper } from '@mui/material';
+import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Iconify from '../components/Iconify';
 import Answer from '../components/quiz/Answer';
 import Question from '../components/quiz/Question';
 import Result from '../components/quiz/Result';
@@ -28,11 +30,36 @@ const ExamScreen = () => {
 	const [nbOfQuestions, setNbOfQuestions] = useState(0);
 	const [result, setResult] = useState(null);
 
+	const [videoStream, setVideoStream] = useState(null);
+
 	const [submitted, setSubmitted] = useState(false);
 
 	const [shouldShowNext, setShouldShowNext] = useState(false);
 
+	const theme = useTheme();
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const getPermissions = async () => {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+				setVideoStream(stream);
+				return stream;
+			} catch (e) {
+				navigate('/', { replace: true });
+				return null;
+			}
+		};
+		const result = Promise.all([]).then(getPermissions);
+
+		return () => {
+			result.then((stream) => {
+				const tracks = stream.getTracks();
+				tracks.forEach((track) => track.stop());
+			});
+		};
+	}, [navigate]);
 
 	useEffect(() => {
 		if (submitted && Object.keys(finalAnswers).length === questions.length) {
@@ -77,7 +104,9 @@ const ExamScreen = () => {
 		});
 		setSubmitted(true);
 		//fetchResult
-		setResult({ answers: 2, score: 12.5 });
+		setResult({ answers: 3, score: 100 });
+		const tracks = videoStream.getTracks();
+		tracks.forEach((track) => track.stop());
 	};
 
 	const onAnswerSelected = (answerId) => {
@@ -86,6 +115,9 @@ const ExamScreen = () => {
 	};
 
 	const onAnswerUnselected = (answerId) => {
+		if (selectedAnswers.length === 1) {
+			setShouldShowNext(false);
+		}
 		setSelectedAnswers((selected) => {
 			return selected.filter((s) => s !== answerId);
 		});
@@ -112,6 +144,22 @@ const ExamScreen = () => {
 	return (
 		<Transitions>
 			<StyledPaper id='mainContainer' elevation={2}>
+				{result === null && (
+					<Typography
+						variant='subtitle2'
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							mb: theme.spacing(1),
+						}}>
+						<Iconify icon='carbon:dot-mark' sx={{ fontSize: '20px', color: theme.palette.primary.main }} />
+						<Iconify
+							icon='eva:video-outline'
+							sx={{ fontSize: '20px', mr: theme.spacing(1), color: theme.palette.text.primary }}
+						/>
+						Don't cheat! You are being recorded!
+					</Typography>
+				)}
 				{questionsLoaded() && result === null ? (
 					<Transitions>
 						<>
