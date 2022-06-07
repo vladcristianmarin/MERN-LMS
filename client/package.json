@@ -1,7 +1,7 @@
 {
 	"name": "client",
 	"proxy": "http://127.0.0.1:3030",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"private": true,
 	"dependencies": {
 		"@emotion/react": "^11.9.0",
@@ -14,7 +14,10 @@
 		"@mui/utils": "^5.6.0",
 		"@mui/x-data-grid": "^5.8.0",
 		"@mui/x-date-pickers": "^5.0.0-alpha.5",
+		"@tensorflow-models/face-landmarks-detection": "^1.0.1",
+		"@tensorflow/tfjs": "^3.18.0",
 		"axios": "^0.26.1",
+		"crypto-js": "^4.1.1",
 		"date-fns": "^2.28.0",
 		"formik": "^2.2.9",
 		"lodash": "^4.17.21",
@@ -38,6 +41,7 @@
 		"simplebar": "^5.3.6",
 		"simplebar-react": "^2.3.6",
 		"socket.io-client": "^4.4.1",
+		"tslib": "^2.4.0",
 		"yup": "^0.32.11"
 	},
 	"scripts": {

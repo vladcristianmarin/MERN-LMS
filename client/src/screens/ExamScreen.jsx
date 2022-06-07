@@ -1,3 +1,5 @@
+import * as facemesh from '@tensorflow-models/face-landmarks-detection';
+
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
@@ -8,6 +10,7 @@ import Answer from '../components/quiz/Answer';
 import Question from '../components/quiz/Question';
 import Result from '../components/quiz/Result';
 import Transitions from '../utils/transitions';
+import Toast from '../components/Toast';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
 	position: 'relative',
@@ -22,6 +25,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const ExamScreen = () => {
+	const [audio] = useState(new Audio('http://thecyberbuddy.com/sounds/urgent.wav'));
+
 	const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 	const [currentAnswers, setCurrentAnswers] = useState([]);
 	const [questions, setQuestions] = useState([]);
@@ -29,12 +34,12 @@ const ExamScreen = () => {
 	const [finalAnswers, setFinalAnswers] = useState({});
 	const [nbOfQuestions, setNbOfQuestions] = useState(0);
 	const [result, setResult] = useState(null);
-
-	const [videoStream, setVideoStream] = useState(null);
-
 	const [submitted, setSubmitted] = useState(false);
-
 	const [shouldShowNext, setShouldShowNext] = useState(false);
+	const [video, setVideo] = useState(null);
+
+	const [showAlert, setShowAlert] = useState(false);
+	const [alertCounter, setAlertCounter] = useState(false);
 
 	const theme = useTheme();
 	const location = useLocation();
@@ -44,14 +49,24 @@ const ExamScreen = () => {
 		const getPermissions = async () => {
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-				setVideoStream(stream);
+				const video = document.createElement('video');
+				video.srcObject = stream;
+				video.width = 640;
+				video.height = 480;
+				video.muted = true;
+				video.onloadeddata = (e) => {
+					setVideo(e.target);
+					video.play();
+				};
 				return stream;
 			} catch (e) {
+				console.log(e);
 				navigate('/', { replace: true });
 				return null;
 			}
 		};
-		const result = Promise.all([]).then(getPermissions);
+
+		const result = getPermissions();
 
 		return () => {
 			result.then((stream) => {
@@ -59,7 +74,86 @@ const ExamScreen = () => {
 				tracks.forEach((track) => track.stop());
 			});
 		};
-	}, [navigate]);
+		//eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
+		if (video !== null) {
+			const runFacemesh = async () => {
+				const model = facemesh.SupportedModels.MediaPipeFaceMesh;
+				const detectorConfig = {
+					runtime: 'mediapipe',
+					solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+				};
+				const detector = await facemesh.createDetector(model, detectorConfig);
+				let leftCounter = 0;
+				let rightCounter = 0;
+				let upCounter = 0;
+				let downCounter = 0;
+				const interval = setInterval(async () => {
+					const face = await detector.estimateFaces(video);
+					face[0].keypoints.forEach((point) => {
+						if (point.name === 'leftEye') {
+							if (point.x > 430) {
+								console.log('You might be looking left');
+								leftCounter++;
+							}
+							if (point.x < 255) {
+								console.log('You might be looking right');
+								rightCounter++;
+							}
+							if (point.y < 190) {
+								console.log('You might be looking up');
+								upCounter++;
+							}
+							if (point.y > 270) {
+								console.log('You might be looking down');
+								downCounter++;
+							}
+						}
+						if (point.name === 'rightEye') {
+							if (point.x > 320) {
+								console.log('You might be looking left');
+								leftCounter++;
+							}
+							if (point.x < 235) {
+								console.log('You might be looking right');
+								rightCounter++;
+							}
+							if (point.y < 190) {
+								console.log('You might be looking up');
+								upCounter++;
+							}
+							if (point.y > 270) {
+								console.log('You might be looking down');
+								downCounter++;
+							}
+						}
+					});
+
+					if (leftCounter > 400 || rightCounter > 250 || upCounter > 400 || downCounter > 400) {
+						setShowAlert(true);
+						leftCounter = 0;
+						rightCounter = 0;
+						upCounter = 0;
+						downCounter = 0;
+					}
+				}, 100);
+				return interval;
+			};
+			const promise = runFacemesh();
+			return () => {
+				promise.then((interval) => clearInterval(interval));
+			};
+		}
+	}, [video]);
+
+	useEffect(() => {
+		if (showAlert) {
+			audio.play();
+			setAlertCounter((prev) => ++prev);
+		}
+	}, [showAlert, audio]);
 
 	useEffect(() => {
 		if (submitted && Object.keys(finalAnswers).length === questions.length) {
@@ -105,7 +199,7 @@ const ExamScreen = () => {
 		setSubmitted(true);
 		//fetchResult
 		setResult({ answers: 3, score: 100 });
-		const tracks = videoStream.getTracks();
+		const tracks = video.srcObject.getTracks();
 		tracks.forEach((track) => track.stop());
 	};
 
@@ -144,6 +238,13 @@ const ExamScreen = () => {
 	return (
 		<Transitions>
 			<StyledPaper id='mainContainer' elevation={2}>
+				<Toast
+					show={showAlert}
+					timeout={4000}
+					severity='error'
+					message={`Look in your monitor! Attempts left ${10 - alertCounter}`}
+					onClose={() => setShowAlert(false)}
+				/>
 				{result === null && (
 					<Typography
 						variant='subtitle2'
