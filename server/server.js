@@ -44,6 +44,8 @@ app.use('/api/teachers', teacherRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/exams', examRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/tasks', taskRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
