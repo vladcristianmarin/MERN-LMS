@@ -11,7 +11,7 @@ import {
 } from '../components/app/styles/StudentHomeScreenStyles.js';
 
 import AppProfileBox from '../components/app/AppProfileBox';
-import AppTasks from '../components/forms/AppTasks';
+import TasksFrom from '../components/forms/TasksForm';
 import { LocalizationProvider, StaticDatePicker } from '@mui/lab';
 import AppCourseActivity from '../components/app/AppCourseActivity.jsx';
 import CourseListItem from '../components/CourseListItem.jsx';
@@ -130,7 +130,7 @@ const StudentHomeScreen = () => {
 					</Box>
 				</div>
 				<Card sx={{ width: '100%', height: 'calc(100% - 75vh)' }}>
-					<AppTasks />
+					<TasksFrom />
 				</Card>
 			</Box>
 			<StyledRightCard>

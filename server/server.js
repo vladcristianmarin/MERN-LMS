@@ -15,6 +15,8 @@ import courseRoutes from './routes/courseRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 import examRoutes from './routes/examRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import { videoCallHandler } from './videocall/index.js';

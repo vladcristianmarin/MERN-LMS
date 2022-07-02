@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Form, FormikProvider, useFormik } from 'formik';
 // material
-import { Box, Card, Checkbox, CardHeader, Typography, FormControlLabel, Stack } from '@mui/material';
+import { Box, Checkbox, CardHeader, Typography, FormControlLabel, Stack } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
