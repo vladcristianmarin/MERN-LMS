@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@emotion/react';
 import AdapterDateFns from '@date-io/date-fns';
-import { Box, Card, CircularProgress, List, Typography } from '@mui/material';
+import { Box, Card, CircularProgress, List, TextField, Typography } from '@mui/material';
 import {
 	StyledAvatar,
 	StyledContainer,
@@ -11,7 +11,6 @@ import {
 } from '../components/app/styles/StudentHomeScreenStyles.js';
 
 import AppProfileBox from '../components/app/AppProfileBox';
-import CoursesList from '../components/CoursesList';
 import AppTasks from '../components/forms/AppTasks';
 import { LocalizationProvider, StaticDatePicker } from '@mui/lab';
 import AppCourseActivity from '../components/app/AppCourseActivity.jsx';
@@ -25,6 +24,8 @@ const StudentHomeScreen = () => {
 	const { loading: studentCoursesLoading } = studentCourses;
 
 	const courses = studentCourses.courses || [];
+
+	const [calendarValue, setCalendarValue] = useState(new Date());
 
 	const weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 	const todayCourses = courses.filter((course) => course.weekday === weekdays[new Date().getDay() - 1]);
@@ -120,7 +121,7 @@ const StudentHomeScreen = () => {
 								</Card>
 							)}
 
-							<List sx={{ width: '100%' }}>
+							<List sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }}>
 								{todayCourses?.map((course, i) => (
 									<CourseListItem key={i} course={course} />
 								))}
@@ -160,7 +161,14 @@ const StudentHomeScreen = () => {
 				</StyledRightChildrenCard>
 				<StyledRightChildrenCard sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
-						<StaticDatePicker openTo='day' />
+						<StaticDatePicker
+							openTo='day'
+							value={calendarValue}
+							onChange={(newValue) => {
+								setCalendarValue(newValue);
+							}}
+							renderInput={(params) => <TextField {...params} />}
+						/>
 					</LocalizationProvider>
 				</StyledRightChildrenCard>
 				<StyledRightChildrenCard sx={{ gridColumn: '1 / -1' }}>

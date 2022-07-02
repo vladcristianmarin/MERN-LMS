@@ -67,7 +67,9 @@ const RegisterForm = ({ variant }) => {
 		phoneNumber: Yup.string().min(10, 'Too Short').required('Phone Number is required'),
 		country: Yup.string().required('Please choose a country'),
 		password: Yup.string().required('Password is required'),
-		passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+		passwordConfirmation: Yup.string()
+			.oneOf([Yup.ref('password'), null], 'Passwords must match')
+			.required('Confirm Password is required!'),
 		...(variant === 'teacher' && {
 			title: Yup.string().min(2, 'Too Short').max(50, 'Too Long').required('Title is required'),
 			school: Yup.string().min(2, 'Too Short').max(50, 'Too Long').required('School name is required'),

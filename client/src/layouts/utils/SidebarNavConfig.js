@@ -10,6 +10,7 @@ const generalSidebarConfig = () => {
 			path: '/',
 			icon: getIcon('eva:home-outline'),
 		},
+		{ title: 'Calendar', path: '/calendar', icon: getIcon('eva:calendar-outline') },
 		{
 			title: 'Announcements',
 			path: `/announcements`,
@@ -24,11 +25,6 @@ const studentSidebarConfig = (userInfo) => {
 			title: 'My Courses',
 			path: `/student/courses`,
 			icon: getIcon('eva:book-outline'),
-		},
-		{
-			title: 'Schedule',
-			path: `/schedule/${userInfo.groupId}`,
-			icon: getIcon('eva:calendar-outline'),
 		},
 		{
 			title: 'Grades',

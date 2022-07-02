@@ -1,4 +1,4 @@
 import io from 'socket.io-client';
-import { ENDPOINT } from './constants/extra';
+// import { ENDPOINT } from './constants/extra';
 
 export const ws = io('/');

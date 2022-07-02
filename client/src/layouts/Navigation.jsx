@@ -7,6 +7,9 @@ import NavItem from '../components/NavItem';
 const Navigation = ({ navConfig, ...other }) => {
 	const { pathname } = useLocation();
 	const match = (path) => {
+		if (path === '/' && pathname === '/admin') {
+			return true;
+		}
 		return path ? !!matchPath({ path, strict: false }, pathname) : false;
 	};
 	return (
